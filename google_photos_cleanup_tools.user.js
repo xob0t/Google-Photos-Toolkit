@@ -8,6 +8,7 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=photos.google.com
 // @grant        none
 // @run-at       document-end
+// @require      file:///C:/Users/admin/Documents/GitHub/delete-photos/google_photos_cleanup_tools.user.js
 // @noframes
 
 // ==/UserScript==
@@ -31,12 +32,11 @@ const getMedia = async (timestamp = null) => {
             "credentials": "include"
         });
 
-        const data = await response.text();
-        let responseBody = data;
+        const responseBody = await response.text();
         const jsonResponse = responseBody.substring(responseBody.indexOf('['));
-        const parsedResponse = JSON.parse(jsonResponse);
-        const mediaData = JSON.parse(parsedResponse[0][2]);
-        return mediaData;
+        let parsedResponse = JSON.parse(jsonResponse);
+        parsedResponse = JSON.parse(parsedResponse[0][2]);
+        return parsedResponse;
     } catch (error) {
         console.error('getMedia Error:', error);
         throw error;
@@ -80,10 +80,8 @@ const parseMediaPage = (mediaPage) => {
 
 };
 
-const getAlbums = async (mediaPage) => {
-    // Retrieve media items created before the provided timestamp
+const getAlbums = async () => {
     const rpcids = "Z5xsfc";
-
     const requestData = [[[rpcids,"[null,null,null,null,1,null,null,100]",null,"1"]]];
 
     const requestDataString = `f.req=${encodeURIComponent(JSON.stringify(requestData))}&at=${encodeURIComponent(window.WIZ_global_data.SNlM0e)}&`;
@@ -98,12 +96,11 @@ const getAlbums = async (mediaPage) => {
             "credentials": "include"
         });
 
-        const data = await response.text();
-        let responseBody = data;
+        const responseBody = await response.text();
         const jsonResponse = responseBody.substring(responseBody.indexOf('['));
-        const parsedResponse = JSON.parse(jsonResponse);
-        const sizeData = JSON.parse(parsedResponse[0][2])[0][1];
-        return sizeData;
+        let parsedResponse = JSON.parse(jsonResponse);
+        parsedResponse = JSON.parse(parsedResponse[0][2]);
+        return parsedResponse;
     } catch (error) {
         console.error('Error:', error);
         throw error;
@@ -180,12 +177,11 @@ const getMediaSize = async (mediaPage) => {
             "credentials": "include"
         });
 
-        const data = await response.text();
-        let responseBody = data;
+        const responseBody = await response.text();
         const jsonResponse = responseBody.substring(responseBody.indexOf('['));
-        const parsedResponse = JSON.parse(jsonResponse);
-        const sizeData = JSON.parse(parsedResponse[0][2])[0][1];
-        return sizeData;
+        let parsedResponse = JSON.parse(jsonResponse);
+        parsedResponse = JSON.parse(parsedResponse[0][2])[0][1];
+        return parsedResponse;
     } catch (error) {
         console.error('Error:', error);
         throw error;
@@ -209,13 +205,11 @@ const moveMediaToTrash = async (mediaIdList) => {
             "credentials": "include"
         });
 
-        const data = await response.text();
-        let responseBody = data;
+        const responseBody = await response.text();
         const jsonResponse = responseBody.substring(responseBody.indexOf('['));
-        const parsedResponse = JSON.parse(jsonResponse);
-        const mediaData = JSON.parse(parsedResponse[0][2]);
-        console.log('mediaData:', mediaData);
-        return mediaData;
+        let parsedResponse = JSON.parse(jsonResponse);
+        parsedResponse = JSON.parse(parsedResponse[0][2]);
+        return parsedResponse;
     } catch (error) {
         console.error('Error:', error);
         throw error;

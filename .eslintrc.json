@@ -1,0 +1,27 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": ["error", 2],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "no-unused-vars": [
+          "warn",
+          {
+            "args": "none"
+          }
+        ],
+        "no-console": "off",
+        "no-debugger": "warn",
+        "no-unused-expressions": "error",
+        "no-trailing-spaces": "off",
+        "no-undef": "error"
+    }
+}

@@ -1,0 +1,447 @@
+<div class="overlay"></div>
+<div id="gptk" class="container">
+  <div class="header">
+    <div class="header-info">
+      <div class="header-text">Google Photos Toolkit</div>
+    </div>
+
+    <div id="hide">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+        <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+      </svg>
+    </div>
+  </div>
+  <hr>
+  <div class="sources">
+    <div class="source">
+      <input type="radio" name="source" id="library" class="sourceHeaderInput" checked="checked">
+      <label class="sourceHeader" for="library">
+        <svg width="24px" height="24px">
+          <path
+            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z">
+          </path>
+        </svg>Library</label>
+    </div>
+    <div class="source">
+      <input type="radio" name="source" id="search" class="sourceHeaderInput">
+      <label class="sourceHeader" for="search">
+        <svg width="24px" height="24px" viewBox="0 0 24 24">
+          <path
+            d="M20.49 19l-5.73-5.73C15.53 12.2 16 10.91 16 9.5A6.5 6.5 0 1 0 9.5 16c1.41 0 2.7-.47 3.77-1.24L19 20.49 20.49 19zM5 9.5C5 7.01 7.01 5 9.5 5S14 7.01 14 9.5 11.99 14 9.5 14 5 11.99 5 9.5z">
+          </path>
+        </svg>Search</label>
+    </div>
+    <div class="source">
+      <input type="radio" name="source" id="albums" class="sourceHeaderInput">
+      <label class="sourceHeader" for="albums">
+        <svg width="24px" height="24px">
+          <path
+            d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H6V4h6v7l2.5-1.88L17 11V4h1v16zm-4.33-6L17 18H7l2.5-3.2 1.67 2.18 2.5-2.98z">
+          </path>
+        </svg>Albums</label>
+    </div>
+    <div class="source">
+      <input type="radio" name="source" id="sharedLinks" class="sourceHeaderInput">
+      <label class="sourceHeader" for="sharedLinks">
+        <svg width="24px" height="24px">
+          <path
+            d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8z">
+          </path>
+        </svg>Shared Links</label>
+    </div>
+    <div class="source">
+      <input type="radio" name="source" id="favorites" class="sourceHeaderInput">
+      <label class="sourceHeader" for="favorites">
+        <svg width="24px" height="24px">
+          <path
+            d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z">
+          </path>
+        </svg>Favorites</label>
+    </div>
+    <div class="source">
+      <input type="radio" name="source" id="trash" class="sourceHeaderInput">
+      <label class="sourceHeader" for="trash">
+        <svg width="24px" height="24px">
+          <path
+            d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z">
+          </path>
+        </svg>Trash</label>
+    </div>
+    <div class="source">
+      <input type="radio" name="source" id="lockedFolder" class="sourceHeaderInput">
+      <label class="sourceHeader" for="lockedFolder">
+        <svg width="24px" height="24px">
+          <path
+            d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z">
+          </path>
+        </svg>Locked Folder</label>
+    </div>
+
+  </div>
+  <hr>
+  <div class="action-bar">
+    <div class="action-buttons">
+      <button id="showExistingAlbumForm" title="Add To Existing Album">Add To Existing Album</button>
+      <button id="showNewAlbumForm" title="Add To New Album">Add To New Album</button>
+      <button type="button" id="toTrash" title="Move To Trash">Move to Trash</button>
+      <button type="button" id="restoreTrash" title="Restore From Trash">Restore From Trash</button>
+      <button type="button" id="toArchive" title="Move ToArchive">Archive</button>
+      <button type="button" id="unArchive" title="Remove From Archive">Un-Archive</button>
+      <button type="button" id="toFavorite" title="Set Favorite">Favorite</button>
+      <button type="button" id="unFavorite" title="Removed From Favorites">Un-Favorite</button>
+      <button type="button" id="lock" title="Move to Locked Folder">Move to Locked Folder</button>
+      <button type="button" id="unLock" title="Move out of Locked Folder">Move out of Locked Folder</button>
+    </div>
+
+    <div class="to-existing-container">
+      <form id="toExistingAlbum" class="flex" title="Add To Existing Album">
+        <div class="refresh-albums svg-container" title="Refresh Albums">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+            <path
+              d="M482-160q-134 0-228-93t-94-227v-7l-64 64-56-56 160-160 160 160-56 56-64-64v7q0 100 70.5 170T482-240q26 0 51-6t49-18l60 60q-38 22-78 33t-82 11Zm278-161L600-481l56-56 64 64v-7q0-100-70.5-170T478-720q-26 0-51 6t-49 18l-60-60q38-22 78-33t82-11q134 0 228 93t94 227v7l64-64 56 56-160 160Z" />
+          </svg>
+        </div>
+        <select id="existingAlbum" class="dropdown albums-select" name="targetAlbumIdExisting" required>
+          <option value="">Press Refresh</option>
+        </select>
+        <button type="submit" title="Add To Existing Album">Submit</button>
+      </form>
+      <button class="return" title="Back to Actions">
+        Return
+      </button>
+    </div>
+    <div class="to-new-container">
+      <form id="toNewAlbum" class="flex" title="Add To A New Album">
+        <input id="newAlbumName" type="text" placeholder="Enter Album Name" required>
+        <button type="submit" title="Add To A New Album">Submit</button>
+      </form>
+      <button class="return" title="Back to Actions">
+        Return
+      </button>
+    </div>
+  </div>
+  <hr>
+  <div class="window-body">
+    <div class="sidebar scroll">
+      <form class="filters-form">
+        <div class="sidebar-top">
+          <div class="flex centered" title="Reset all filters" id="filterResetButton">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+              <path
+                d="M440-122q-121-15-200.5-105.5T160-440q0-66 26-126.5T260-672l57 57q-38 34-57.5 79T240-440q0 88 56 155.5T440-202v80Zm80 0v-80q87-16 143.5-83T720-440q0-100-70-170t-170-70h-3l44 44-56 56-140-140 140-140 56 56-44 44h3q134 0 227 93t93 227q0 121-79.5 211.5T520-122Z" />
+            </svg>
+            Reset Filters
+          </div>
+        </div>
+        <details open class="include-albums">
+          <summary>Select Albums</summary>
+          <fieldset>
+            <select size="5" multiple="multiple" class="select-multiple albums-select scroll" name="albumsInclude" required>
+              <option value="" title="First Album">Press Refresh</option>
+            </select>
+            <div class="select-control-buttons-row">
+              <div class="refresh-albums svg-container" title="Refresh Albums">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                  <path
+                    d="M482-160q-134 0-228-93t-94-227v-7l-64 64-56-56 160-160 160 160-56 56-64-64v7q0 100 70.5 170T482-240q26 0 51-6t49-18l60 60q-38 22-78 33t-82 11Zm278-161L600-481l56-56 64 64v-7q0-100-70.5-170T478-720q-26 0-51 6t-49 18l-60-60q38-22 78-33t82-11q134 0 228 93t94 227v7l64-64 56 56-160 160Z">
+                  </path>
+                </svg>
+              </div>
+              <button type="button" name="selectAll">Select All</button>
+              <button type="button" name="resetAlbumSelection">Reset Selection</button>
+            </div>
+            <div class="select-control-buttons-row">
+              <button type="button" name="selectShared">Select Shared</button>
+              <button type="button" name="selectNonShared">Select Non-Shared</button>
+            </div>
+          </fieldset>
+        </details>
+        <details open class="search">
+          <summary>Search</summary>
+          <fieldset>
+            <label class="form-control">
+              <legend>Search Query:</legend>
+              <input name="searchQuery" value="" type="input" placeholder="Search Query" required>
+            </label>
+          </fieldset>
+        </details>
+        <details class="exclude-albums">
+          <summary>Exclude Albums</summary>
+          <fieldset>
+            <select size="5" multiple="multiple" class="select-multiple albums-select scroll" name="albumsExclude">
+              <option value="" title="First Album">Press Refresh</option>
+            </select>
+            <div class="select-control-buttons-row">
+              <div class="refresh-albums svg-container" title="Refresh Albums">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                  <path
+                    d="M482-160q-134 0-228-93t-94-227v-7l-64 64-56-56 160-160 160 160-56 56-64-64v7q0 100 70.5 170T482-240q26 0 51-6t49-18l60 60q-38 22-78 33t-82 11Zm278-161L600-481l56-56 64 64v-7q0-100-70.5-170T478-720q-26 0-51 6t-49 18l-60-60q38-22 78-33t82-11q134 0 228 93t94 227v7l64-64 56 56-160 160Z">
+                  </path>
+                </svg>
+              </div>
+              <button type="button" name="selectAll">Select All</button>
+              <button type="button" name="resetAlbumSelection">Reset Selection</button>
+            </div>
+            <div class="select-control-buttons-row">
+              <button type="button" name="selectShared">Select Shared</button>
+              <button type="button" name="selectNonShared">Select Non-Shared</button>
+            </div>
+          </fieldset>
+        </details>
+        <details class="date-interval">
+          <summary>Date Interval</summary>
+          <fieldset>
+            <legend>From:</legend>
+            <div class="flex centered input-wrapper">
+              <input type="datetime-local" name="lowerBoundaryDate">
+              <div class="date-reset flex centered" title="Reset Input" name="dateReset">
+                <!-- https://www.svgrepo.com/svg/436706/clear-fill -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56">
+                  <path
+                    d="M 13.7851 49.5742 L 42.2382 49.5742 C 47.1366 49.5742 49.5743 47.1367 49.5743 42.3086 L 49.5743 13.6914 C 49.5743 8.8633 47.1366 6.4258 42.2382 6.4258 L 13.7851 6.4258 C 8.9101 6.4258 6.4257 8.8398 6.4257 13.6914 L 6.4257 42.3086 C 6.4257 47.1602 8.9101 49.5742 13.7851 49.5742 Z M 19.6913 38.3711 C 18.5429 38.3711 17.5820 37.4336 17.5820 36.2852 C 17.5820 35.7461 17.8163 35.2305 18.2382 34.8086 L 25.0351 27.9649 L 18.2382 21.1445 C 17.8163 20.7227 17.5820 20.2071 17.5820 19.6680 C 17.5820 18.4961 18.5429 17.5352 19.6913 17.5352 C 20.2539 17.5352 20.7460 17.7461 21.1679 18.1680 L 28.0117 25.0118 L 34.8554 18.1680 C 35.2539 17.7461 35.7695 17.5352 36.3085 17.5352 C 37.4804 17.5352 38.4413 18.4961 38.4413 19.6680 C 38.4413 20.2071 38.2070 20.7227 37.7851 21.1445 L 30.9648 27.9649 L 37.7851 34.8086 C 38.2070 35.2305 38.4413 35.7461 38.4413 36.2852 C 38.4413 37.4336 37.4804 38.3711 36.3085 38.3711 C 35.7695 38.3711 35.2539 38.1602 34.8788 37.7852 L 28.0117 30.8945 L 21.1444 37.7852 C 20.7460 38.1602 20.2773 38.3711 19.6913 38.3711 Z" />
+                </svg>
+              </div>
+            </div>
+            <legend>To:</legend>
+            <div class="flex centered input-wrapper">
+              <input type="datetime-local" name="higherBoundaryDate">
+              <div class="date-reset flex centered" title="Reset Input" name="dateReset">
+                <!-- https://www.svgrepo.com/svg/436706/clear-fill -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56">
+                  <path
+                    d="M 13.7851 49.5742 L 42.2382 49.5742 C 47.1366 49.5742 49.5743 47.1367 49.5743 42.3086 L 49.5743 13.6914 C 49.5743 8.8633 47.1366 6.4258 42.2382 6.4258 L 13.7851 6.4258 C 8.9101 6.4258 6.4257 8.8398 6.4257 13.6914 L 6.4257 42.3086 C 6.4257 47.1602 8.9101 49.5742 13.7851 49.5742 Z M 19.6913 38.3711 C 18.5429 38.3711 17.5820 37.4336 17.5820 36.2852 C 17.5820 35.7461 17.8163 35.2305 18.2382 34.8086 L 25.0351 27.9649 L 18.2382 21.1445 C 17.8163 20.7227 17.5820 20.2071 17.5820 19.6680 C 17.5820 18.4961 18.5429 17.5352 19.6913 17.5352 C 20.2539 17.5352 20.7460 17.7461 21.1679 18.1680 L 28.0117 25.0118 L 34.8554 18.1680 C 35.2539 17.7461 35.7695 17.5352 36.3085 17.5352 C 37.4804 17.5352 38.4413 18.4961 38.4413 19.6680 C 38.4413 20.2071 38.2070 20.7227 37.7851 21.1445 L 30.9648 27.9649 L 37.7851 34.8086 C 38.2070 35.2305 38.4413 35.7461 38.4413 36.2852 C 38.4413 37.4336 37.4804 38.3711 36.3085 38.3711 C 35.7695 38.3711 35.2539 38.1602 34.8788 37.7852 L 28.0117 30.8945 L 21.1444 37.7852 C 20.7460 38.1602 20.2773 38.3711 19.6913 38.3711 Z" />
+                </svg>
+              </div>
+            </div>
+            <hr>
+            <div class="form-control">
+              <label class="form-control">
+                <input name="intervalType" type="radio" value="include" checked="checked">
+                <span>Include Interval</span>
+              </label>
+              <label class="form-control">
+                <input name="intervalType" type="radio" value="exclude">
+                <span>Exclude Interval</span>
+              </label>
+            </div>
+            <hr>
+            <div class="form-control">
+              <label class="form-control">
+                <input name="dateType" type="radio" value="taken" checked="checked">
+                <span>Date Taken</span>
+              </label>
+              <label class="form-control">
+                <input name="dateType" type="radio" value="uploaded">
+                <span>Date Uploaded</span>
+              </label>
+            </div>
+          </fieldset>
+        </details>
+        <details class="filename">
+          <summary>Filename</summary>
+          <fieldset>
+            <label class="form-control">
+              <legend>Regex:</legend>
+              <input name="fileNameRegex" value="" type="input" placeholder="Regex">
+            </label>
+            <label class="form-control">
+              <input name="fileNameMatchType" value="include" type="radio" checked="checked">
+              Include</label>
+            <label class="form-control">
+              <input name="fileNameMatchType" value="exclude" type="radio">
+              Exclude
+            </label>
+          </fieldset>
+        </details>
+        <details class="description">
+          <summary>Description</summary>
+          <fieldset>
+            <label class="form-control">
+              <legend>Regex:</legend>
+              <input name="descriptionRegex" value="" type="input" placeholder="Regex">
+            </label>
+            <label class="form-control">
+              <input name="descriptionMatchType" value="include" type="radio" checked="checked">
+              Include</label>
+            <label class="form-control">
+              <input name="descriptionMatchType" value="exclude" type="radio">
+              Exclude
+            </label>
+          </fieldset>
+        </details>
+        <details class="space">
+          <summary>Space</summary>
+          <fieldset>
+            <label class="form-control">
+              <input name="space" value="" type="radio" checked="checked">
+              Any </label>
+            <label class="form-control">
+              <input name="space" value="consuming" type="radio">
+              Space-Consuming </label>
+            <label class="form-control">
+              <input name="space" value="non-consuming" type="radio">
+              Not Space-Consuming
+            </label>
+          </fieldset>
+        </details>
+        <details class="size">
+          <summary>Size</summary>
+          <fieldset>
+            <legend>More Than</legend>
+            <div class="input-wrapper">
+              <input name="lowerBoundarySize" type="number" placeholder="Bytes">
+            </div>
+            <legend>Less Than</legend>
+            <div class="input-wrapper">
+              <input name="higherBoundarySize" type="number" placeholder="Bytes">
+            </div>
+          </fieldset>
+        </details>
+        <details class="quality">
+          <summary>Quality</summary>
+          <fieldset>
+            <label class="form-control">
+              <input name="quality" value="" type="radio" checked="checked">
+              Any </label>
+            <label class="form-control">
+              <input name="quality" value="original" type="radio">
+              Original </label>
+            <label class="form-control">
+              <input name="quality" value="storage-saver" type="radio">
+              Storage Saver
+            </label>
+          </fieldset>
+        </details>
+        <details class="type">
+          <summary>Type</summary>
+          <fieldset>
+            <label class="form-control">
+              <input name="type" value="" type="radio" checked="checked">
+              Any </label>
+            <label class="form-control">
+              <input name="type" value="image" type="radio">
+              Image </label>
+            <label class="form-control">
+              <input name="type" value="video" type="radio">
+              Video
+            </label>
+          </fieldset>
+        </details>
+        <details class="archive">
+          <summary>Archived</summary>
+          <fieldset>
+            <label class="form-control">
+              <input name="archived" value="" type="radio" checked="checked">
+              Any
+            </label>
+            <label class="form-control">
+              <input name="archived" value="true" type="radio">
+              Archived
+            </label>
+            <label class="form-control">
+              <input name="archived" value="false" type="radio">
+              Not Archived
+            </label>
+          </fieldset>
+        </details>
+        <details class="owned">
+          <summary>Ownership</summary>
+          <fieldset>
+            <label class="warning">Experimental!</label>
+          <label class="form-control">
+            <input name="owned" value="" type="radio" checked="checked">
+            Any
+          </label>
+          <label class="form-control">
+            <input name="owned" value="true" type="radio">
+            Owned
+          </label>
+          <label class="form-control">
+            <input name="owned" value="false" type="radio">
+            Not Owned
+          </label>
+          </fieldset>
+        </details>
+        <details class="favorite">
+          <summary>Favorite</summary>
+          <fieldset>
+          <label class="form-control">
+            <input name="favorite" value="" type="radio" checked="checked">
+            Any
+          </label>
+          <label class="form-control">
+            <input name="favorite" value="true" type="radio">
+            Favorite
+          </label>
+          <label class="form-control">
+            <input name="favorite" value="false" type="radio">
+            Not Favorite
+          </label>
+          </fieldset>
+        </details>
+        <hr>
+        <fieldset class="exclude-shared">
+          <label class="form-control">
+            <input name="excludeShared" value="true" type="checkbox">
+            Exclude Media With Shared Links
+          </label>
+        </fieldset>
+        <fieldset class="exclude-favorites">
+          <label class="form-control">
+            <input name="excludeFavorites" value="true" type="checkbox">
+            Exclude Favorites
+          </label>
+        </fieldset>
+      </form>
+      <form class="settings-form">
+        <details class="settings">
+          <summary>Advanced Settings</summary>
+          <fieldset>
+            <legend>Max Concurrent Api Requests</legend>
+            <div class="input-wrapper">
+              <input name="maxConcurrentApiReq" value="3" min="1" type="number" required>
+            </div>
+            <legend>Api Operation Batch Size</legend>
+            <div class="input-wrapper">
+              <input name="operationSize" value="500" max="500" min="1" type="number" required>
+            </div>
+            <legend>Locked Folder Api Operation Size</legend>
+            <div class="input-wrapper">
+              <input name="lockedFolderOpSize" value="100" max="100" min="1" type="number" required>
+            </div>
+            <legend>Bulk Info Api Batch Size</legend>
+            <div class="input-wrapper">
+              <input name="infoSize" value="5000" max="10000" min="1" type="number" required>
+            </div>
+            <div class="settings-controls">
+              <button name="save" type="submit">Save</button>
+              <button name="default">Default</button>
+            </div>
+          </fieldset>
+        </details>
+      </form>
+    </div>
+
+    <div class="main">
+      <div class="filter-preview" title="Filter Preview">
+        <span>
+          Filter: None
+        </span>
+      </div>
+      <div class="button-container">
+        <button id="stopProcess">Stop</button>
+        <button id="clearLog">Clear Log</button>
+      </div>
+      <div id="logArea" class="logarea scroll"></div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="info-container">
+      <a class="homepage-link" href="%homepage%" target="_blank">%version%</a>
+    </div>
+    <div class="auto-scroll-container">
+      <input type="checkbox" id="autoScroll" checked="checked">
+      <label for="autoScroll"> AUTO SCROLL</label>
+    </div>
+  </div>
+</div>

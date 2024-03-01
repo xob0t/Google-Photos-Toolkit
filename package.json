@@ -1,0 +1,36 @@
+{
+  "name": "google-photos-toolkit",
+  "nameFull": "Google Photos Toolkit",
+  "version": "2.0.0",
+  "description": "Bulk organize your media",
+  "userScript": {
+    "namespace": "https://github.com/xob0t/Google-Photos-Toolkit",
+    "match": [
+      "*://photos.google.com/*"
+    ],
+    "icon": "https://raw.githubusercontent.com/xob0t/Google-Photos-Toolkit/main/media/icon.png",
+    "downloadURL": "https://github.com/xob0t/Google-Photos-Toolkit/releases/latest/download/google_photos_toolkit.user.js",
+    "run-at": "body",
+    "grant": "none",
+    "noframes": ""
+  },
+  "main": "google_photos_toolkit.user.js",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
+  },
+  "keywords": [],
+  "author": "xob0t",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xob0t/Google-Photos-Toolkit/discussions"
+  },
+  "homepage": "https://github.com/xob0t/Google-Photos-Toolkit#readme",
+  "devDependencies": {
+    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/pluginutils": "^5.1.0",
+    "eslint": "^8.56.0",
+    "rollup": "^4.9.6",
+    "rollup-plugin-banner2": "^1.2.2"
+  }
+}

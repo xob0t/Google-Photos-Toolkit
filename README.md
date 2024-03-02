@@ -1,3 +1,5 @@
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/xob0t/Google-Photos-Toolkit/total)
+
 # Google Photos Toolkit
 Bulk organize your media
 

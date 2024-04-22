@@ -36,6 +36,22 @@ In your browser, utilizing GP's undocumented web api
   
 </details>
 
+<details>
+  <summary>Finding storage-space consuming media</summary>
+
+  This example groups all storage space consuming media in one album.
+
+  1. Select `SPACE-CONSUMING` in the `Space` filter
+
+  2. Select action `Add to new album`
+</details>
+
+<details>
+  <summary>Deleting all media in the library</summary>
+
+  As simple as opening GPTK, clicking `Move to trash`, then clearing it.
+</details>
+
 ## BUGS
 If something does not work, open an [issue](https://github.com/xob0t/Google-Photos-Toolkit/issues) and describe it in detail
 
@@ -43,3 +59,10 @@ If you have a question, open a [discussion](https://github.com/xob0t/Google-Phot
 
 ## Credits
 Borrowed some code and UI inspiration from [undiscord](https://github.com/victornpb/undiscord)
+
+## ♥
+If GPTK is useful to you, please consider supporting the project:
+
+[Steam](https://steamcommunity.com/tradeoffer/new/?partner=108584965&token=BXrJr_O7)
+
+BTC `12znTocLytrrYhQT4AJVeJdR8KTULWbKb7`

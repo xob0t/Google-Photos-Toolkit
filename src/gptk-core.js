@@ -10,12 +10,12 @@ export default class Core {
     this.api = new Api();
   }
 
-  async getAndFilterMedia(filter, source) {
+  async getAndFilterMedia(filter, source, apiSettings) {
     let mediaItems = [];
     if (source === 'library') {
       log('Reading library');
-      if (filter.dateType === 'uploaded') mediaItems = await this.getLibraryItemsByUploadDate(filter);
-      else if (filter.dateType === 'taken') mediaItems = await this.getLibraryItemsByTakenDate(filter);
+      if (filter.dateType === 'uploaded') mediaItems = await this.getLibraryItemsByUploadDate(filter, apiSettings);
+      else if (filter.dateType === 'taken') mediaItems = await this.getLibraryItemsByTakenDate(filter, apiSettings);
     }
     else if (source === 'search') {
       log('Reading search results');
@@ -128,7 +128,7 @@ export default class Core {
     return extendedMediaItems;
   }
 
-  async getLibraryItemsByTakenDate(filter) {
+  async getLibraryItemsByTakenDate(filter, apiSettings) {
     let source;
     if (filter.archived === 'true') {
       source = 'archive';
@@ -152,7 +152,7 @@ export default class Core {
       do {
         if (!this.isProcessRunning) return;
         let mediaPage = await this.api.listItemsByTakenDate(nextPageTimestamp, source, nextPageId);
-        if (!mediaPage?.items?.length) {
+        if (!mediaPage?.items?.length && apiSettings.ignoreErrors !== 'on') {
           log('No media items on the page!', 'error');
           return mediaItems;
         }
@@ -168,7 +168,7 @@ export default class Core {
       do {
         if (!this.isProcessRunning) return;
         let mediaPage = await this.api.listItemsByTakenDate(nextPageTimestamp, source, nextPageId);
-        if (!mediaPage?.items?.length) {
+        if (!mediaPage?.items?.length && apiSettings.ignoreErrors !== 'on') {
           log('No media items on the page!', 'error');
           return mediaItems;
         }
@@ -192,7 +192,7 @@ export default class Core {
       do {
         if (!this.isProcessRunning) return;
         let mediaPage = await this.api.listItemsByTakenDate(nextPageTimestamp, source, nextPageId);
-        if (!mediaPage?.items?.length) {
+        if (!mediaPage?.items?.length && !apiSettings.ignoreErrors !== 'on') {
           log('No media items on the page!', 'error');
           return mediaItems;
         }
@@ -206,7 +206,7 @@ export default class Core {
     return mediaItems;
   }
 
-  async getLibraryItemsByUploadDate(filter) {
+  async getLibraryItemsByUploadDate(filter, apiSettings) {
     let lowerBoundaryDate = new Date(filter.lowerBoundaryDate).getTime();
     let higherBoundaryDate = new Date(filter.higherBoundaryDate).getTime();
 
@@ -222,7 +222,7 @@ export default class Core {
     do {
       if (!this.isProcessRunning) return;
       let mediaPage = await this.api.listItemsByUploadedDate(nextPageId);
-      if (!mediaPage?.items?.length) {
+      if (!mediaPage?.items?.length && apiSettings.ignoreErrors !== 'on') {
         log('No media items on the page!', 'error');
         return mediaItems;
       }

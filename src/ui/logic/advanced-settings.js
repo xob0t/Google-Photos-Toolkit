@@ -11,6 +11,7 @@ export default function advancedSettingsListenersSetUp() {
 
     const userInptSettings = getFormData('.settings-form');
 
+    userInptSettings.ignoreErrors = ignoreErrorsInput.checked;
     // Save values to localStorage
     saveToStorage('apiSettings', userInptSettings);
     log('Api settings saved');
@@ -22,12 +23,14 @@ export default function advancedSettingsListenersSetUp() {
     saveToStorage('apiSettings', apiSettingsDefault);
 
     // Update the form with default values
+    ignoreErrorsInput.checked = apiSettingsDefault.ignoreErrors;
     maxConcurrentApiReqInput.value = apiSettingsDefault.maxConcurrentApiReq;
     operationSizeInput.value = apiSettingsDefault.operationSize;
     lockedFolderOpSizeInput.value = apiSettingsDefault.lockedFolderOpSize;
     infoSizeInput.value = apiSettingsDefault.infoSize;
     log('Default api settings restored');
   }
+  const ignoreErrorsInput = document.querySelector('input[name="ignoreErrors"]');
   const maxConcurrentApiReqInput = document.querySelector('input[name="maxConcurrentApiReq"]');
   const operationSizeInput = document.querySelector('input[name="operationSize"]');
   const lockedFolderOpSizeInput = document.querySelector('input[name="lockedFolderOpSize"]');
@@ -37,6 +40,7 @@ export default function advancedSettingsListenersSetUp() {
 
   const restoredSettings = getFromStorage('apiSettings');
 
+  ignoreErrorsInput.checked = restoredSettings?.ignoreErrors || apiSettingsDefault.ignoreErrors;
   maxConcurrentApiReqInput.value = restoredSettings?.maxConcurrentApiReq || apiSettingsDefault.maxConcurrentApiReq;
   operationSizeInput.value = restoredSettings?.operationSize || apiSettingsDefault.operationSize;
   lockedFolderOpSizeInput.value = restoredSettings?.lockedFolderOpSize || apiSettingsDefault.lockedFolderOpSize;

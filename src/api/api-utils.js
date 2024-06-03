@@ -10,12 +10,14 @@ export default class ApiUtils {
     this.getAllItems = this.getAllItems.bind(this);
     this.core = core;
     let {
+      ignoreErrors,
       maxConcurrentApiReq,
       operationSize,
       infoSize,
       lockedFolderOpSize
     } = settings || apiSettingsDefault;
 
+    this.ignoreErrors = ignoreErrors;
     this.maxConcurrentApiReq = parseInt(maxConcurrentApiReq);
     this.operationSize = parseInt(operationSize);
     this.lockedFolderOpSize = parseInt(lockedFolderOpSize);
@@ -62,7 +64,7 @@ export default class ApiUtils {
     do {
       if (!this.core.isProcessRunning) return;
       const page = await apiMethod.call(this.api, ...args, nextPageId);
-      if (!page?.items) {
+      if (!page?.items && !this.ignoreErrors) {
         log('No items found!', 'error');
         return [];
       }

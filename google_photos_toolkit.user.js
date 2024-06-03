@@ -1172,7 +1172,7 @@
       do {
         if (!this.core.isProcessRunning) return;
         const page = await apiMethod.call(this.api, ...args, nextPageId);
-        if (!page?.items && !this.ignoreErrors) {
+        if (!page?.items && this.ignoreErrors !== 'on') {
           log('No items found!', 'error');
           return [];
         }
@@ -1523,7 +1523,7 @@
         do {
           if (!this.isProcessRunning) return;
           let mediaPage = await this.api.listItemsByTakenDate(nextPageTimestamp, source, nextPageId);
-          if (!mediaPage?.items?.length && !apiSettings.ignoreErrors !== 'on') {
+          if (!mediaPage?.items?.length && apiSettings.ignoreErrors !== 'on') {
             log('No media items on the page!', 'error');
             return mediaItems;
           }

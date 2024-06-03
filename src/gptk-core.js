@@ -192,7 +192,7 @@ export default class Core {
       do {
         if (!this.isProcessRunning) return;
         let mediaPage = await this.api.listItemsByTakenDate(nextPageTimestamp, source, nextPageId);
-        if (!mediaPage?.items?.length && !apiSettings.ignoreErrors !== 'on') {
+        if (!mediaPage?.items?.length && apiSettings.ignoreErrors !== 'on') {
           log('No media items on the page!', 'error');
           return mediaItems;
         }

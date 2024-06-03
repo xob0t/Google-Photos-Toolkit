@@ -64,7 +64,7 @@ export default class ApiUtils {
     do {
       if (!this.core.isProcessRunning) return;
       const page = await apiMethod.call(this.api, ...args, nextPageId);
-      if (!page?.items && !this.ignoreErrors) {
+      if (!page?.items && this.ignoreErrors !== 'on') {
         log('No items found!', 'error');
         return [];
       }

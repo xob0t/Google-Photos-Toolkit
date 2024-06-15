@@ -230,6 +230,23 @@ export default class Api {
     }
   }
 
+  async addItemsToSharedAlbum(productIdList, albumId = null, albumName = null) {
+    // supply album ID for adding to an existing album, or a name for a new one
+    const rpcid = 'laUYf';
+    let requestData = null;
+
+    if (albumName) requestData = [productIdList, null, albumName];
+    else if (albumId) requestData = [albumId, [2, null, productIdList.map(id => [[id]]), null, null, null, [1]]];
+
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      return response;
+    } catch (error) {
+      console.error('Error in addItemsToSharedAlbum:', error);
+      throw error;
+    }
+  }
+
   async setFavorite(mediaIdList, action = true) {
     if (action === true) action = 1; //set favorite
     else if (action === false) action = 2;//un favorite

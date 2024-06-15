@@ -177,23 +177,31 @@ export default class ApiUtils {
     await this.executeWithConcurrency(this.api.setFavorite, isSuccess, this.operationSize, mediaIdList, false);
   }
 
-  async addToExistingAlbum(mediaItems, targetAlbumId) {
-    log(`Adding ${mediaItems.length} items to album`);
+  async addToExistingAlbum(mediaItems, targetAlbum) {
+    log(`Adding ${mediaItems.length} items to album "${targetAlbum.name}"`);
+
     const isSuccess = (result) => Array.isArray(result);
     const productIdList = mediaItems.map((item) => item.productId);
+
+    const addItemFunction = targetAlbum.isShared ? this.api.addItemsToSharedAlbum : this.api.addItemsToAlbum;
+
     await this.executeWithConcurrency(
-      this.api.addItemsToAlbum,
+      addItemFunction,
       isSuccess,
       this.operationSize,
       productIdList,
-      targetAlbumId
+      targetAlbum.productId
     );
   }
+  
 
   async addToNewAlbum(mediaItems, targetAlbumName) {
     log(`Creating new album "${targetAlbumName}"`);
-    const targetAlbumId = await this.api.createEmptyAlbum(targetAlbumName);
-    await this.addToExistingAlbum(mediaItems, targetAlbumId);
+    const album = {};
+    album.name = targetAlbumName;
+    album.shared = false;
+    album.productId = await this.api.createEmptyAlbum(targetAlbumName);
+    await this.addToExistingAlbum(mediaItems, album);
   }
 
   async getBatchMediaInfoChunked(mediaItems) {

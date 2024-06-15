@@ -4,6 +4,7 @@ import getFormData from './utils/getFormData.js';
 import { generateFilterDescription } from './filter-description-gen.js';
 import { updateUI } from './update-state.js';
 import { disableActionBar } from './utils/disable-action-bar.js';
+import getFromStorage from '../../utils/getFromStorage.js';
 
 const actions = [
   {
@@ -44,8 +45,15 @@ function userConfirmation(action, filter, source) {
 
 async function runAction(actionId) {
   const action = actions.find(action => action.elementId === actionId);
-  // user input value if action has a target
-  const target = document.getElementById(action?.targetId)?.value;
+  // get the target album if action has one
+  let targetAlbum = null;
+  let newTargetAlbumName = null;
+  if (actionId === 'toExistingAlbum'){
+    const albumProductId = document.getElementById(action?.targetId)?.value;
+    targetAlbum = getFromStorage('albums').find(album => album.productId === albumProductId);
+  }else{
+    newTargetAlbumName = document.getElementById(action?.targetId)?.value;
+  }
   // id of currently selected source element
   const source = document.querySelector('input[name="source"]:checked').id;
   
@@ -67,7 +75,7 @@ async function runAction(actionId) {
   // add class to indicate which action is running
   document.getElementById(actionId).classList.add('running');
   // Run it
-  await core.actionWithFilter(action, filter, source, target, apiSettings);
+  await core.actionWithFilter(action, filter, source, targetAlbum, newTargetAlbumName, apiSettings);
   // remove 'running' class
   document.getElementById(actionId).classList.remove('running');
   // Update the ui

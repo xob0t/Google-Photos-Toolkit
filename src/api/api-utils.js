@@ -18,33 +18,34 @@ export default class ApiUtils {
   }
 
   async executeWithConcurrency(apiMethod, successCheck, operationSize, itemsArray, ...args) {
-    const promisePool = [];
+    const promisePool = new Set();
     const results = [];
     const chunkedItems = splitArrayIntoChunks(itemsArray, operationSize);
 
     for (const chunk of chunkedItems) {
       if (!this.core.isProcessRunning) return;
-      while (promisePool.length >= this.maxConcurrentApiReq) {
+
+      while (promisePool.size >= this.maxConcurrentApiReq) {
         await Promise.race(promisePool);
-        promisePool.shift();
       }
 
       log(`Processing ${chunk.length} items`);
 
-      const promise = apiMethod.call(this.api, chunk, ...args); // Call apiMethod with correct context
-      promisePool.push(promise);
+      const promise = apiMethod.call(this.api, chunk, ...args);
+      promisePool.add(promise);
 
       promise
         .then((result) => {
           results.push(...result);
           if (successCheck && !successCheck(result)) {
             log(`Error executing action ${apiMethod.name}`, 'error');
-            promisePool.shift();
           }
-        }) // Remove fulfilled promise from pool
+        })
         .catch((error) => {
           log(`${apiMethod.name} Api error ${error}`, 'error');
-          promisePool.shift();
+        })
+        .finally(() => {
+          promisePool.delete(promise);
         });
     }
     await Promise.all(promisePool);

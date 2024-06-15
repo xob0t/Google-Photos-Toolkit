@@ -36,21 +36,24 @@ In your browser, utilizing GP's undocumented web api
   
 </details>
 
-<details>
-  <summary>Finding storage-space consuming media</summary>
+  ### Finding space-consuming media
+  This example groups all space-consuming media in one album.
 
-  This example groups all storage space consuming media in one album.
+  1. Make sure "Library" is the selected source
+  2. Select `SPACE-CONSUMING` in the `Space` filter
+  3. Select action `Add to new album`
 
-  1. Select `SPACE-CONSUMING` in the `Space` filter
+  ### Deleting all media in the library
+  As simple as selecting "Library" source, clicking `Move to trash`, then clearing it.
 
-  2. Select action `Add to new album`
-</details>
+  ### Use GPTK's api
+  GPTK exposes it's api class globally so you can use it in your browser's console.
 
-<details>
-  <summary>Deleting all media in the library</summary>
+  Example usage.
+  ```
+  gptkApi.listItemsByTakenDate()
+  ```
 
-  As simple as opening GPTK, clicking `Move to trash`, then clearing it.
-</details>
 
 ## BUGS
 If something does not work, open an [issue](https://github.com/xob0t/Google-Photos-Toolkit/issues) and describe it in detail

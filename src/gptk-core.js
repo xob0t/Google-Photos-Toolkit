@@ -372,7 +372,7 @@ export default class Core {
     }
   }
 
-  async actionWithFilter(action, filter, source, target, apiSettings) {
+  async actionWithFilter(action, filter, source, targetAlbum, newTargetAlbumName, apiSettings) {
     try{
       this.preChecks(filter);
     }
@@ -398,8 +398,8 @@ export default class Core {
         if (action.elementId === 'restoreTrash' || source === 'trash') await this.apiUtils.restoreFromTrash(mediaItems);
         if (action.elementId === 'unLock' || source === 'lockedFolder') await this.apiUtils.removeFromLockedFolder(mediaItems);
         if (action.elementId === 'lock') await this.apiUtils.moveToLockedFolder(mediaItems);
-        if (action.elementId === 'toExistingAlbum') await this.apiUtils.addToExistingAlbum(mediaItems, target);
-        if (action.elementId === 'toNewAlbum') await this.apiUtils.addToNewAlbum(mediaItems, target);
+        if (action.elementId === 'toExistingAlbum') await this.apiUtils.addToExistingAlbum(mediaItems, targetAlbum);
+        if (action.elementId === 'toNewAlbum') await this.apiUtils.addToNewAlbum(mediaItems, newTargetAlbumName);
         if (action.elementId === 'toTrash') await this.apiUtils.moveToTrash(mediaItems);
         if (action.elementId === 'toArchive') await this.apiUtils.sendToArchive(mediaItems);
         if (action.elementId === 'unArchive') await this.apiUtils.unArchive(mediaItems);

@@ -53,6 +53,7 @@ export function updateUI() {
 
   function updateFilterVisibility() {
     const filterElements = {
+      livePhotoType: document.querySelector('.type input[value=live]').parentNode,
       includeAlbums: document.querySelector('.include-albums'),
       owned: document.querySelector('.owned'),
       search: document.querySelector('.search'),
@@ -84,6 +85,7 @@ export function updateUI() {
       toggleVisibility(filterElements.archive, true);
     }
     if (!isActiveTab('trash')) {
+      toggleVisibility(filterElements.livePhotoType, true);
       toggleVisibility(filterElements.quality, true);
       toggleVisibility(filterElements.size, true);
       toggleVisibility(filterElements.filename, true);

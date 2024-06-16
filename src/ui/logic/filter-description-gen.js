@@ -24,6 +24,7 @@ export function generateFilterDescription(filter) {
 
   if (!filter.type) descriptionParts.push('media');
   else if (filter.type === 'video') descriptionParts.push('videos');
+  else if (filter.type === 'live') descriptionParts.push('live photos');
   else if (filter.type === 'image') descriptionParts.push('images');
 
   if (filter.searchQuery) descriptionParts.push(`in search results of query "${filter.searchQuery}"`);

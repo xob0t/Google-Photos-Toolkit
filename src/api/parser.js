@@ -85,6 +85,7 @@ export default function parser(data, rpcid) {
       dateTaken: rawItemData?.[2],
       mediaId: rawItemData?.[3],
       dateUploaded: rawItemData?.[5],
+      isLivePhoto: rawItemData?.at(-1)?.[146008172] ? true : false,
       duration: rawItemData?.at(-1)?.[76647426]?.[0]
     };
   }

@@ -316,6 +316,7 @@ export default class Core {
     log('Filtering by media type');
     if (filter.type === 'video') mediaItems = mediaItems.filter(item => item.duration);
     else if (filter.type === 'image') mediaItems = mediaItems.filter(item => !item.duration);
+    else if (filter.type === 'live') mediaItems = mediaItems.filter(item => item.isLivePhoto);
     log(`Item count after filtering: ${mediaItems?.length}`);
     return mediaItems;
   }

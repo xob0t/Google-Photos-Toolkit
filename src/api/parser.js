@@ -11,7 +11,7 @@ export default function parser(data, rpcid) {
       duration: rawItemData?.at(-1)?.[76647426]?.[0],
       descriptionShort: rawItemData?.at(-1)?.[396644657]?.[0],
       isLivePhoto: rawItemData?.at(-1)?.[146008172] ? true : false,
-      isOwned: rawItemData?.[7]?.[12]?.[0] !== 27
+      isOwned: rawItemData[7]?.filter(subArray => subArray.includes(27)).length === 0,
     };
   }
 

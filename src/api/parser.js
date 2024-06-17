@@ -3,9 +3,9 @@ export default function parser(data, rpcid) {
   function libraryItemParse(rawItemData) {
     return {
       productId: rawItemData?.[0],
-      dateTaken: rawItemData?.[2],
+      timestamp: rawItemData?.[2],
+      creationTimestamp: rawItemData?.[5],
       mediaId: rawItemData?.[3],
-      dateUploaded: rawItemData?.[5],
       isArchived: rawItemData?.[13],
       isFavorite: rawItemData?.at(-1)?.[163238866]?.[0],
       duration: rawItemData?.at(-1)?.[76647426]?.[0],
@@ -33,9 +33,9 @@ export default function parser(data, rpcid) {
   function lockedFolderItemParse(rawItemData) {
     return {
       productId: rawItemData?.[0],
-      dateTaken: rawItemData?.[2],
+      timestamp: rawItemData?.[2],
+      creationTimestamp: rawItemData?.[5],
       mediaId: rawItemData?.[3],
-      dateUploaded: rawItemData?.[5],
       duration: rawItemData?.at(-1)?.[76647426]?.[0]
     };
   }
@@ -82,9 +82,9 @@ export default function parser(data, rpcid) {
   function itemBasicParse(rawItemData) {
     return {
       productId: rawItemData?.[0],
-      dateTaken: rawItemData?.[2],
+      timestamp: rawItemData?.[2],
+      creationTimestamp: rawItemData?.[5],
       mediaId: rawItemData?.[3],
-      dateUploaded: rawItemData?.[5],
       isLivePhoto: rawItemData?.at(-1)?.[146008172] ? true : false,
       duration: rawItemData?.at(-1)?.[76647426]?.[0]
     };
@@ -109,8 +109,8 @@ export default function parser(data, rpcid) {
       productId: rawItemData?.[0],
       descriptionFull: rawItemData?.[1]?.[2],
       fileName: rawItemData?.[1]?.[3],
-      dateTaken: rawItemData?.[1]?.[6],
-      dateUploaded: rawItemData?.[1]?.[8],
+      timestamp: rawItemData?.[1]?.[6],
+      creationTimestamp: rawItemData?.[1]?.[8],
       size: rawItemData?.[1]?.[9],
       takesUpSpace: rawItemData?.[1]?.at(-1)?.[0] === 1,
       spaceTaken: rawItemData?.[1]?.at(-1)?.[1],

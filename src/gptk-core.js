@@ -158,7 +158,7 @@ export default class Core {
         }
         nextPageId = mediaPage.nextPageId;
         nextPageTimestamp = mediaPage.lastItemTimestamp - 1;
-        mediaPage.items = mediaPage.items.filter(item => item.dateTaken >= lowerBoundaryDate && item.dateTaken <= higherBoundaryDate);
+        mediaPage.items = mediaPage.items.filter(item => item.timestamp >= lowerBoundaryDate && item.timestamp <= higherBoundaryDate);
         if (mediaPage?.items?.length === 0) continue;
         log(`Found ${mediaPage?.items?.length} items`);
         mediaItems.push(...mediaPage.items);
@@ -174,7 +174,7 @@ export default class Core {
         }
         
         nextPageId = mediaPage.nextPageId;
-        mediaPage.items = mediaPage.items.filter(item => item.dateTaken < lowerBoundaryDate || item.dateTaken > higherBoundaryDate);
+        mediaPage.items = mediaPage.items.filter(item => item.timestamp < lowerBoundaryDate || item.timestamp > higherBoundaryDate);
 
         if (nextPageTimestamp > lowerBoundaryDate && nextPageTimestamp < higherBoundaryDate) {
           nextPageTimestamp = lowerBoundaryDate;
@@ -226,13 +226,13 @@ export default class Core {
         log('No media items on the page!', 'error');
         return mediaItems;
       }
-      const lastTimeStamp = mediaPage.items.at(-1).dateUploaded;
+      const lastTimeStamp = mediaPage.items.at(-1).creationTimestamp;
       nextPageId = mediaPage.nextPageId;
       if (filter.intervalType === 'include') {
-        mediaPage.items = mediaPage.items.filter(item => item.dateUploaded >= lowerBoundaryDate && item.dateUploaded <= higherBoundaryDate);
+        mediaPage.items = mediaPage.items.filter(item => item.creationTimestamp >= lowerBoundaryDate && item.creationTimestamp <= higherBoundaryDate);
         skipTheRest = lastTimeStamp < lowerBoundaryDate;
       } else if (filter.intervalType === 'exclude') {
-        mediaPage.items = mediaPage.items.filter(item => item.dateUploaded < lowerBoundaryDate || item.dateUploaded > higherBoundaryDate);
+        mediaPage.items = mediaPage.items.filter(item => item.creationTimestamp < lowerBoundaryDate || item.creationTimestamp > higherBoundaryDate);
       }
 
       log(`Found ${mediaPage?.items?.length} items`);
@@ -294,17 +294,17 @@ export default class Core {
 
     if (filter.intervalType === 'include') {
       if (filter.dateType === 'taken') {
-        mediaItems = mediaItems.filter(item => item.dateTaken >= lowerBoundaryDate && item.dateTaken <= higherBoundaryDate);
+        mediaItems = mediaItems.filter(item => item.timestamp >= lowerBoundaryDate && item.timestamp <= higherBoundaryDate);
       }
       else if (filter.dateType === 'uploaded') {
-        mediaItems = mediaItems.filter(item => item.dateUploaded >= lowerBoundaryDate && item.dateUploaded <= higherBoundaryDate);
+        mediaItems = mediaItems.filter(item => item.creationTimestamp >= lowerBoundaryDate && item.creationTimestamp <= higherBoundaryDate);
       }
     }
     else if (filter.intervalType === 'exclude') {
       if (filter.dateType === 'taken') {
-        mediaItems = mediaItems.filter(item => item.dateTaken < lowerBoundaryDate || item.dateTaken > higherBoundaryDate);
+        mediaItems = mediaItems.filter(item => item.timestamp < lowerBoundaryDate || item.timestamp > higherBoundaryDate);
       } else if (filter.dateType === 'uploaded') {
-        mediaItems = mediaItems.filter(item => item.dateUploaded < lowerBoundaryDate || item.dateUploaded > higherBoundaryDate);
+        mediaItems = mediaItems.filter(item => item.creationTimestamp < lowerBoundaryDate || item.creationTimestamp > higherBoundaryDate);
       }
     }
     log(`Item count after filtering: ${mediaItems?.length}`);

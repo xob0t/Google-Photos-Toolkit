@@ -6,11 +6,15 @@ export default function parser(data, rpcid) {
       timestamp: rawItemData?.[2],
       creationTimestamp: rawItemData?.[5],
       mediaId: rawItemData?.[3],
+      thumb: rawItemData?.[1]?.[0],
+      resWidth: rawItemData?.[1]?.[1],
+      resHeight: rawItemData?.[1]?.[2],
       isArchived: rawItemData?.[13],
       isFavorite: rawItemData?.at(-1)?.[163238866]?.[0],
       duration: rawItemData?.at(-1)?.[76647426]?.[0],
       descriptionShort: rawItemData?.at(-1)?.[396644657]?.[0],
       isLivePhoto: rawItemData?.at(-1)?.[146008172] ? true : false,
+      livePhotoDuration: rawItemData?.at(-1)?.[146008172]?.[1],
       isOwned: rawItemData[7]?.filter(subArray => subArray.includes(27)).length === 0,
     };
   }
@@ -79,32 +83,49 @@ export default function parser(data, rpcid) {
     };
   }
 
-  function itemBasicParse(rawItemData) {
+  function albumItemParse(rawItemData) {
     return {
       productId: rawItemData?.[0],
+      thumb: rawItemData?.[1]?.[0],
+      resWidth: rawItemData[1]?.[1],
+      resHeight: rawItemData[1]?.[2],
       timestamp: rawItemData?.[2],
       creationTimestamp: rawItemData?.[5],
       mediaId: rawItemData?.[3],
       isLivePhoto: rawItemData?.at(-1)?.[146008172] ? true : false,
+      livePhotoDuration: rawItemData?.at(-1)?.[146008172]?.[1],
+      duration: rawItemData?.at(-1)?.[76647426]?.[0]
+    };
+  }
+
+  function trashItemParse(rawItemData) {
+    return {
+      productId: rawItemData?.[0],
+      thumb: rawItemData?.[1]?.[0],
+      resWidth: rawItemData?.[1]?.[1],
+      resHeight: rawItemData?.[1]?.[2],
+      timestamp: rawItemData?.[2],
+      creationTimestamp: rawItemData?.[5],
+      mediaId: rawItemData?.[3],
       duration: rawItemData?.at(-1)?.[76647426]?.[0]
     };
   }
 
   function albumItemsPage(data) {
     return {
-      items: data?.[1]?.map(rawItemData => itemBasicParse(rawItemData)),
+      items: data?.[1]?.map(rawItemData => albumItemParse(rawItemData)),
       nextPageId: data?.[2]
     };
   }
 
   function trashPage(data) {
     return {
-      items: data?.[0].map(rawItemData => itemBasicParse(rawItemData)),
+      items: data?.[0].map(rawItemData => trashItemParse(rawItemData)),
       nextPageId: data?.[1]
     };
   }
 
-  function itemBulkInfoParse(rawItemData) {
+  function itemBulkMediaInfoParse(rawItemData) {
     return {
       productId: rawItemData?.[0],
       descriptionFull: rawItemData?.[1]?.[2],
@@ -112,14 +133,17 @@ export default function parser(data, rpcid) {
       timestamp: rawItemData?.[1]?.[6],
       creationTimestamp: rawItemData?.[1]?.[8],
       size: rawItemData?.[1]?.[9],
-      takesUpSpace: rawItemData?.[1]?.at(-1)?.[0] === 1,
+      takesUpSpace: rawItemData?.[1]?.at(-1)?.[0] === undefined ? null : rawItemData?.[1]?.at(-1)?.[0] === 1,
       spaceTaken: rawItemData?.[1]?.at(-1)?.[1],
-      isOriginalQuality: rawItemData?.[1]?.at(-1)?.[2] === 2
+      isOriginalQuality: rawItemData?.[1]?.at(-1)?.[2] === undefined ? null : rawItemData?.[1]?.at(-1)?.[2] === 2
     };
   }
 
-  function bulkInfo(data) {
-    return data.map(rawItemData => itemBulkInfoParse(rawItemData));
+    };
+  }
+
+  function bulkMediaInfo(data) {
+    return data.map(rawItemData => itemBulkMediaInfoParse(rawItemData));
   }
 
   if(!data?.length) return null;
@@ -130,5 +154,5 @@ export default function parser(data, rpcid) {
   if (rpcid === 'Z5xsfc') return albumsPage(data);
   if (rpcid === 'snAcKc') return albumItemsPage(data);
   if (rpcid === 'zy0IHe') return trashPage(data);
-  if (rpcid === 'EWgK9e') return bulkInfo(data);
+  if (rpcid === 'VrseUb') return itemInfoParse(data);
 }

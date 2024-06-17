@@ -174,10 +174,10 @@ export default class Api {
     }
   }
 
-  async listAlbumItems(albumId, pageId = null, parseResponse = true) {
+  async listAlbumItems(albumProductId, pageId = null, parseResponse = true) {
     // list items of an album or a shared link with the given id
     const rpcid = 'snAcKc';
-    const requestData = [albumId, pageId, null, null, 1];
+    const requestData = [albumProductId, pageId, null, null, 1];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);

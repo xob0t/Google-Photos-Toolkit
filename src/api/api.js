@@ -41,7 +41,7 @@ export default class Api {
     }
   }
 
-  async listItemsByTakenDate(timestamp = null, source = null, pageId = null, parseResponse = true) {
+  async getItemsByTakenDate(timestamp = null, source = null, pageId = null, parseResponse = true) {
     // Retrieves media items created before the provided timestamp
     if (source === 'library') source = 1;
     else if (source === 'archive') source = 2;
@@ -55,12 +55,12 @@ export default class Api {
       if (parseResponse) return parser(response, rpcid);
       return response;
     } catch (error) {
-      console.error('Error in listItemsByTakenDate:', error);
+      console.error('Error in getItemsByTakenDate:', error);
       throw error;
     }
   }
 
-  async listItemsByUploadedDate(pageId = null, parseResponse = true) {
+  async getItemsByUploadedDate(pageId = null, parseResponse = true) {
     const rpcid = 'EzkLib';
     const requestData = ['', [[4, 'ra', 0, 0]], pageId];
     try {
@@ -68,7 +68,7 @@ export default class Api {
       if (parseResponse) return parser(response, rpcid);
       return response;
     } catch (error) {
-      console.error('Error in listItemsByUploadedDate:', error);
+      console.error('Error in getItemsByUploadedDate:', error);
       throw error;
     }
   }
@@ -86,7 +86,7 @@ export default class Api {
     }
   }
 
-  async listFavorites(pageId = null, parseResponse = true) {
+  async getFavoriteItems(pageId = null, parseResponse = true) {
     const rpcid = 'EzkLib';
     const requestData = ['Favorites', [[5, '8', 0, 9]], pageId];
     try {
@@ -94,12 +94,12 @@ export default class Api {
       if (parseResponse) return parser(response, rpcid);
       return response;
     } catch (error) {
-      console.error('Error in listFavorites:', error);
+      console.error('Error in getFavoriteItems:', error);
       throw error;
     }
   }
 
-  async listTrashItems(pageId = null, parseResponse = true) {
+  async getTrashItems(pageId = null, parseResponse = true) {
     const rpcid = 'zy0IHe';
     const requestData = [pageId];
     try {
@@ -107,12 +107,12 @@ export default class Api {
       if (parseResponse) return parser(response, rpcid);
       return response;
     } catch (error) {
-      console.error('Error in listTrashItems:', error);
+      console.error('Error in getTrashItems:', error);
       throw error;
     }
   }
 
-  async listLockedFolderItems(pageId = null, parseResponse = true) {
+  async getLockedFolderItems(pageId = null, parseResponse = true) {
     const rpcid = 'nMFwOc';
     const requestData = [pageId];
     try {
@@ -120,12 +120,12 @@ export default class Api {
       if (parseResponse) return parser(response, rpcid);
       return response;
     } catch (error) {
-      console.error('Error in listLockedFolderItems:', error);
+      console.error('Error in getLockedFolderItems:', error);
       throw error;
     }
   }
 
-  async moveMediaToTrash(mediaIdList) {
+  async moveItemsToTrash(mediaIdList) {
     const rpcid = 'XwAOJf';
     const requestData = [null, 1, mediaIdList, 3];
     // note: It seems that '3' here corresponds to items' location
@@ -133,7 +133,7 @@ export default class Api {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response[0];
     } catch (error) {
-      console.error('Error in moveMediaToTrash:', error);
+      console.error('Error in moveItemsToTrash:', error);
       throw error;
     }
   }
@@ -150,7 +150,7 @@ export default class Api {
     }
   }
 
-  async listSharedLinks(pageId = null, parseResponse = true) {
+  async getSharedLinks(pageId = null, parseResponse = true) {
     const rpcid = 'F2A0H';
     const requestData = [pageId, null, 2, null, 3];
     try {
@@ -158,12 +158,12 @@ export default class Api {
       if (parseResponse) return parser(response, rpcid);
       return response;
     } catch (error) {
-      console.error('Error in listSharedLinks:', error);
+      console.error('Error in getSharedLinks:', error);
       throw error;
     }
   }
 
-  async listAlbums(pageId = null, parseResponse = true) {
+  async getAlbums(pageId = null, parseResponse = true) {
     const rpcid = 'Z5xsfc';
     const requestData = [pageId, null, null, null, 1, null, null, 100];
     try {
@@ -171,12 +171,12 @@ export default class Api {
       if (parseResponse) return parser(response, rpcid);
       return response;
     } catch (error) {
-      console.error('Error in listAlbums:', error);
+      console.error('Error in getAlbums:', error);
       throw error;
     }
   }
 
-  async listAlbumItems(albumProductId, pageId = null, parseResponse = true) {
+  async getAlbumItems(albumProductId, pageId = null, parseResponse = true) {
     // list items of an album or a shared link with the given id
     const rpcid = 'snAcKc';
     const requestData = [albumProductId, pageId, null, null, 1];
@@ -185,7 +185,7 @@ export default class Api {
       if (parseResponse) return parser(response, rpcid);
       return response;
     } catch (error) {
-      console.error('Error in listAlbumItems:', error);
+      console.error('Error in getAlbumItems:', error);
       throw error;
     }
   }
@@ -203,7 +203,7 @@ export default class Api {
     }
   }
 
-  async createEmptyAlbum(albumName) {
+  async createAlbum(albumName) {
     // returns string id of the created album
     const rpcid = 'OXvT9d';
     let requestData = [albumName, null, 2];
@@ -211,7 +211,7 @@ export default class Api {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response[0][0];
     } catch (error) {
-      console.error('Error in createEmptyAlbum:', error);
+      console.error('Error in createAlbum:', error);
       throw error;
     }
   }

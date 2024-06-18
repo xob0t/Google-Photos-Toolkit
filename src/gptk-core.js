@@ -140,7 +140,7 @@ export default class Core {
       let nextPageTimestamp = higherBoundaryDate !== Infinity ? higherBoundaryDate : null;
       do {
         if (!this.isProcessRunning) return;
-        let mediaPage = await this.api.listItemsByTakenDate(nextPageTimestamp, source, nextPageId);
+        let mediaPage = await this.api.getItemsByTakenDate(nextPageTimestamp, source, nextPageId);
         if (!mediaPage?.items?.length) {
           log('No media items on the page!', 'error');
           return mediaItems;
@@ -156,7 +156,7 @@ export default class Core {
       let nextPageTimestamp = null;
       do {
         if (!this.isProcessRunning) return;
-        let mediaPage = await this.api.listItemsByTakenDate(nextPageTimestamp, source, nextPageId);
+        let mediaPage = await this.api.getItemsByTakenDate(nextPageTimestamp, source, nextPageId);
         if (!mediaPage?.items?.length) {
           log('No media items on the page!', 'error');
           return mediaItems;
@@ -180,7 +180,7 @@ export default class Core {
       let nextPageTimestamp = null;
       do {
         if (!this.isProcessRunning) return;
-        let mediaPage = await this.api.listItemsByTakenDate(nextPageTimestamp, source, nextPageId);
+        let mediaPage = await this.api.getItemsByTakenDate(nextPageTimestamp, source, nextPageId);
         if (!mediaPage?.items?.length) {
           log('No media items on the page!', 'error');
           return mediaItems;
@@ -210,7 +210,7 @@ export default class Core {
 
     do {
       if (!this.isProcessRunning) return;
-      let mediaPage = await this.api.listItemsByUploadedDate(nextPageId);
+      let mediaPage = await this.api.getItemsByUploadedDate(nextPageId);
       if (!mediaPage?.items?.length) {
         log('No media items on the page!', 'error');
         return mediaItems;

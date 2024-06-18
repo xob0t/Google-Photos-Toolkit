@@ -52,7 +52,7 @@ In your browser, utilizing GP's undocumented web api
   Example usage.
   ```
   // getting the fist page of the library by taken date
-  const libraryPage = await gptkApi.listItemsByTakenDate()
+  const libraryPage = await gptkApi.getItemsByTakenDate()
   // getting the info of the first item on the page
   const itemInfo = await gptkApi.getItemInfo(libraryPage.items[0].productId)
   console.log(itemInfo)

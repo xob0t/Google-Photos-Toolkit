@@ -70,27 +70,27 @@ export default class ApiUtils {
   }
 
   async getAllAlbums() {
-    return await this.getAllItems(this.api.listAlbums);
+    return await this.getAllItems(this.api.getAlbums);
   }
 
   async getAllSharedLinks() {
-    return await this.getAllItems(this.api.listSharedLinks);
+    return await this.getAllItems(this.api.getSharedLinks);
   }
 
   async getAllMediaInSharedLink(sharedLinkId) {
-    return await this.getAllItems(this.api.listAlbumItems, sharedLinkId);
+    return await this.getAllItems(this.api.getAlbumItems, sharedLinkId);
   }
 
   async getAllMediaInAlbum(albumId) {
-    return await this.getAllItems(this.api.listAlbumItems, albumId);
+    return await this.getAllItems(this.api.getAlbumItems, albumId);
   }
 
   async getAllTrashItems() {
-    return await this.getAllItems(this.api.listTrashItems);
+    return await this.getAllItems(this.api.getTrashItems);
   }
 
   async getAllFavoriteItems() {
-    return await this.getAllItems(this.api.listFavorites);
+    return await this.getAllItems(this.api.getFavoriteItems);
   }
 
   async getAllSearchItems(searchQuery) {
@@ -98,7 +98,7 @@ export default class ApiUtils {
   }
 
   async getAllLockedFolderItems() {
-    return await this.getAllItems(this.api.listLockedFolderItems);
+    return await this.getAllItems(this.api.getLockedFolderItems);
   }
 
   async moveToLockedFolder(mediaItems) {
@@ -119,7 +119,7 @@ export default class ApiUtils {
     log(`Moving ${mediaItems.length} items to trash`);
     const isSuccess = (result) => Array.isArray(result);
     const mediaIdList = mediaItems.map((item) => item.mediaId);
-    await this.executeWithConcurrency(this.api.moveMediaToTrash, isSuccess, this.operationSize, mediaIdList);
+    await this.executeWithConcurrency(this.api.moveItemsToTrash, isSuccess, this.operationSize, mediaIdList);
   }
 
   async restoreFromTrash(trashItems) {
@@ -199,7 +199,7 @@ export default class ApiUtils {
     const album = {};
     album.name = targetAlbumName;
     album.shared = false;
-    album.productId = await this.api.createEmptyAlbum(targetAlbumName);
+    album.productId = await this.api.createAlbum(targetAlbumName);
     await this.addToExistingAlbum(mediaItems, album);
   }
 

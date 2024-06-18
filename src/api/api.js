@@ -188,14 +188,15 @@ export default class Api {
     }
   }
 
-  async removeFromAlbum(albumItemIdList) {
+  async removeItemsFromAlbum(itemAlbumProductIdList) {
+    // regular productId's won't cut it, you need to get them from an album
     const rpcid = 'ycV3Nd';
-    const requestData = [albumItemIdList];
+    const requestData = [itemAlbumProductIdList];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
     } catch (error) {
-      console.error('Error in removeFromAlbum:', error);
+      console.error('Error in removeItemsFromAlbum:', error);
       throw error;
     }
   }

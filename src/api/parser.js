@@ -40,14 +40,14 @@ export default function parser(data, rpcid) {
       timestamp: rawItemData?.[2],
       creationTimestamp: rawItemData?.[5],
       mediaId: rawItemData?.[3],
-      duration: rawItemData?.at(-1)?.[76647426]?.[0]
+      duration: rawItemData?.at(-1)?.[76647426]?.[0],
     };
   }
 
   function lockedFolderPage(data) {
     return {
       nextPageId: data?.[0],
-      items: data?.[1]?.map(rawItemData => lockedFolderItemParse(rawItemData))
+      items: data?.[1]?.map(rawItemData => lockedFolderItemParse(rawItemData)),
     };
   }
 
@@ -55,14 +55,14 @@ export default function parser(data, rpcid) {
     return {
       productId: rawLinkData?.[6],
       linkId: rawLinkData?.[17],
-      itemCount: rawLinkData?.[3]
+      itemCount: rawLinkData?.[3],
     };
   }
 
   function linksPage(data) {
     return {
       items: data?.[0]?.map(rawLinkData => linkParse(rawLinkData)),
-      nextPageId: data?.[1]
+      nextPageId: data?.[1],
     };
   }
 
@@ -72,14 +72,14 @@ export default function parser(data, rpcid) {
       albumId: rawAlbumData?.[6]?.[0],
       name: rawAlbumData?.at(-1)?.[72930366]?.[1],
       itemCount: rawAlbumData?.at(-1)?.[72930366]?.[3],
-      isShared: rawAlbumData?.at(-1)?.[72930366]?.[4] || false
+      isShared: rawAlbumData?.at(-1)?.[72930366]?.[4] || false,
     };
   }
 
   function albumsPage(data) {
     return {
       items: data?.[0]?.map(rawAlbumData => albumParse(rawAlbumData)),
-      nextPageId: data?.[1]
+      nextPageId: data?.[1],
     };
   }
 
@@ -94,7 +94,7 @@ export default function parser(data, rpcid) {
       mediaId: rawItemData?.[3],
       isLivePhoto: rawItemData?.at(-1)?.[146008172] ? true : false,
       livePhotoDuration: rawItemData?.at(-1)?.[146008172]?.[1],
-      duration: rawItemData?.at(-1)?.[76647426]?.[0]
+      duration: rawItemData?.at(-1)?.[76647426]?.[0],
     };
   }
 
@@ -107,21 +107,21 @@ export default function parser(data, rpcid) {
       timestamp: rawItemData?.[2],
       creationTimestamp: rawItemData?.[5],
       mediaId: rawItemData?.[3],
-      duration: rawItemData?.at(-1)?.[76647426]?.[0]
+      duration: rawItemData?.at(-1)?.[76647426]?.[0],
     };
   }
 
   function albumItemsPage(data) {
     return {
       items: data?.[1]?.map(rawItemData => albumItemParse(rawItemData)),
-      nextPageId: data?.[2]
+      nextPageId: data?.[2],
     };
   }
 
   function trashPage(data) {
     return {
       items: data?.[0].map(rawItemData => trashItemParse(rawItemData)),
-      nextPageId: data?.[1]
+      nextPageId: data?.[1],
     };
   }
 
@@ -135,7 +135,7 @@ export default function parser(data, rpcid) {
       size: rawItemData?.[1]?.[9],
       takesUpSpace: rawItemData?.[1]?.at(-1)?.[0] === undefined ? null : rawItemData?.[1]?.at(-1)?.[0] === 1,
       spaceTaken: rawItemData?.[1]?.at(-1)?.[1],
-      isOriginalQuality: rawItemData?.[1]?.at(-1)?.[2] === undefined ? null : rawItemData?.[1]?.at(-1)?.[2] === 2
+      isOriginalQuality: rawItemData?.[1]?.at(-1)?.[2] === undefined ? null : rawItemData?.[1]?.at(-1)?.[2] === 2,
     };
   }
 

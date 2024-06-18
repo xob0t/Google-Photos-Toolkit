@@ -51,7 +51,7 @@ export function generateFilterDescription(filter) {
   }
   if (filter.albumsExclude) {
     descriptionParts.push('excluding items');
-    descriptionParts.push(Array.isArray(filter.albumsExclude) ? `in the ${filter.albumsInclude.length} selected albums` : 'in the selected album');
+    descriptionParts.push(Array.isArray(filter.albumsExclude) ? `in the ${filter.albumsExclude.length} selected albums` : 'in the selected album');
   }
 
   if (filter.lowerBoundaryDate || filter.higherBoundaryDate) {

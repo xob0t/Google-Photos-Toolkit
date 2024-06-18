@@ -4,7 +4,6 @@ import { disableActionBar } from './utils/disable-action-bar.js';
 import { core } from '../../globals.js';
 
 export function updateUI() {
-
   function toggleVisibility(element, toggle) {
     const allDescendants = element.querySelectorAll('*');
     if (toggle) {
@@ -21,8 +20,7 @@ export function updateUI() {
     try {
       const description = generateFilterDescription(getFormData('.filters-form'));
       previewElement.innerText = description;
-    }
-    catch {
+    } catch {
       previewElement.innerText = 'Failed to generate description';
     }
   }
@@ -31,9 +29,9 @@ export function updateUI() {
     return document.querySelector('input[name="source"]:checked').id === tabName;
   }
 
-  function lockedFolderTabState(){
+  function lockedFolderTabState() {
     const lockedFolderTab = document.getElementById('lockedFolder');
-    if(!window.location.href.includes('lockedfolder')){
+    if (!window.location.href.includes('lockedfolder')) {
       lockedFolderTab.disabled = true;
       lockedFolderTab.parentNode.title = 'To process items in the locked folder, you must open GPTK while in it';
     }
@@ -50,7 +48,6 @@ export function updateUI() {
     document.getElementById('unLock').disabled = !isActiveTab('lockedFolder');
   }
 
-
   function updateFilterVisibility() {
     const filterElements = {
       livePhotoType: document.querySelector('.type input[value=live]').parentNode,
@@ -66,11 +63,11 @@ export function updateUI() {
       excludeAlbums: document.querySelector('.exclude-albums'),
       archive: document.querySelector('.archive'),
       excludeShared: document.querySelector('.exclude-shared'),
-      excludeFavorite: document.querySelector('.exclude-favorites')
+      excludeFavorite: document.querySelector('.exclude-favorites'),
     };
 
     // Default: hide all
-    Object.values(filterElements).forEach(el => toggleVisibility(el, false));
+    Object.values(filterElements).forEach((el) => toggleVisibility(el, false));
 
     // Conditions for showing filters based on the active tab.
     if (isActiveTab('albums')) {

@@ -9,11 +9,11 @@ import getFromStorage from '../../utils/getFromStorage.js';
 const actions = [
   {
     elementId: 'toExistingAlbum',
-    targetId: 'existingAlbum'
+    targetId: 'existingAlbum',
   },
   {
     elementId: 'toNewAlbum',
-    targetId: 'newAlbumName'
+    targetId: 'newAlbumName',
   },
   { elementId: 'toTrash' },
   { elementId: 'restoreTrash' },
@@ -22,7 +22,7 @@ const actions = [
   { elementId: 'toFavorite' },
   { elementId: 'unFavorite' },
   { elementId: 'lock' },
-  { elementId: 'unLock' }
+  { elementId: 'unLock' },
 ];
 
 function userConfirmation(action, filter, source) {
@@ -44,22 +44,22 @@ function userConfirmation(action, filter, source) {
 }
 
 async function runAction(actionId) {
-  const action = actions.find(action => action.elementId === actionId);
+  const action = actions.find((action) => action.elementId === actionId);
   // get the target album if action has one
   let targetAlbum = null;
   let newTargetAlbumName = null;
-  if (actionId === 'toExistingAlbum'){
+  if (actionId === 'toExistingAlbum') {
     const albumProductId = document.getElementById(action?.targetId)?.value;
-    targetAlbum = getFromStorage('albums').find(album => album.productId === albumProductId);
-  }else{
+    targetAlbum = getFromStorage('albums').find((album) => album.productId === albumProductId);
+  } else {
     newTargetAlbumName = document.getElementById(action?.targetId)?.value;
   }
   // id of currently selected source element
   const source = document.querySelector('input[name="source"]:checked').id;
-  
+
   // check filter validity
   const filtersForm = document.querySelector('.filters-form');
-  if (!filtersForm.checkValidity()){
+  if (!filtersForm.checkValidity()) {
     filtersForm.reportValidity();
     return;
   }

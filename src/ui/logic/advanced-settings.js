@@ -5,7 +5,6 @@ import { apiSettingsDefault } from '../../api/api-utils-deafault-presets.js';
 import getFormData from './utils/getFormData.js';
 
 export default function advancedSettingsListenersSetUp() {
-
   function saveApiSettings(event) {
     event.preventDefault();
 
@@ -17,7 +16,6 @@ export default function advancedSettingsListenersSetUp() {
   }
 
   function restoreApiDefaults() {
-
     // Save default values to localStorage
     saveToStorage('apiSettings', apiSettingsDefault);
 

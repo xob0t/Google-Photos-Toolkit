@@ -4,7 +4,7 @@ export default function log(logMessage, type = null) {
   const logDiv = document.createElement('div');
   logDiv.textContent = logMessage;
 
-  if(type)logDiv.classList.add(type);
+  if (type) logDiv.classList.add(type);
   console.log(`${logPrefix} ${logMessage}`);
 
   // Append the log message to the log container

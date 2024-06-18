@@ -8,22 +8,20 @@ const version = `v${__VERSION__}`;
 // eslint-disable-next-line no-undef
 const homepage = __HOMEPAGE__;
 
-function htmlTemplatePrep(gptkMainTemplate){
-  return gptkMainTemplate
-    .replace('%version%', version)
-    .replace('%homepage%', homepage);
+function htmlTemplatePrep(gptkMainTemplate) {
+  return gptkMainTemplate.replace('%version%', version).replace('%homepage%', homepage);
 }
 
 export function insertUi() {
   // for inserting html to work
   if (window.trustedTypes && window.trustedTypes.createPolicy) {
     window.trustedTypes.createPolicy('default', {
-      createHTML: (string) => string
+      createHTML: (string) => string,
     });
   }
   // html
   let buttonInsertLocation = '.J3TAe';
-  if(window.location.href.includes('lockedfolder')) buttonInsertLocation = '.c9yG5b';
+  if (window.location.href.includes('lockedfolder')) buttonInsertLocation = '.c9yG5b';
   document.querySelector(buttonInsertLocation).insertAdjacentHTML('afterbegin', buttonHtml);
   document.body.insertAdjacentHTML('afterbegin', htmlTemplatePrep(gptkMainTemplate));
   // css
@@ -48,7 +46,7 @@ function hideMainMenu() {
   document.body.style.overflow = 'visible';
 }
 
-function baseListenersSetUp(){
+function baseListenersSetUp() {
   document.addEventListener('change', updateUI);
 
   const gptkButton = document.getElementById('gptk-button');

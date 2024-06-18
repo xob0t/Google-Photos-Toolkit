@@ -47,11 +47,15 @@ In your browser, utilizing GP's undocumented web api
   As simple as selecting "Library" source, clicking `Move to trash`, then clearing it.
 
   ### Use GPTK's api
-  GPTK exposes it's api class globally so you can use it in your browser's console.
+  GPTK exports it's api class globally so you can use it in your browser's console.
 
   Example usage.
   ```
-  gptkApi.listItemsByTakenDate()
+  // getting the fist page of the library by taken date
+  const libraryPage = await gptkApi.listItemsByTakenDate()
+  // getting the info of the first item on the page
+  const itemInfo = await gptkApi.getItemInfo(libraryPage.items[0].productId)
+  console.log(itemInfo)
   ```
 
 

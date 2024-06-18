@@ -193,7 +193,6 @@ export default class ApiUtils {
       targetAlbum.productId
     );
   }
-  
 
   async addToNewAlbum(mediaItems, targetAlbumName) {
     log(`Creating new album "${targetAlbumName}"`);

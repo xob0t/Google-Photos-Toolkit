@@ -56,7 +56,6 @@ function selectNotSharedAlbums() {
   let closestSelect = parent.querySelector('select');
   for (const option of closestSelect.options) {
     if (option.value) option.selected = !option.classList.contains('shared');
-
   }
   updateUI();
 }
@@ -72,13 +71,12 @@ async function refreshAlbums() {
   // ugly
   core.isProcessRunning = true;
   let albums = null;
-  try{
+  try {
     albums = await apiUtils.getAllAlbums();
     addAlbums(albums);
     saveToStorage('albums', albums);
     log('Albums Refreshed');
-  }
-  catch{
+  } catch {
     log('Error refreshing albums', 'error');
   }
   core.isProcessRunning = false;

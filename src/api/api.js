@@ -13,24 +13,26 @@ export default class Api {
       'f.sid': windowGlobalData['f.sid'],
       bl: windowGlobalData.bl,
       pageId: 'none',
-      rt: 'c'
+      rt: 'c',
     };
     // if in locked folder send rapt
-    if(windowGlobalData.rapt) params.rapt = windowGlobalData.rapt;
-    const paramsString = Object.keys(params).map(key => `${key}=${encodeURIComponent(params[key])}`).join('&');
+    if (windowGlobalData.rapt) params.rapt = windowGlobalData.rapt;
+    const paramsString = Object.keys(params)
+      .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+      .join('&');
     const url = `https://photos.google.com${windowGlobalData.path}data/batchexecute?${paramsString}`;
     try {
       const response = await fetch(url, {
-        'headers': {
+        headers: {
           'content-type': 'application/x-www-form-urlencoded;charset=UTF-8',
         },
-        'body': requestDataString,
-        'method': 'POST',
-        'credentials': 'include'
+        body: requestDataString,
+        method: 'POST',
+        credentials: 'include',
       });
 
       const responseBody = await response.text();
-      const jsonLines = responseBody.split('\n').filter(line => line.includes('wrb.fr'));
+      const jsonLines = responseBody.split('\n').filter((line) => line.includes('wrb.fr'));
       let parsedData = JSON.parse(jsonLines[0]);
       return JSON.parse(parsedData[0][2]);
     } catch (error) {
@@ -237,7 +239,7 @@ export default class Api {
     let requestData = null;
 
     if (albumName) requestData = [productIdList, null, albumName];
-    else if (albumId) requestData = [albumId, [2, null, productIdList.map(id => [[id]]), null, null, null, [1]]];
+    else if (albumId) requestData = [albumId, [2, null, productIdList.map((id) => [[id]]), null, null, null, [1]]];
 
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
@@ -250,8 +252,8 @@ export default class Api {
 
   async setFavorite(mediaIdList, action = true) {
     if (action === true) action = 1; //set favorite
-    else if (action === false) action = 2;//un favorite
-    mediaIdList = mediaIdList.map(item => [null, item]);
+    else if (action === false) action = 2; //un favorite
+    mediaIdList = mediaIdList.map((item) => [null, item]);
     const rpcid = 'Ftfh0';
     const requestData = [mediaIdList, [action]];
     try {
@@ -264,10 +266,10 @@ export default class Api {
   }
 
   async setArchive(mediaIdList, action = true) {
-    if (action === true) action = 1;// send to archive
-    else if (action === false) action = 2;// un archive
+    if (action === true) action = 1; // send to archive
+    else if (action === false) action = 2; // un archive
 
-    mediaIdList = mediaIdList.map(item => [null, [action], [null, item]]);
+    mediaIdList = mediaIdList.map((item) => [null, [action], [null, item]]);
     const rpcid = 'w7TP3c';
     const requestData = [mediaIdList, null, 1];
     try {
@@ -305,7 +307,11 @@ export default class Api {
 
   async removeItemsFromSharedAlbum(albumProductId, itemProductIdList) {
     const rpcid = 'LjmOue';
-    const requestData = [[albumProductId],[itemProductIdList],[[null,null,null,[null,[],[]],null,null,null,null,null,null,null,null,null,[]]]];
+    const requestData = [
+      [albumProductId],
+      [itemProductIdList],
+      [[null, null, null, [null, [], []], null, null, null, null, null, null, null, null, null, []]],
+    ];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -319,7 +325,7 @@ export default class Api {
     // every point is an array of coordinates, every coordinate is 9 digit-long int
     // coordinates and scale can be extracted from mapThumb, but gMapsPlaceId is not exposed in GP
     const rpcid = 'EtUHOe';
-    const requestData = [[[null,mediaId]],[2,center,[visible1,visible2],[null,null,scale],gMapsPlaceId]];
+    const requestData = [[[null, mediaId]], [2, center, [visible1, visible2], [null, null, scale], gMapsPlaceId]];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -331,7 +337,7 @@ export default class Api {
 
   async deleteItemGeoData(mediaId) {
     const rpcid = 'EtUHOe';
-    const requestData = [[[null,mediaId]],[1]];
+    const requestData = [[[null, mediaId]], [1]];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -345,7 +351,7 @@ export default class Api {
     // timestamp in epoch miliseconds
     // timesone as an offset e.g 19800 is GMT+05:30
     const rpcid = 'DaSgWe';
-    const requestData = [[[mediaId,timestamp,timezone]]];
+    const requestData = [[[mediaId, timestamp, timezone]]];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -357,7 +363,7 @@ export default class Api {
 
   async setItemDescription(mediaId, description) {
     const rpcid = 'AQNOFd';
-    const requestData = [null,description,mediaId];
+    const requestData = [null, description, mediaId];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -369,7 +375,7 @@ export default class Api {
 
   async getItemInfo(productId, parseResponse = true) {
     const rpcid = 'VrseUb';
-    const requestData = [productId,null,null,1];
+    const requestData = [productId, null, null, 1];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);
@@ -382,7 +388,7 @@ export default class Api {
 
   async getItemInfoExt(productId, parseResponse = true) {
     const rpcid = 'fDcn4b';
-    const requestData = [productId,1];
+    const requestData = [productId, 1];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);
@@ -395,7 +401,8 @@ export default class Api {
 
   async getBatchMediaInfo(productIdList, parseResponse = true) {
     const rpcid = 'EWgK9e';
-    productIdList = productIdList.map(id => [id]);
+    productIdList = productIdList.map((id) => [id]);
+    // prettier-ignore
     const requestData = [[[productIdList], [[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, [], null, null, null, null, null, null, null, null, null, null, []]]]];
     try {
       let response = await this.makeApiRequest(rpcid, requestData);

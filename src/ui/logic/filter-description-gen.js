@@ -1,5 +1,4 @@
 export function generateFilterDescription(filter) {
-
   // date check
   if (filter.lowerBoundaryDate >= filter.higherBoundaryDate) return 'Error: Invalid Date Interval';
   // size check
@@ -63,17 +62,14 @@ export function generateFilterDescription(filter) {
     else if (filter.dateType === 'uploaded') descriptionParts.push('uploaded');
 
     if (lowerBoundaryDate && higherBoundaryDate) {
-
       if (filter.intervalType === 'exclude') {
         descriptionParts.push(`before ${lowerBoundaryDate} and after ${higherBoundaryDate}`);
-      }
-      else if (filter.intervalType === 'include') {
+      } else if (filter.intervalType === 'include') {
         descriptionParts.push(`from ${lowerBoundaryDate} to ${higherBoundaryDate}`);
       }
     } else if (lowerBoundaryDate) {
       if (filter.intervalType === 'exclude') descriptionParts.push(`before ${lowerBoundaryDate}`);
       else if (filter.intervalType === 'include') descriptionParts.push(`after ${lowerBoundaryDate}`);
-
     } else if (higherBoundaryDate) {
       if (filter.intervalType === 'exclude') descriptionParts.push(`after ${higherBoundaryDate}`);
       else if (filter.intervalType === 'include') descriptionParts.push(`before ${higherBoundaryDate}`);

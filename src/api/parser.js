@@ -1,5 +1,4 @@
 export default function parser(data, rpcid) {
-
   // note
   // add =w417-h174-k-no?authuser=0 to thumbnail url to
   // set custon size, remove 'video' watermark, remove auth requirement
@@ -20,7 +19,7 @@ export default function parser(data, rpcid) {
       descriptionShort: rawItemData?.at(-1)?.[396644657]?.[0],
       isLivePhoto: rawItemData?.at(-1)?.[146008172] ? true : false,
       livePhotoDuration: rawItemData?.at(-1)?.[146008172]?.[1],
-      isOwned: rawItemData[7]?.filter(subArray => subArray.includes(27)).length === 0,
+      isOwned: rawItemData[7]?.filter((subArray) => subArray.includes(27)).length === 0,
       geoLocation: {
         coordinates: rawItemData?.at(-1)?.[129168200]?.[1]?.[0],
         name: rawItemData?.at(-1)?.[129168200]?.[1]?.[4]?.[0]?.[1]?.[0]?.[0],
@@ -30,7 +29,7 @@ export default function parser(data, rpcid) {
 
   function libraryTimelinePage(data) {
     return {
-      items: data?.[0]?.map(rawItemData => libraryItemParse(rawItemData)),
+      items: data?.[0]?.map((rawItemData) => libraryItemParse(rawItemData)),
       nextPageId: data?.[1],
       lastItemTimestamp: parseInt(data?.[2]),
     };
@@ -38,7 +37,7 @@ export default function parser(data, rpcid) {
 
   function libraryGenericPage(data) {
     return {
-      items: data?.[0]?.map(rawItemData => libraryItemParse(rawItemData)),
+      items: data?.[0]?.map((rawItemData) => libraryItemParse(rawItemData)),
       nextPageId: data?.[1],
     };
   }
@@ -56,7 +55,7 @@ export default function parser(data, rpcid) {
   function lockedFolderPage(data) {
     return {
       nextPageId: data?.[0],
-      items: data?.[1]?.map(rawItemData => lockedFolderItemParse(rawItemData)),
+      items: data?.[1]?.map((rawItemData) => lockedFolderItemParse(rawItemData)),
     };
   }
 
@@ -70,7 +69,7 @@ export default function parser(data, rpcid) {
 
   function linksPage(data) {
     return {
-      items: data?.[0]?.map(rawLinkData => linkParse(rawLinkData)),
+      items: data?.[0]?.map((rawLinkData) => linkParse(rawLinkData)),
       nextPageId: data?.[1],
     };
   }
@@ -91,7 +90,7 @@ export default function parser(data, rpcid) {
 
   function albumsPage(data) {
     return {
-      items: data?.[0]?.map(rawAlbumData => albumParse(rawAlbumData)),
+      items: data?.[0]?.map((rawAlbumData) => albumParse(rawAlbumData)),
       nextPageId: data?.[1],
     };
   }
@@ -128,14 +127,14 @@ export default function parser(data, rpcid) {
 
   function albumItemsPage(data) {
     return {
-      items: data?.[1]?.map(rawItemData => albumItemParse(rawItemData)),
+      items: data?.[1]?.map((rawItemData) => albumItemParse(rawItemData)),
       nextPageId: data?.[2],
     };
   }
 
   function trashPage(data) {
     return {
-      items: data?.[0].map(rawItemData => trashItemParse(rawItemData)),
+      items: data?.[0].map((rawItemData) => trashItemParse(rawItemData)),
       nextPageId: data?.[1],
     };
   }
@@ -188,12 +187,12 @@ export default function parser(data, rpcid) {
       resWidth: rawItemData[0]?.[6],
       resHeight: rawItemData[0]?.[7],
       cameraInfo: rawItemData[0]?.[23],
-      albums: rawItemData[0]?.[19]?.map(rawItemData => albumParse(rawItemData)),
+      albums: rawItemData[0]?.[19]?.map((rawItemData) => albumParse(rawItemData)),
       source: source,
       takesUpSpace: rawItemData[0]?.[30]?.[0] === undefined ? null : rawItemData[0]?.[30]?.[0] === 1,
       spaceTaken: rawItemData[0]?.[30]?.[1],
       isOriginalQuality: rawItemData[0]?.[30]?.[2] === undefined ? null : rawItemData[0][30][2] === 2,
-      savedToYourPhotos: rawItemData[0]?.[12].filter(subArray => subArray.includes(20)).length === 0,
+      savedToYourPhotos: rawItemData[0]?.[12].filter((subArray) => subArray.includes(20)).length === 0,
       sharedByUserName: rawItemData[0]?.[27]?.[3]?.[0]?.[11]?.[0] || rawItemData[0]?.[27]?.[4]?.[0]?.[11]?.[0],
       sharedByUserId: rawItemData[0]?.[27]?.[3]?.[0]?.[1] || rawItemData[0]?.[27]?.[4]?.[0]?.[1],
       geoLocation: {
@@ -225,16 +224,16 @@ export default function parser(data, rpcid) {
       isLivePhoto: rawItemData[0]?.[15]?.[146008172] ? true : false,
       livePhotoDuration: rawItemData[0]?.[15]?.[146008172]?.[1],
       livePhotoVideoDownloadUrl: rawItemData[0]?.[15]?.[146008172]?.[3],
-      descriptionFull : rawItemData[10],
+      descriptionFull: rawItemData[10],
       thumb: rawItemData[12],
     };
   }
 
   function bulkMediaInfo(data) {
-    return data.map(rawItemData => itemBulkMediaInfoParse(rawItemData));
+    return data.map((rawItemData) => itemBulkMediaInfoParse(rawItemData));
   }
 
-  if(!data?.length) return null;
+  if (!data?.length) return null;
   if (rpcid === 'lcxiM') return libraryTimelinePage(data);
   if (rpcid === 'nMFwOc') return lockedFolderPage(data);
   if (rpcid === 'EzkLib') return libraryGenericPage(data);

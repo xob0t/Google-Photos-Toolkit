@@ -302,6 +302,96 @@ export default class Api {
     }
   }
 
+  async removeItemsFromSharedAlbum(albumProductId, itemProductIdList) {
+    const rpcid = 'LjmOue';
+    const requestData = [[albumProductId],[itemProductIdList],[[null,null,null,[null,[],[]],null,null,null,null,null,null,null,null,null,[]]]];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      return response;
+    } catch (error) {
+      console.error('Error in removeItemsFromSharedAlbum:', error);
+      throw error;
+    }
+  }
+
+  async setItemGeoData(mediaId, center, visible1, visible2, scale, gMapsPlaceId) {
+    // every point is an array of coordinates, every coordinate is 9 digit-long int
+    // coordinates and scale can be extracted from mapThumb, but gMapsPlaceId is not exposed in GP
+    const rpcid = 'EtUHOe';
+    const requestData = [[[null,mediaId]],[2,center,[visible1,visible2],[null,null,scale],gMapsPlaceId]];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      return response;
+    } catch (error) {
+      console.error('Error in setItemGeoData:', error);
+      throw error;
+    }
+  }
+
+  async deleteItemGeoData(mediaId) {
+    const rpcid = 'EtUHOe';
+    const requestData = [[[null,mediaId]],[1]];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      return response;
+    } catch (error) {
+      console.error('Error in deleteItemGeoData:', error);
+      throw error;
+    }
+  }
+
+  async setItemTimestamp(mediaId, timestamp, timezone) {
+    // timestamp in epoch miliseconds
+    // timesone as an offset e.g 19800 is GMT+05:30
+    const rpcid = 'DaSgWe';
+    const requestData = [[[mediaId,timestamp,timezone]]];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      return response;
+    } catch (error) {
+      console.error('Error in setItemTimestamp:', error);
+      throw error;
+    }
+  }
+
+  async setItemDescription(mediaId, description) {
+    const rpcid = 'AQNOFd';
+    const requestData = [null,description,mediaId];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      return response;
+    } catch (error) {
+      console.error('Error in setItemDescription:', error);
+      throw error;
+    }
+  }
+
+  async getItemInfo(productId, parseResponse = true) {
+    const rpcid = 'VrseUb';
+    const requestData = [productId,null,null,1];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      if (parseResponse) return parser(response, rpcid);
+      return response;
+    } catch (error) {
+      console.error('Error in getItemInfo:', error);
+      throw error;
+    }
+  }
+
+  async getItemInfoExt(productId, parseResponse = true) {
+    const rpcid = 'fDcn4b';
+    const requestData = [productId,1];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      if (parseResponse) return parser(response, rpcid);
+      return response;
+    } catch (error) {
+      console.error('Error in getItemInfoExt:', error);
+      throw error;
+    }
+  }
+
   async getBatchMediaInfo(productIdList, parseResponse = true) {
     const rpcid = 'EWgK9e';
     productIdList = productIdList.map(id => [id]);

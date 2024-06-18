@@ -48,11 +48,11 @@ export function generateFilterDescription(filter) {
   if (parseInt(filter.higherBoundarySize) > 0) descriptionParts.push(`smaller than ${parseInt(filter.higherBoundarySize)} bytes`);
 
   if (filter.albumsInclude) {
-    descriptionParts.push(Array.isArray(filter.albumsInclude) ? 'in the target albums' : 'in the target album');
+    descriptionParts.push(Array.isArray(filter.albumsInclude) ? `in the ${filter.albumsInclude.length} target albums` : 'in the target album');
   }
   if (filter.albumsExclude) {
     descriptionParts.push('excluding items');
-    descriptionParts.push(Array.isArray(filter.albumsExclude) ? 'in the selected albums' : 'in the selected album');
+    descriptionParts.push(Array.isArray(filter.albumsExclude) ? `in the ${filter.albumsInclude.length} selected albums` : 'in the selected album');
   }
 
   if (filter.lowerBoundaryDate || filter.higherBoundaryDate) {

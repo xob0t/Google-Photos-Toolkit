@@ -50,7 +50,7 @@ In your browser, utilizing GP's undocumented web api
   GPTK exports it's api class globally so you can use it in your browser's console.
 
   Example usage.
-  ```
+  ```js
   // getting the fist page of the library by taken date
   const libraryPage = await gptkApi.getItemsByTakenDate()
   // getting the info of the first item on the page

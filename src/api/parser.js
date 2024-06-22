@@ -224,6 +224,7 @@ export default function parser(data, rpcid) {
       isLivePhoto: rawItemData[0]?.[15]?.[146008172] ? true : false,
       livePhotoDuration: rawItemData[0]?.[15]?.[146008172]?.[1],
       livePhotoVideoDownloadUrl: rawItemData[0]?.[15]?.[146008172]?.[3],
+      movedToTrashTimestamp: rawItemData[0]?.[15]?.[225032867]?.[0],
       descriptionFull: rawItemData[10],
       thumb: rawItemData[12],
     };

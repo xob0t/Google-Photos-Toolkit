@@ -156,12 +156,12 @@ export default class Api {
     }
   }
 
-  async moveItemsToTrash(dedupKeyList) {
+  async moveItemsToTrash(dedupKeyArray) {
     // type assertion
-    if (dedupKeyList) assertInstance(dedupKeyList, Array);
+    if (dedupKeyArray) assertInstance(dedupKeyArray, Array);
 
     const rpcid = 'XwAOJf';
-    const requestData = [null, 1, dedupKeyList, 3];
+    const requestData = [null, 1, dedupKeyArray, 3];
     // note: It seems that '3' here corresponds to items' location
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
@@ -172,12 +172,12 @@ export default class Api {
     }
   }
 
-  async restoreFromTrash(dedupKeyList) {
+  async restoreFromTrash(dedupKeyArray) {
     // type assertion
-    if (dedupKeyList) assertInstance(dedupKeyList, Array);
+    if (dedupKeyArray) assertInstance(dedupKeyArray, Array);
 
     const rpcid = 'XwAOJf';
-    const requestData = [null, 3, dedupKeyList, 2];
+    const requestData = [null, 3, dedupKeyArray, 2];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response[0];
@@ -247,14 +247,14 @@ export default class Api {
     }
   }
 
-  async removeItemsFromAlbum(itemalbumMediaKeyList) {
+  async removeItemsFromAlbum(itemalbumMediaKeyArray) {
     // regular mediaKey's won't cut it, you need to get them from an album
 
     // type assertion
-    if (itemalbumMediaKeyList) assertInstance(itemalbumMediaKeyList, Array);
+    if (itemalbumMediaKeyArray) assertInstance(itemalbumMediaKeyArray, Array);
 
     const rpcid = 'ycV3Nd';
-    const requestData = [itemalbumMediaKeyList];
+    const requestData = [itemalbumMediaKeyArray];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -281,19 +281,19 @@ export default class Api {
     }
   }
 
-  async addItemsToAlbum(mediaKeyList, albumId = null, albumName = null) {
+  async addItemsToAlbum(mediaKeyArray, albumId = null, albumName = null) {
     // supply album ID for adding to an existing album, or a name for a new one
 
     // type assertion
-    if (mediaKeyList) assertInstance(mediaKeyList, Array);
+    if (mediaKeyArray) assertInstance(mediaKeyArray, Array);
     if (albumId) assertType(albumId, 'string');
     if (albumName) assertType(albumName, 'string');
 
     const rpcid = 'E1Cajb';
     let requestData = null;
 
-    if (albumName) requestData = [mediaKeyList, null, albumName];
-    else if (albumId) requestData = [mediaKeyList, albumId];
+    if (albumName) requestData = [mediaKeyArray, null, albumName];
+    else if (albumId) requestData = [mediaKeyArray, albumId];
 
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
@@ -304,19 +304,19 @@ export default class Api {
     }
   }
 
-  async addItemsToSharedAlbum(mediaKeyList, albumId = null, albumName = null) {
+  async addItemsToSharedAlbum(mediaKeyArray, albumId = null, albumName = null) {
     // supply album ID for adding to an existing album, or a name for a new one
 
     // type assertion
-    if (mediaKeyList) assertInstance(mediaKeyList, Array);
+    if (mediaKeyArray) assertInstance(mediaKeyArray, Array);
     if (albumId) assertType(albumId, 'string');
     if (albumName) assertType(albumName, 'string');
 
     const rpcid = 'laUYf';
     let requestData = null;
 
-    if (albumName) requestData = [mediaKeyList, null, albumName];
-    else if (albumId) requestData = [albumId, [2, null, mediaKeyList.map((id) => [[id]]), null, null, null, [1]]];
+    if (albumName) requestData = [mediaKeyArray, null, albumName];
+    else if (albumId) requestData = [albumId, [2, null, mediaKeyArray.map((id) => [[id]]), null, null, null, [1]]];
 
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
@@ -327,16 +327,16 @@ export default class Api {
     }
   }
 
-  async setFavorite(dedupKeyList, action = true) {
+  async setFavorite(dedupKeyArray, action = true) {
     // type assertion
-    if (dedupKeyList) assertInstance(dedupKeyList, Array);
+    if (dedupKeyArray) assertInstance(dedupKeyArray, Array);
     if (action) assertType(action, 'boolean');
 
     if (action === true) action = 1; //set favorite
     else if (action === false) action = 2; //un favorite
-    dedupKeyList = dedupKeyList.map((item) => [null, item]);
+    dedupKeyArray = dedupKeyArray.map((item) => [null, item]);
     const rpcid = 'Ftfh0';
-    const requestData = [dedupKeyList, [action]];
+    const requestData = [dedupKeyArray, [action]];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -346,17 +346,17 @@ export default class Api {
     }
   }
 
-  async setArchive(dedupKeyList, action = true) {
+  async setArchive(dedupKeyArray, action = true) {
     // type assertion
-    if (dedupKeyList) assertInstance(dedupKeyList, Array);
+    if (dedupKeyArray) assertInstance(dedupKeyArray, Array);
     if (action) assertType(action, 'boolean');
 
     if (action === true) action = 1; // send to archive
     else if (action === false) action = 2; // un archive
 
-    dedupKeyList = dedupKeyList.map((item) => [null, [action], [null, item]]);
+    dedupKeyArray = dedupKeyArray.map((item) => [null, [action], [null, item]]);
     const rpcid = 'w7TP3c';
-    const requestData = [dedupKeyList, null, 1];
+    const requestData = [dedupKeyArray, null, 1];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -366,12 +366,12 @@ export default class Api {
     }
   }
 
-  async moveToLockedFolder(dedupKeyList) {
+  async moveToLockedFolder(dedupKeyArray) {
     // type assertion
-    if (dedupKeyList) assertInstance(dedupKeyList, Array);
+    if (dedupKeyArray) assertInstance(dedupKeyArray, Array);
 
     const rpcid = 'StLnCe';
-    const requestData = [dedupKeyList, []];
+    const requestData = [dedupKeyArray, []];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -381,12 +381,12 @@ export default class Api {
     }
   }
 
-  async removeFromLockedFolder(dedupKeyList) {
+  async removeFromLockedFolder(dedupKeyArray) {
     // type assertion
-    if (dedupKeyList) assertInstance(dedupKeyList, Array);
+    if (dedupKeyArray) assertInstance(dedupKeyArray, Array);
 
     const rpcid = 'Pp2Xxe';
-    const requestData = [dedupKeyList];
+    const requestData = [dedupKeyArray];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -524,15 +524,15 @@ export default class Api {
     }
   }
 
-  async getBatchMediaInfo(mediaKeyList, parseResponse = true) {
+  async getBatchMediaInfo(mediaKeyArray, parseResponse = true) {
     // type assertion
-    if (mediaKeyList) assertInstance(mediaKeyList, Array);
+    if (mediaKeyArray) assertInstance(mediaKeyArray, Array);
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'EWgK9e';
-    mediaKeyList = mediaKeyList.map((id) => [id]);
+    mediaKeyArray = mediaKeyArray.map((id) => [id]);
     // prettier-ignore
-    const requestData = [[[mediaKeyList], [[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, [], null, null, null, null, null, null, null, null, null, null, []]]]];
+    const requestData = [[[mediaKeyArray], [[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, [], null, null, null, null, null, null, null, null, null, null, []]]]];
     try {
       let response = await this.makeApiRequest(rpcid, requestData);
       response = response[0][1];

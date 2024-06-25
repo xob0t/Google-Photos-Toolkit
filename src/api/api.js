@@ -490,13 +490,14 @@ export default class Api {
     }
   }
 
-  async getItemInfo(mediaKey, parseResponse = true) {
+  async getItemInfo(mediaKey, parseResponse = true, albumMediaKey = null, authKey = null) {
     // type assertion
     if (mediaKey) assertType(mediaKey, 'string');
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'VrseUb';
-    const requestData = [mediaKey, null, null, 1];
+
+    const requestData = [mediaKey, null, authKey, null, albumMediaKey];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);
@@ -507,13 +508,13 @@ export default class Api {
     }
   }
 
-  async getItemInfoExt(mediaKey, parseResponse = true) {
+  async getItemInfoExt(mediaKey, parseResponse = true, authKey = null) {
     // type assertion
     if (mediaKey) assertType(mediaKey, 'string');
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'fDcn4b';
-    const requestData = [mediaKey, 1];
+    const requestData = [mediaKey, 1, authKey];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);

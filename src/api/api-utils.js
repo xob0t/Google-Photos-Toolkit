@@ -81,8 +81,8 @@ export default class ApiUtils {
     return await this.getAllItems(this.api.getAlbumPage, sharedLinkId);
   }
 
-  async getAllMediaInAlbum(albumId) {
-    return await this.getAllItems(this.api.getAlbumPage, albumId);
+  async getAllMediaInAlbum(albumMediaKey) {
+    return await this.getAllItems(this.api.getAlbumPage, albumMediaKey);
   }
 
   async getAllTrashItems() {
@@ -178,7 +178,7 @@ export default class ApiUtils {
   }
 
   async addToExistingAlbum(mediaItems, targetAlbum) {
-    log(`Adding ${mediaItems.length} items to album "${targetAlbum.name}"`);
+    log(`Adding ${mediaItems.length} items to album "${targetalbum.title}"`);
 
     const isSuccess = (result) => Array.isArray(result);
     const mediaKeyArray = mediaItems.map((item) => item.mediaKey);
@@ -197,7 +197,7 @@ export default class ApiUtils {
   async addToNewAlbum(mediaItems, targetAlbumName) {
     log(`Creating new album "${targetAlbumName}"`);
     const album = {};
-    album.name = targetAlbumName;
+    album.title = targetAlbumName;
     album.shared = false;
     album.mediaKey = await this.api.createAlbum(targetAlbumName);
     await this.addToExistingAlbum(mediaItems, album);

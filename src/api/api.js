@@ -281,19 +281,19 @@ export default class Api {
     }
   }
 
-  async addItemsToAlbum(mediaKeyArray, albumId = null, albumName = null) {
+  async addItemsToAlbum(mediaKeyArray, albumMediaKey = null, albumName = null) {
     // supply album ID for adding to an existing album, or a name for a new one
 
     // type assertion
     if (mediaKeyArray) assertInstance(mediaKeyArray, Array);
-    if (albumId) assertType(albumId, 'string');
+    if (albumMediaKey) assertType(albumMediaKey, 'string');
     if (albumName) assertType(albumName, 'string');
 
     const rpcid = 'E1Cajb';
     let requestData = null;
 
     if (albumName) requestData = [mediaKeyArray, null, albumName];
-    else if (albumId) requestData = [mediaKeyArray, albumId];
+    else if (albumMediaKey) requestData = [mediaKeyArray, albumMediaKey];
 
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
@@ -304,19 +304,19 @@ export default class Api {
     }
   }
 
-  async addItemsToSharedAlbum(mediaKeyArray, albumId = null, albumName = null) {
+  async addItemsToSharedAlbum(mediaKeyArray, albumMediaKey = null, albumName = null) {
     // supply album ID for adding to an existing album, or a name for a new one
 
     // type assertion
     if (mediaKeyArray) assertInstance(mediaKeyArray, Array);
-    if (albumId) assertType(albumId, 'string');
+    if (albumMediaKey) assertType(albumMediaKey, 'string');
     if (albumName) assertType(albumName, 'string');
 
     const rpcid = 'laUYf';
     let requestData = null;
 
     if (albumName) requestData = [mediaKeyArray, null, albumName];
-    else if (albumId) requestData = [albumId, [2, null, mediaKeyArray.map((id) => [[id]]), null, null, null, [1]]];
+    else if (albumMediaKey) requestData = [albumMediaKey, [2, null, mediaKeyArray.map((id) => [[id]]), null, null, null, [1]]];
 
     try {
       const response = await this.makeApiRequest(rpcid, requestData);

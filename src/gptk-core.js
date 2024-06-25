@@ -47,9 +47,9 @@ export default class Core {
         throw new Error('no target album!');
       }
       filter.albumsInclude = Array.isArray(filter.albumsInclude) ? filter.albumsInclude : [filter.albumsInclude];
-      for (const albumId of filter.albumsInclude) {
+      for (const albumMediaKey of filter.albumsInclude) {
         log('Getting album items');
-        mediaItems.push(...(await this.apiUtils.getAllMediaInAlbum(albumId)));
+        mediaItems.push(...(await this.apiUtils.getAllMediaInAlbum(albumMediaKey)));
       }
     }
 
@@ -67,9 +67,9 @@ export default class Core {
       const itemsToExclude = [];
       filter.albumsExclude = Array.isArray(filter.albumsExclude) ? filter.albumsExclude : [filter.albumsExclude];
 
-      for (const albumId of filter.albumsExclude) {
+      for (const albumMediaKey of filter.albumsExclude) {
         log('Getting album items to exclude');
-        itemsToExclude.push(...(await this.apiUtils.getAllMediaInAlbum(albumId)));
+        itemsToExclude.push(...(await this.apiUtils.getAllMediaInAlbum(albumMediaKey)));
       }
       log('Excluding album items');
       mediaItems = mediaItems.filter((mediaItem) => {

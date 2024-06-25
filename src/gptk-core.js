@@ -73,7 +73,7 @@ export default class Core {
       }
       log('Excluding album items');
       mediaItems = mediaItems.filter((mediaItem) => {
-        return !itemsToExclude.some((excludeItem) => excludeItem.mediaId === mediaItem.mediaId);
+        return !itemsToExclude.some((excludeItem) => excludeItem.dedupKey === mediaItem.dedupKey);
       });
     }
     if (mediaItems?.length && filter.excludeShared) {
@@ -86,7 +86,7 @@ export default class Core {
       }
       log('Excluding shared items');
       mediaItems = mediaItems.filter((mediaItem) => {
-        return !itemsToExclude.some((excludeItem) => excludeItem.mediaId === mediaItem.mediaId);
+        return !itemsToExclude.some((excludeItem) => excludeItem.dedupKey === mediaItem.dedupKey);
       });
     }
     if (mediaItems?.length && filter.owned) mediaItems = this.filterOwned(mediaItems, filter);
@@ -112,7 +112,7 @@ export default class Core {
     const mediaInfoData = await this.apiUtils.getBatchMediaInfoChunked(mediaItems);
 
     const extendedMediaItems = mediaItems.map((item) => {
-      const matchingInfoItem = mediaInfoData.find((infoItem) => infoItem.productId === item.productId);
+      const matchingInfoItem = mediaInfoData.find((infoItem) => infoItem.mediaKey === item.mediaKey);
       return { ...item, ...matchingInfoItem };
     });
     return extendedMediaItems;

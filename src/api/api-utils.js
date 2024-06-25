@@ -78,11 +78,11 @@ export default class ApiUtils {
   }
 
   async getAllMediaInSharedLink(sharedLinkId) {
-    return await this.getAllItems(this.api.getAlbumItems, sharedLinkId);
+    return await this.getAllItems(this.api.getAlbumPage, sharedLinkId);
   }
 
   async getAllMediaInAlbum(albumId) {
-    return await this.getAllItems(this.api.getAlbumItems, albumId);
+    return await this.getAllItems(this.api.getAlbumPage, albumId);
   }
 
   async getAllTrashItems() {
@@ -104,53 +104,53 @@ export default class ApiUtils {
   async moveToLockedFolder(mediaItems) {
     log(`Moving ${mediaItems.length} items to locked folder`);
     const isSuccess = (result) => Array.isArray(result);
-    const mediaIdList = mediaItems.map((item) => item.mediaId);
-    await this.executeWithConcurrency(this.api.moveToLockedFolder, isSuccess, this.lockedFolderOpSize, mediaIdList);
+    const dedupKeyList = mediaItems.map((item) => item.dedupKey);
+    await this.executeWithConcurrency(this.api.moveToLockedFolder, isSuccess, this.lockedFolderOpSize, dedupKeyList);
   }
 
   async removeFromLockedFolder(mediaItems) {
     log(`Moving ${mediaItems.length} items out of locked folder`);
     const isSuccess = (result) => Array.isArray(result);
-    const mediaIdList = mediaItems.map((item) => item.mediaId);
-    await this.executeWithConcurrency(this.api.removeFromLockedFolder, isSuccess, this.lockedFolderOpSize, mediaIdList);
+    const dedupKeyList = mediaItems.map((item) => item.dedupKey);
+    await this.executeWithConcurrency(this.api.removeFromLockedFolder, isSuccess, this.lockedFolderOpSize, dedupKeyList);
   }
 
   async moveToTrash(mediaItems) {
     log(`Moving ${mediaItems.length} items to trash`);
     const isSuccess = (result) => Array.isArray(result);
-    const mediaIdList = mediaItems.map((item) => item.mediaId);
-    await this.executeWithConcurrency(this.api.moveItemsToTrash, isSuccess, this.operationSize, mediaIdList);
+    const dedupKeyList = mediaItems.map((item) => item.dedupKey);
+    await this.executeWithConcurrency(this.api.moveItemsToTrash, isSuccess, this.operationSize, dedupKeyList);
   }
 
   async restoreFromTrash(trashItems) {
     log(`Restoring ${trashItems.length} items from trash`);
     const isSuccess = (result) => Array.isArray(result);
-    const mediaIdList = trashItems.map((item) => item.mediaId);
-    await this.executeWithConcurrency(this.api.restoreFromTrash, isSuccess, this.operationSize, mediaIdList);
+    const dedupKeyList = trashItems.map((item) => item.dedupKey);
+    await this.executeWithConcurrency(this.api.restoreFromTrash, isSuccess, this.operationSize, dedupKeyList);
   }
 
   async sendToArchive(mediaItems) {
     log(`Sending ${mediaItems.length} items to archive`);
     const isSuccess = (result) => Array.isArray(result);
     mediaItems = mediaItems.filter((item) => item?.isArchived !== true);
-    const mediaIdList = mediaItems.map((item) => item.mediaId);
+    const dedupKeyList = mediaItems.map((item) => item.dedupKey);
     if (!mediaItems) {
       log('All target items are already archived!');
       return;
     }
-    await this.executeWithConcurrency(this.api.setArchive, isSuccess, this.operationSize, mediaIdList, true);
+    await this.executeWithConcurrency(this.api.setArchive, isSuccess, this.operationSize, dedupKeyList, true);
   }
 
   async unArchive(mediaItems) {
     log(`Removing ${mediaItems.length} items from archive`);
     const isSuccess = (result) => Array.isArray(result);
     mediaItems = mediaItems.filter((item) => item?.isArchived !== false);
-    const mediaIdList = mediaItems.map((item) => item.mediaId);
+    const dedupKeyList = mediaItems.map((item) => item.dedupKey);
     if (!mediaItems) {
       log('All target items are not archived!');
       return;
     }
-    await this.executeWithConcurrency(this.api.setArchive, isSuccess, this.operationSize, mediaIdList, false);
+    await this.executeWithConcurrency(this.api.setArchive, isSuccess, this.operationSize, dedupKeyList, false);
   }
 
   async setAsFavorite(mediaItems) {
@@ -161,8 +161,8 @@ export default class ApiUtils {
       log('All target items are already favorite!');
       return;
     }
-    const mediaIdList = mediaItems.map((item) => item.mediaId);
-    await this.executeWithConcurrency(this.api.setFavorite, isSuccess, this.operationSize, mediaIdList, true);
+    const dedupKeyList = mediaItems.map((item) => item.dedupKey);
+    await this.executeWithConcurrency(this.api.setFavorite, isSuccess, this.operationSize, dedupKeyList, true);
   }
 
   async unFavorite(mediaItems) {
@@ -173,15 +173,15 @@ export default class ApiUtils {
       log('All target items are not favorite!');
       return;
     }
-    const mediaIdList = mediaItems.map((item) => item.mediaId);
-    await this.executeWithConcurrency(this.api.setFavorite, isSuccess, this.operationSize, mediaIdList, false);
+    const dedupKeyList = mediaItems.map((item) => item.dedupKey);
+    await this.executeWithConcurrency(this.api.setFavorite, isSuccess, this.operationSize, dedupKeyList, false);
   }
 
   async addToExistingAlbum(mediaItems, targetAlbum) {
     log(`Adding ${mediaItems.length} items to album "${targetAlbum.name}"`);
 
     const isSuccess = (result) => Array.isArray(result);
-    const productIdList = mediaItems.map((item) => item.productId);
+    const mediaKeyList = mediaItems.map((item) => item.mediaKey);
 
     const addItemFunction = targetAlbum.isShared ? this.api.addItemsToSharedAlbum : this.api.addItemsToAlbum;
 
@@ -189,8 +189,8 @@ export default class ApiUtils {
       addItemFunction,
       isSuccess,
       this.operationSize,
-      productIdList,
-      targetAlbum.productId
+      mediaKeyList,
+      targetAlbum.mediaKey
     );
   }
 
@@ -199,18 +199,18 @@ export default class ApiUtils {
     const album = {};
     album.name = targetAlbumName;
     album.shared = false;
-    album.productId = await this.api.createAlbum(targetAlbumName);
+    album.mediaKey = await this.api.createAlbum(targetAlbumName);
     await this.addToExistingAlbum(mediaItems, album);
   }
 
   async getBatchMediaInfoChunked(mediaItems) {
     log('Getting items\' media info');
-    const productIdList = mediaItems.map((item) => item.productId);
+    const mediaKeyList = mediaItems.map((item) => item.mediaKey);
     const mediaInfoData = await this.executeWithConcurrency(
       this.api.getBatchMediaInfo,
       null,
       this.infoSize,
-      productIdList
+      mediaKeyList
     );
     return mediaInfoData;
   }

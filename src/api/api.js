@@ -156,12 +156,12 @@ export default class Api {
     }
   }
 
-  async moveItemsToTrash(mediaIdList) {
+  async moveItemsToTrash(dedupKeyList) {
     // type assertion
-    if (mediaIdList) assertInstance(mediaIdList, Array);
+    if (dedupKeyList) assertInstance(dedupKeyList, Array);
 
     const rpcid = 'XwAOJf';
-    const requestData = [null, 1, mediaIdList, 3];
+    const requestData = [null, 1, dedupKeyList, 3];
     // note: It seems that '3' here corresponds to items' location
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
@@ -172,12 +172,12 @@ export default class Api {
     }
   }
 
-  async restoreFromTrash(mediaIdList) {
+  async restoreFromTrash(dedupKeyList) {
     // type assertion
-    if (mediaIdList) assertInstance(mediaIdList, Array);
+    if (dedupKeyList) assertInstance(dedupKeyList, Array);
 
     const rpcid = 'XwAOJf';
-    const requestData = [null, 3, mediaIdList, 2];
+    const requestData = [null, 3, dedupKeyList, 2];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response[0];
@@ -221,34 +221,40 @@ export default class Api {
     }
   }
 
-  async getAlbumItems(albumProductId, pageId = null, parseResponse = true) {
+  async getAlbumPage(albumMediaKey, pageId = null, authKey=null, parseResponse = true) {
     // get items of an album or a shared link with the given id
 
     // type assertion
-    if (albumProductId) assertType(albumProductId, 'string');
+    if (albumMediaKey) assertType(albumMediaKey, 'string');
     if (pageId) assertType(pageId, 'string');
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'snAcKc';
-    const requestData = [albumProductId, pageId, null, null, 1];
+    let requestData = null;
+    if (authKey){
+      requestData = [albumMediaKey, pageId, null, null, 1];
+    }else{
+      requestData = [albumMediaKey,pageId,null,authKey];
+    }
+
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);
       return response;
     } catch (error) {
-      console.error('Error in getAlbumItems:', error);
+      console.error('Error in getAlbumPage:', error);
       throw error;
     }
   }
 
-  async removeItemsFromAlbum(itemAlbumProductIdList) {
-    // regular productId's won't cut it, you need to get them from an album
+  async removeItemsFromAlbum(itemalbumMediaKeyList) {
+    // regular mediaKey's won't cut it, you need to get them from an album
 
     // type assertion
-    if (itemAlbumProductIdList) assertInstance(itemAlbumProductIdList, Array);
+    if (itemalbumMediaKeyList) assertInstance(itemalbumMediaKeyList, Array);
 
     const rpcid = 'ycV3Nd';
-    const requestData = [itemAlbumProductIdList];
+    const requestData = [itemalbumMediaKeyList];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -275,19 +281,19 @@ export default class Api {
     }
   }
 
-  async addItemsToAlbum(productIdList, albumId = null, albumName = null) {
+  async addItemsToAlbum(mediaKeyList, albumId = null, albumName = null) {
     // supply album ID for adding to an existing album, or a name for a new one
 
     // type assertion
-    if (productIdList) assertInstance(productIdList, Array);
+    if (mediaKeyList) assertInstance(mediaKeyList, Array);
     if (albumId) assertType(albumId, 'string');
     if (albumName) assertType(albumName, 'string');
 
     const rpcid = 'E1Cajb';
     let requestData = null;
 
-    if (albumName) requestData = [productIdList, null, albumName];
-    else if (albumId) requestData = [productIdList, albumId];
+    if (albumName) requestData = [mediaKeyList, null, albumName];
+    else if (albumId) requestData = [mediaKeyList, albumId];
 
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
@@ -298,19 +304,19 @@ export default class Api {
     }
   }
 
-  async addItemsToSharedAlbum(productIdList, albumId = null, albumName = null) {
+  async addItemsToSharedAlbum(mediaKeyList, albumId = null, albumName = null) {
     // supply album ID for adding to an existing album, or a name for a new one
 
     // type assertion
-    if (productIdList) assertInstance(productIdList, Array);
+    if (mediaKeyList) assertInstance(mediaKeyList, Array);
     if (albumId) assertType(albumId, 'string');
     if (albumName) assertType(albumName, 'string');
 
     const rpcid = 'laUYf';
     let requestData = null;
 
-    if (albumName) requestData = [productIdList, null, albumName];
-    else if (albumId) requestData = [albumId, [2, null, productIdList.map((id) => [[id]]), null, null, null, [1]]];
+    if (albumName) requestData = [mediaKeyList, null, albumName];
+    else if (albumId) requestData = [albumId, [2, null, mediaKeyList.map((id) => [[id]]), null, null, null, [1]]];
 
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
@@ -321,16 +327,16 @@ export default class Api {
     }
   }
 
-  async setFavorite(mediaIdList, action = true) {
+  async setFavorite(dedupKeyList, action = true) {
     // type assertion
-    if (mediaIdList) assertInstance(mediaIdList, Array);
+    if (dedupKeyList) assertInstance(dedupKeyList, Array);
     if (action) assertType(action, 'boolean');
 
     if (action === true) action = 1; //set favorite
     else if (action === false) action = 2; //un favorite
-    mediaIdList = mediaIdList.map((item) => [null, item]);
+    dedupKeyList = dedupKeyList.map((item) => [null, item]);
     const rpcid = 'Ftfh0';
-    const requestData = [mediaIdList, [action]];
+    const requestData = [dedupKeyList, [action]];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -340,17 +346,17 @@ export default class Api {
     }
   }
 
-  async setArchive(mediaIdList, action = true) {
+  async setArchive(dedupKeyList, action = true) {
     // type assertion
-    if (mediaIdList) assertInstance(mediaIdList, Array);
+    if (dedupKeyList) assertInstance(dedupKeyList, Array);
     if (action) assertType(action, 'boolean');
 
     if (action === true) action = 1; // send to archive
     else if (action === false) action = 2; // un archive
 
-    mediaIdList = mediaIdList.map((item) => [null, [action], [null, item]]);
+    dedupKeyList = dedupKeyList.map((item) => [null, [action], [null, item]]);
     const rpcid = 'w7TP3c';
-    const requestData = [mediaIdList, null, 1];
+    const requestData = [dedupKeyList, null, 1];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -360,12 +366,12 @@ export default class Api {
     }
   }
 
-  async moveToLockedFolder(mediaIdList) {
+  async moveToLockedFolder(dedupKeyList) {
     // type assertion
-    if (mediaIdList) assertInstance(mediaIdList, Array);
+    if (dedupKeyList) assertInstance(dedupKeyList, Array);
 
     const rpcid = 'StLnCe';
-    const requestData = [mediaIdList, []];
+    const requestData = [dedupKeyList, []];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -375,12 +381,12 @@ export default class Api {
     }
   }
 
-  async removeFromLockedFolder(mediaIdList) {
+  async removeFromLockedFolder(dedupKeyList) {
     // type assertion
-    if (mediaIdList) assertInstance(mediaIdList, Array);
+    if (dedupKeyList) assertInstance(dedupKeyList, Array);
 
     const rpcid = 'Pp2Xxe';
-    const requestData = [mediaIdList];
+    const requestData = [dedupKeyList];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -390,14 +396,14 @@ export default class Api {
     }
   }
 
-  async removeItemsFromSharedAlbum(albumProductId, itemProductIdList) {
+  async removeItemsFromSharedAlbum(albumMediaKey, itemProductIdList) {
     // type assertion
-    if (albumProductId) assertType(albumProductId, 'string');
+    if (albumMediaKey) assertType(albumMediaKey, 'string');
     if (itemProductIdList) assertInstance(itemProductIdList, Array);
 
     const rpcid = 'LjmOue';
     const requestData = [
-      [albumProductId],
+      [albumMediaKey],
       [itemProductIdList],
       [[null, null, null, [null, [], []], null, null, null, null, null, null, null, null, null, []]],
     ];
@@ -410,9 +416,9 @@ export default class Api {
     }
   }
 
-  async setItemGeoData(mediaId, center, visible1, visible2, scale, gMapsPlaceId) {
+  async setItemGeoData(dedupKey, center, visible1, visible2, scale, gMapsPlaceId) {
     // type assertion
-    if (mediaId) assertType(mediaId, 'string');
+    if (dedupKey) assertType(dedupKey, 'string');
     if (center) assertInstance(center, Array);
     if (visible1) assertInstance(visible1, Array);
     if (visible2) assertInstance(visible2, Array);
@@ -422,7 +428,7 @@ export default class Api {
     // every point is an array of coordinates, every coordinate is 9 digit-long int
     // coordinates and scale can be extracted from mapThumb, but gMapsPlaceId is not exposed in GP
     const rpcid = 'EtUHOe';
-    const requestData = [[[null, mediaId]], [2, center, [visible1, visible2], [null, null, scale], gMapsPlaceId]];
+    const requestData = [[[null, dedupKey]], [2, center, [visible1, visible2], [null, null, scale], gMapsPlaceId]];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -432,12 +438,12 @@ export default class Api {
     }
   }
 
-  async deleteItemGeoData(mediaId) {
+  async deleteItemGeoData(dedupKey) {
     // type assertion
-    if (mediaId) assertType(mediaId, 'string');
+    if (dedupKey) assertType(dedupKey, 'string');
 
     const rpcid = 'EtUHOe';
-    const requestData = [[[null, mediaId]], [1]];
+    const requestData = [[[null, dedupKey]], [1]];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -447,16 +453,16 @@ export default class Api {
     }
   }
 
-  async setItemTimestamp(mediaId, timestamp, timezone) {
+  async setItemTimestamp(dedupKey, timestamp, timezone) {
     // timestamp in epoch miliseconds
     // timesone as an offset e.g 19800 is GMT+05:30
 
     // type assertion
-    if (mediaId) assertType(mediaId, 'string');
+    if (dedupKey) assertType(dedupKey, 'string');
     if (timestamp) assertType(timestamp, 'number');
     if (timezone) assertType(timezone, 'number');
     const rpcid = 'DaSgWe';
-    const requestData = [[[mediaId, timestamp, timezone]]];
+    const requestData = [[[dedupKey, timestamp, timezone]]];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -466,13 +472,13 @@ export default class Api {
     }
   }
 
-  async setItemDescription(mediaId, description) {
+  async setItemDescription(dedupKey, description) {
     // type assertion
-    if (mediaId) assertType(mediaId, 'string');
+    if (dedupKey) assertType(dedupKey, 'string');
     if (description) assertType(description, 'string');
 
     const rpcid = 'AQNOFd';
-    const requestData = [null, description, mediaId];
+    const requestData = [null, description, dedupKey];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -482,13 +488,13 @@ export default class Api {
     }
   }
 
-  async getItemInfo(productId, parseResponse = true) {
+  async getItemInfo(mediaKey, parseResponse = true) {
     // type assertion
-    if (productId) assertType(productId, 'string');
+    if (mediaKey) assertType(mediaKey, 'string');
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'VrseUb';
-    const requestData = [productId, null, null, 1];
+    const requestData = [mediaKey, null, null, 1];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);
@@ -499,13 +505,13 @@ export default class Api {
     }
   }
 
-  async getItemInfoExt(productId, parseResponse = true) {
+  async getItemInfoExt(mediaKey, parseResponse = true) {
     // type assertion
-    if (productId) assertType(productId, 'string');
+    if (mediaKey) assertType(mediaKey, 'string');
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'fDcn4b';
-    const requestData = [productId, 1];
+    const requestData = [mediaKey, 1];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);
@@ -516,15 +522,15 @@ export default class Api {
     }
   }
 
-  async getBatchMediaInfo(productIdList, parseResponse = true) {
+  async getBatchMediaInfo(mediaKeyList, parseResponse = true) {
     // type assertion
-    if (productIdList) assertInstance(productIdList, Array);
+    if (mediaKeyList) assertInstance(mediaKeyList, Array);
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'EWgK9e';
-    productIdList = productIdList.map((id) => [id]);
+    mediaKeyList = mediaKeyList.map((id) => [id]);
     // prettier-ignore
-    const requestData = [[[productIdList], [[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, [], null, null, null, null, null, null, null, null, null, null, []]]]];
+    const requestData = [[[mediaKeyList], [[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, [], null, null, null, null, null, null, null, null, null, null, []]]]];
     try {
       let response = await this.makeApiRequest(rpcid, requestData);
       response = response[0][1];

@@ -125,10 +125,31 @@ export default function parser(data, rpcid) {
     };
   }
 
+  function memberParse(rawMemberData) {
+    return {
+      actorId: rawMemberData?.[0],
+      gaiaId: rawMemberData?.[1],
+      name: rawMemberData?.[11][0],
+      gender: rawMemberData?.[11][2],
+      profiePhotoUrl: rawMemberData?.[12][0],
+    };
+  }
+
   function albumItemsPage(data) {
     return {
       items: data?.[1]?.map((rawItemData) => albumItemParse(rawItemData)),
       nextPageId: data?.[2],
+      mediaKey: data?.[3][0],
+      title: data?.[3][1],
+      startTimestamp:data?.[3][2][5],
+      endTimestamp:data?.[3][2][6],
+      lastActivityTimestamp:data?.[3][2][7],
+      createdTimestamp:data?.[3][2][8],
+      newestOperationTimestamp:data?.[3][2][9],
+      totalItemCount: data?.[3][2][21],
+      authKey:data?.[3][19],
+      owner: memberParse(data?.[3][5]),
+      members: data?.[3][9]?.map((memberData) => memberParse(memberData)),
     };
   }
 

@@ -221,7 +221,7 @@ export default class Api {
     }
   }
 
-  async getAlbumPage(albumMediaKey, pageId = null, authKey=null, parseResponse = true) {
+  async getAlbumPage(albumMediaKey, pageId = null, authKey = null, parseResponse = true) {
     // get items of an album or a shared link with the given id
 
     // type assertion

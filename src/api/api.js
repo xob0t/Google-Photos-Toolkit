@@ -230,13 +230,7 @@ export default class Api {
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'snAcKc';
-    let requestData = null;
-    if (authKey){
-      requestData = [albumMediaKey, pageId, null, null, 1];
-    }else{
-      requestData = [albumMediaKey,pageId,null,authKey];
-    }
-
+    const requestData = [albumMediaKey, pageId, null, authKey];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);

@@ -231,6 +231,7 @@ export default function parser(data, rpcid) {
       resWidth: rawItemData[0]?.[1]?.[1],
       resHeight: rawItemData[0]?.[1]?.[2],
       timestamp: rawItemData[0]?.[2],
+      owner: memberParse(rawItemData[3]),
       timezoneOffset: rawItemData[0]?.[4],
       creationTimestamp: rawItemData[0]?.[5],
       downloadUrl: rawItemData?.[1],

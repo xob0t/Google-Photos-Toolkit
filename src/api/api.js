@@ -396,15 +396,15 @@ export default class Api {
     }
   }
 
-  async removeItemsFromSharedAlbum(albumMediaKey, itemProductIdList) {
+  async removeItemsFromSharedAlbum(albumMediaKey, mediaKeyArray) {
     // type assertion
     if (albumMediaKey) assertType(albumMediaKey, 'string');
-    if (itemProductIdList) assertInstance(itemProductIdList, Array);
+    if (mediaKeyArray) assertInstance(mediaKeyArray, Array);
 
     const rpcid = 'LjmOue';
     const requestData = [
       [albumMediaKey],
-      [itemProductIdList],
+      [mediaKeyArray],
       [[null, null, null, [null, [], []], null, null, null, null, null, null, null, null, null, []]],
     ];
     try {
@@ -416,9 +416,9 @@ export default class Api {
     }
   }
 
-  async setItemGeoData(dedupKey, center, visible1, visible2, scale, gMapsPlaceId) {
+  async setItemGeoData(dedupKeyArray, center, visible1, visible2, scale, gMapsPlaceId) {
     // type assertion
-    if (dedupKey) assertType(dedupKey, 'string');
+    if (dedupKeyArray) assertInstance(dedupKeyArray, Array);
     if (center) assertInstance(center, Array);
     if (visible1) assertInstance(visible1, Array);
     if (visible2) assertInstance(visible2, Array);
@@ -428,7 +428,8 @@ export default class Api {
     // every point is an array of coordinates, every coordinate is 9 digit-long int
     // coordinates and scale can be extracted from mapThumb, but gMapsPlaceId is not exposed in GP
     const rpcid = 'EtUHOe';
-    const requestData = [[[null, dedupKey]], [2, center, [visible1, visible2], [null, null, scale], gMapsPlaceId]];
+    dedupKeyArray = dedupKeyArray.map((dedupKey) => [null, dedupKey]);
+    const requestData = [dedupKeyArray, [2, center, [visible1, visible2], [null, null, scale], gMapsPlaceId]];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;
@@ -438,12 +439,13 @@ export default class Api {
     }
   }
 
-  async deleteItemGeoData(dedupKey) {
+  async deleteItemGeoData(dedupKeyArray) {
     // type assertion
-    if (dedupKey) assertType(dedupKey, 'string');
+    if (dedupKeyArray) assertInstance(dedupKeyArray, Array);
 
     const rpcid = 'EtUHOe';
-    const requestData = [[[null, dedupKey]], [1]];
+    dedupKeyArray = dedupKeyArray.map((dedupKey) => [null, dedupKey]);
+    const requestData = [dedupKeyArray, [1]];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;

@@ -265,6 +265,15 @@ export default function parser(data, rpcid) {
     return data.map((rawItemData) => itemBulkMediaInfoParse(rawItemData));
   }
 
+  function downloadTokenCheckParse(data) {
+    return {
+      fileName: data?.[0]?.[0]?.[0]?.[2]?.[0]?.[0],
+      downloadUrl: data?.[0]?.[0]?.[0]?.[2]?.[0]?.[1],
+      downloadSize: data?.[0]?.[0]?.[0]?.[2]?.[0]?.[2],
+      unzippedSize: data?.[0]?.[0]?.[0]?.[2]?.[0]?.[3],
+    };
+  }
+
   if (!data?.length) return null;
   if (rpcid === 'lcxiM') return libraryTimelinePage(data);
   if (rpcid === 'nMFwOc') return lockedFolderPage(data);
@@ -276,4 +285,5 @@ export default function parser(data, rpcid) {
   if (rpcid === 'VrseUb') return itemInfoParse(data);
   if (rpcid === 'fDcn4b') return itemInfoExtParse(data);
   if (rpcid === 'EWgK9e') return bulkMediaInfo(data);
+  if (rpcid === 'dnv2s') return downloadTokenCheckParse(data);
 }

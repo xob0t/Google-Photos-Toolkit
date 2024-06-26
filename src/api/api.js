@@ -390,6 +390,63 @@ export default class Api {
     }
   }
 
+  // there are at least two rpcid's that are used for file downloading
+  // getDownloadUrl uses `pLFTfd`
+  // getDownloadToken uses `yCLA7`
+  // `pLFTfd` is simple, send array of keys, get a dl url, can use authKey to download shared media
+  // getDownloadToken recives a token, which is then used to check if the dl url is ready with checkDownloadToken
+  // using `pLFTfd` seems like a no-brainer, but `yCLA7` is also implemeted, just in case
+
+  async getDownloadUrl(mediaKeyArray, authKey = null) {
+    // type assertion
+    if (mediaKeyArray) assertInstance(mediaKeyArray, Array);
+
+    const rpcid = 'pLFTfd';
+    const requestData = [mediaKeyArray, null, authKey];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      return response[0];
+    } catch (error) {
+      console.error('Error in getDownloadUrl:', error);
+      throw error;
+    }
+  }
+
+  async getDownloadToken(mediaKeyArray) {
+    // use the token with checkDownloadToken to check if DL ulr is ready
+
+    // type assertion
+    if (mediaKeyArray) assertInstance(mediaKeyArray, Array);
+
+    const rpcid = 'yCLA7';
+    const requestData = [[mediaKeyArray]];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      return response[0];
+    } catch (error) {
+      console.error('Error in getDownloadToken:', error);
+      throw error;
+    }
+  }
+
+  async checkDownloadToken(dlToken, parseResponse = true) {
+    // returns dl url if one found
+
+    // type assertion
+    if (dlToken) assertType(dlToken, 'string');
+
+    const rpcid = 'dnv2s';
+    const requestData = [[dlToken]];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      if (parseResponse) return parser(response, rpcid);
+      return response;
+    } catch (error) {
+      console.error('Error in checkDownloadToken:', error);
+      throw error;
+    }
+  }
+
   async removeItemsFromSharedAlbum(albumMediaKey, mediaKeyArray) {
     // type assertion
     if (albumMediaKey) assertType(albumMediaKey, 'string');

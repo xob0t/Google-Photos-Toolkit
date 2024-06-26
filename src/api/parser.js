@@ -125,13 +125,13 @@ export default function parser(data, rpcid) {
     };
   }
 
-  function memberParse(rawMemberData) {
+  function actorParse(rawActorData) {
     return {
-      actorId: rawMemberData?.[0],
-      gaiaId: rawMemberData?.[1],
-      name: rawMemberData?.[11][0],
-      gender: rawMemberData?.[11][2],
-      profiePhotoUrl: rawMemberData?.[12][0],
+      actorId: rawActorData?.[0],
+      gaiaId: rawActorData?.[1],
+      name: rawActorData?.[11]?.[0],
+      gender: rawActorData?.[11]?.[2],
+      profiePhotoUrl: rawActorData?.[12]?.[0],
     };
   }
 
@@ -147,9 +147,9 @@ export default function parser(data, rpcid) {
       createdTimestamp:data?.[3][2][8],
       newestOperationTimestamp:data?.[3][2][9],
       totalItemCount: data?.[3][2][21],
-      authKey:data?.[3][19],
-      owner: memberParse(data?.[3][5]),
-      members: data?.[3][9]?.map((memberData) => memberParse(memberData)),
+      authKey: data?.[3][19],
+      owner: actorParse(data?.[3][5]),
+      members: data?.[3][9]?.map((memberData) => actorParse(memberData)),
     };
   }
 
@@ -231,7 +231,7 @@ export default function parser(data, rpcid) {
       resWidth: rawItemData[0]?.[1]?.[1],
       resHeight: rawItemData[0]?.[1]?.[2],
       timestamp: rawItemData[0]?.[2],
-      owner: memberParse(rawItemData[3]),
+      owner: actorParse(rawItemData[3]),
       timezoneOffset: rawItemData[0]?.[4],
       creationTimestamp: rawItemData[0]?.[5],
       downloadUrl: rawItemData?.[1],

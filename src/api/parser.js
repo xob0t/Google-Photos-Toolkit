@@ -197,6 +197,16 @@ export default function parser(data, rpcid) {
 
     source[1] = rawItemData[0]?.[27]?.[1]?.[2] ? sourceMapSecondary[rawItemData[0][27][1][2]] : null;
 
+    // this is a mess, for some items it is in 27, for some in 28
+    // for now it is better to just ignore it and use info from itemInfo, it is much more reliable
+    // let owner = null;
+    // if (rawItemData[0]?.[27]?.length > 0){
+    //   owner = actorParse(rawItemData[0]?.[27]?.[3]?.[0]?.[11]?.[0] || rawItemData[0]?.[27]?.[4]?.[0]?.[11]?.[0]);
+    // }
+    // if (!owner){
+    //   owner = actorParse(rawItemData[0]?.[28]);
+    // }
+
     return {
       mediaKey: rawItemData[0]?.[0],
       dedupKey: rawItemData[0]?.[11],
@@ -214,8 +224,7 @@ export default function parser(data, rpcid) {
       spaceTaken: rawItemData[0]?.[30]?.[1],
       isOriginalQuality: rawItemData[0]?.[30]?.[2] === undefined ? null : rawItemData[0][30][2] === 2,
       savedToYourPhotos: rawItemData[0]?.[12].filter((subArray) => subArray.includes(20)).length === 0,
-      sharedByUserName: rawItemData[0]?.[27]?.[3]?.[0]?.[11]?.[0] || rawItemData[0]?.[27]?.[4]?.[0]?.[11]?.[0],
-      sharedByUserId: rawItemData[0]?.[27]?.[3]?.[0]?.[1] || rawItemData[0]?.[27]?.[4]?.[0]?.[1],
+      // owner: owner,
       geoLocation: {
         coordinates: rawItemData[0]?.[13]?.[0],
         name: rawItemData[0]?.[13]?.[2]?.[0]?.[1]?.[0]?.[0],

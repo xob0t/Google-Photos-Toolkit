@@ -72,7 +72,6 @@ function resetAlbumSelection() {
 async function refreshAlbums() {
   // ugly
   core.isProcessRunning = true;
-  debugger;
   let albums = null;
   const apiSettings = getFormData('.settings-form');
   try {

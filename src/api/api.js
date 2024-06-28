@@ -163,9 +163,9 @@ export default class Api {
     }
   }
 
-  async getAlbums(pageId = null, parseResponse = true) {
+  async getAlbums(pageSize = 100, pageId = null, parseResponse = true) {
     const rpcid = 'Z5xsfc';
-    const requestData = [pageId, null, null, null, 1, null, null, 100];
+    const requestData = [pageId, null, null, null, 1, null, null, pageSize];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);

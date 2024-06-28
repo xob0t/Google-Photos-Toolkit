@@ -1,9 +1,11 @@
 import { addAlbums } from './album-selects-update.js';
 import saveToStorage from '../../utils/saveToStorage.js';
 import log from './log.js';
-import { apiUtils } from '../../globals.js';
 import { updateUI } from './update-state.js';
 import { core } from '../../globals.js';
+import getFormData from './utils/getFormData.js';
+import ApiUtils from '../../api/api-utils.js';
+import { apiSettingsDefault } from '../../api/api-utils-deafault-presets.js';
 
 export function albumSelectsControlsSetUp() {
   const selectAllButtons = document.querySelectorAll('[name="selectAll"]');
@@ -70,8 +72,11 @@ function resetAlbumSelection() {
 async function refreshAlbums() {
   // ugly
   core.isProcessRunning = true;
+  debugger;
   let albums = null;
+  const apiSettings = getFormData('.settings-form');
   try {
+    const apiUtils = new ApiUtils(core, apiSettings || apiSettingsDefault);
     albums = await apiUtils.getAllAlbums();
     addAlbums(albums);
     saveToStorage('albums', albums);

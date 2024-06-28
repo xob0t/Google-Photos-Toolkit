@@ -9,8 +9,9 @@ export default class ApiUtils {
     this.executeWithConcurrency = this.executeWithConcurrency.bind(this);
     this.getAllItems = this.getAllItems.bind(this);
     this.core = core;
-    let { maxConcurrentApiReq, operationSize, infoSize, lockedFolderOpSize } = settings || apiSettingsDefault;
+    let { albumsPageSize, maxConcurrentApiReq, operationSize, infoSize, lockedFolderOpSize } = settings || apiSettingsDefault;
 
+    this.albumsPageSize = parseInt(albumsPageSize);
     this.maxConcurrentApiReq = parseInt(maxConcurrentApiReq);
     this.operationSize = parseInt(operationSize);
     this.lockedFolderOpSize = parseInt(lockedFolderOpSize);
@@ -70,7 +71,7 @@ export default class ApiUtils {
   }
 
   async getAllAlbums() {
-    return await this.getAllItems(this.api.getAlbums);
+    return await this.getAllItems(this.api.getAlbums, this.albumsPageSize);
   }
 
   async getAllSharedLinks() {

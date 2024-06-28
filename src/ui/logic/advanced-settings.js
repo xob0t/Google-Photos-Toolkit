@@ -20,12 +20,14 @@ export default function advancedSettingsListenersSetUp() {
     saveToStorage('apiSettings', apiSettingsDefault);
 
     // Update the form with default values
+    albumsPageSize.value = apiSettingsDefault.albumsPageSize;
     maxConcurrentApiReqInput.value = apiSettingsDefault.maxConcurrentApiReq;
     operationSizeInput.value = apiSettingsDefault.operationSize;
     lockedFolderOpSizeInput.value = apiSettingsDefault.lockedFolderOpSize;
     infoSizeInput.value = apiSettingsDefault.infoSize;
     log('Default api settings restored');
   }
+  const albumsPageSize = document.querySelector('input[name="albumsPageSize"]');
   const maxConcurrentApiReqInput = document.querySelector('input[name="maxConcurrentApiReq"]');
   const operationSizeInput = document.querySelector('input[name="operationSize"]');
   const lockedFolderOpSizeInput = document.querySelector('input[name="lockedFolderOpSize"]');
@@ -35,6 +37,7 @@ export default function advancedSettingsListenersSetUp() {
 
   const restoredSettings = getFromStorage('apiSettings');
 
+  albumsPageSize.value = restoredSettings?.albumsPageSize || apiSettingsDefault.albumsPageSize;
   maxConcurrentApiReqInput.value = restoredSettings?.maxConcurrentApiReq || apiSettingsDefault.maxConcurrentApiReq;
   operationSizeInput.value = restoredSettings?.operationSize || apiSettingsDefault.operationSize;
   lockedFolderOpSizeInput.value = restoredSettings?.lockedFolderOpSize || apiSettingsDefault.lockedFolderOpSize;

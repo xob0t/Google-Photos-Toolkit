@@ -7,5 +7,3 @@ export const apiUtils = new ApiUtils(core);
 
 // exposing api to be accesible globally
 window.gptkApi = new Api();
-window.gptkCore = core;
-window.gptkApiUtils = apiUtils;

@@ -2414,7 +2414,6 @@
   async function refreshAlbums() {
     // ugly
     core.isProcessRunning = true;
-    debugger;
     let albums = null;
     const apiSettings = getForm('.settings-form');
     try {

@@ -204,13 +204,13 @@ export default class Api {
     }
   }
 
-  async getAlbums(pageId = null, parseResponse = true) {
+  async getAlbums(pageId = null, parseResponse = true, pageSize = 100) {
     // type assertion
     if (pageId) assertType(pageId, 'string');
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'Z5xsfc';
-    const requestData = [pageId, null, null, null, 1, null, null, 100];
+    const requestData = [pageId, null, null, null, 1, null, null, pageSize];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);

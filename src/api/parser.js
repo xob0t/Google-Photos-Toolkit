@@ -226,7 +226,7 @@ export default function parser(data, rpcid) {
       savedToYourPhotos: rawItemData[0]?.[12].filter((subArray) => subArray.includes(20)).length === 0,
       // owner: owner,
       geoLocation: {
-        coordinates: rawItemData[0]?.[13]?.[0],
+        coordinates: rawItemData[0]?.[9]?.[0] || rawItemData[0]?.[13]?.[0],
         name: rawItemData[0]?.[13]?.[2]?.[0]?.[1]?.[0]?.[0],
         mapThumb: rawItemData?.[1],
       },

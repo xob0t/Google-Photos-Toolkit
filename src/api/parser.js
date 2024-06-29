@@ -1,7 +1,14 @@
 export default function parser(data, rpcid) {
-  // note
-  // add =w417-h174-k-no?authuser=0 to thumbnail url to
-  // set custon size, remove 'video' watermark, remove auth requirement
+
+  /* notes
+
+  add =w417-h174-k-no?authuser=0 to thumbnail url to set custon size, remove 'video' watermark, remove auth requirement
+
+  dedup key is a base64 encoded SHA1 of a the file
+
+  */
+
+
 
   function libraryItemParse(rawItemData) {
     return {

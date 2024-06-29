@@ -58,13 +58,11 @@ export default class ApiUtils {
     do {
       if (!this.core.isProcessRunning) return;
       const page = await apiMethod.call(this.api, ...args, nextPageId);
-      if (!page?.items) {
-        log('No items found!', 'error');
-        return [];
+      if (page?.items?.length > 0) {
+        log(`Found ${page.items.length} items`);
+        items.push(...page.items);
       }
-      items.push(...page.items);
-      log(`Found ${page.items.length} items`);
-      nextPageId = page.nextPageId;
+      nextPageId = page?.nextPageId;
     } while (nextPageId);
     return items;
   }
@@ -178,7 +176,7 @@ export default class ApiUtils {
   }
 
   async addToExistingAlbum(mediaItems, targetAlbum) {
-    log(`Adding ${mediaItems.length} items to album "${targetalbum.title}"`);
+    log(`Adding ${mediaItems.length} items to album "${targetAlbum.title}"`);
 
     const isSuccess = (result) => Array.isArray(result);
     const mediaKeyArray = mediaItems.map((item) => item.mediaKey);

@@ -76,8 +76,8 @@ async function refreshAlbums() {
     addAlbums(albums);
     saveToStorage('albums', albums);
     log('Albums Refreshed');
-  } catch {
-    log('Error refreshing albums', 'error');
+  } catch (e){
+    log(`Error refreshing albums ${e}`, 'error');
   }
   core.isProcessRunning = false;
   updateUI();

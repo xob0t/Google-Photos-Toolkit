@@ -45,11 +45,12 @@ export default class Api {
     }
   }
 
-  async getItemsByTakenDate(timestamp = null, source = null, pageId = null, parseResponse = true) {
+  async getItemsByTakenDate(timestamp = null, source = null, pageId = null, pageSize = 500, parseResponse = true) {
     // type assertion
     if (timestamp) assertType(timestamp, 'number');
     if (source) assertType(source, 'string');
     if (pageId) assertType(pageId, 'string');
+    if (pageSize) assertType(pageSize, 'number');
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     // Retrieves media items created before the provided timestamp
@@ -58,8 +59,7 @@ export default class Api {
     else if (!source) source = 3; //both
 
     const rpcid = 'lcxiM';
-    const limit = 500; // 500 is max
-    const requestData = [pageId, timestamp, limit, null, 1, source];
+    const requestData = [pageId, timestamp, pageSize, null, 1, source];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);
@@ -204,9 +204,10 @@ export default class Api {
     }
   }
 
-  async getAlbums(pageId = null, parseResponse = true, pageSize = 100) {
+  async getAlbums(pageId = null, pageSize = 100, parseResponse = true) {
     // type assertion
     if (pageId) assertType(pageId, 'string');
+    if (pageSize) assertType(pageSize, 'number');
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'Z5xsfc';
@@ -227,6 +228,7 @@ export default class Api {
     // type assertion
     if (albumMediaKey) assertType(albumMediaKey, 'string');
     if (pageId) assertType(pageId, 'string');
+    if (authKey) assertType(authKey, 'string');
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'snAcKc';
@@ -394,7 +396,7 @@ export default class Api {
   // getDownloadUrl uses `pLFTfd`
   // getDownloadToken uses `yCLA7`
   // `pLFTfd` is simple, send array of keys, get a dl url, can use authKey to download shared media
-  // getDownloadToken recives a token, which is then used to check if the dl url is ready with checkDownloadToken
+  // getDownloadToken receives a token, which is then used to check if the dl url is ready with checkDownloadToken
   // using `pLFTfd` seems like a no-brainer, but `yCLA7` is also implemeted, just in case
 
   async getDownloadUrl(mediaKeyArray, authKey = null) {
@@ -541,9 +543,11 @@ export default class Api {
     }
   }
 
-  async getItemInfo(mediaKey, parseResponse = true, albumMediaKey = null, authKey = null) {
+  async getItemInfo(mediaKey, albumMediaKey = null, authKey = null, parseResponse = true) {
     // type assertion
     if (mediaKey) assertType(mediaKey, 'string');
+    if (albumMediaKey) assertType(albumMediaKey, 'string');
+    if (authKey) assertType(authKey, 'string');
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'VrseUb';
@@ -559,9 +563,10 @@ export default class Api {
     }
   }
 
-  async getItemInfoExt(mediaKey, parseResponse = true, authKey = null) {
+  async getItemInfoExt(mediaKey, authKey = null, parseResponse = true) {
     // type assertion
     if (mediaKey) assertType(mediaKey, 'string');
+    if (authKey) assertType(authKey, 'boolean');
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'fDcn4b';

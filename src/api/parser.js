@@ -1,15 +1,22 @@
 export default function parser(data, rpcid) {
-  // note
-  // add =w417-h174-k-no?authuser=0 to thumbnail url to
-  // set custon size, remove 'video' watermark, remove auth requirement
+
+  /* notes
+
+  add =w417-h174-k-no?authuser=0 to thumbnail url to set custon size, remove 'video' watermark, remove auth requirement
+
+  dedup key is a base64 encoded SHA1 of a the file
+
+  */
+
+
 
   function libraryItemParse(rawItemData) {
     return {
-      productId: rawItemData?.[0],
+      mediaKey: rawItemData?.[0],
       timestamp: rawItemData?.[2],
-      timestampTimezone: rawItemData?.[4],
+      timezoneOffset: rawItemData?.[4],
       creationTimestamp: rawItemData?.[5],
-      mediaId: rawItemData?.[3],
+      dedupKey: rawItemData?.[3],
       thumb: rawItemData?.[1]?.[0],
       resWidth: rawItemData?.[1]?.[1],
       resHeight: rawItemData?.[1]?.[2],
@@ -44,10 +51,10 @@ export default function parser(data, rpcid) {
 
   function lockedFolderItemParse(rawItemData) {
     return {
-      productId: rawItemData?.[0],
+      mediaKey: rawItemData?.[0],
       timestamp: rawItemData?.[2],
       creationTimestamp: rawItemData?.[5],
-      mediaId: rawItemData?.[3],
+      dedupKey: rawItemData?.[3],
       duration: rawItemData?.at(-1)?.[76647426]?.[0],
     };
   }
@@ -61,7 +68,7 @@ export default function parser(data, rpcid) {
 
   function linkParse(rawLinkData) {
     return {
-      productId: rawLinkData?.[6],
+      mediaKey: rawLinkData?.[6],
       linkId: rawLinkData?.[17],
       itemCount: rawLinkData?.[3],
     };
@@ -76,9 +83,9 @@ export default function parser(data, rpcid) {
 
   function albumParse(rawAlbumData) {
     return {
-      productId: rawAlbumData?.[0],
-      albumId: rawAlbumData?.[6]?.[0],
-      name: rawAlbumData?.at(-1)?.[72930366]?.[1],
+      mediaKey: rawAlbumData?.[0],
+      viewerActorId: rawAlbumData?.[6]?.[0],
+      title: rawAlbumData?.at(-1)?.[72930366]?.[1],
       thumb: rawAlbumData?.[1]?.[0],
       itemCount: rawAlbumData?.at(-1)?.[72930366]?.[3],
       createdTimestamp: rawAlbumData?.at(-1)?.[72930366]?.[2]?.[4],
@@ -97,14 +104,14 @@ export default function parser(data, rpcid) {
 
   function albumItemParse(rawItemData) {
     return {
-      albumProductId: rawItemData?.[0],
+      albumMediaKey: rawItemData?.[0],
       thumb: rawItemData?.[1]?.[0],
       resWidth: rawItemData[1]?.[1],
       resHeight: rawItemData[1]?.[2],
       timestamp: rawItemData?.[2],
-      timestampTimezone: rawItemData?.[4],
+      timezoneOffset: rawItemData?.[4],
       creationTimestamp: rawItemData?.[5],
-      mediaId: rawItemData?.[3],
+      dedupKey: rawItemData?.[3],
       isLivePhoto: rawItemData?.at(-1)?.[146008172] ? true : false,
       livePhotoDuration: rawItemData?.at(-1)?.[146008172]?.[1],
       duration: rawItemData?.at(-1)?.[76647426]?.[0],
@@ -113,15 +120,25 @@ export default function parser(data, rpcid) {
 
   function trashItemParse(rawItemData) {
     return {
-      productId: rawItemData?.[0],
+      mediaKey: rawItemData?.[0],
       thumb: rawItemData?.[1]?.[0],
       resWidth: rawItemData?.[1]?.[1],
       resHeight: rawItemData?.[1]?.[2],
       timestamp: rawItemData?.[2],
-      timestampTimezone: rawItemData?.[4],
+      timezoneOffset: rawItemData?.[4],
       creationTimestamp: rawItemData?.[5],
-      mediaId: rawItemData?.[3],
+      dedupKey: rawItemData?.[3],
       duration: rawItemData?.at(-1)?.[76647426]?.[0],
+    };
+  }
+
+  function actorParse(rawActorData) {
+    return {
+      actorId: rawActorData?.[0],
+      gaiaId: rawActorData?.[1],
+      name: rawActorData?.[11]?.[0],
+      gender: rawActorData?.[11]?.[2],
+      profiePhotoUrl: rawActorData?.[12]?.[0],
     };
   }
 
@@ -129,6 +146,17 @@ export default function parser(data, rpcid) {
     return {
       items: data?.[1]?.map((rawItemData) => albumItemParse(rawItemData)),
       nextPageId: data?.[2],
+      mediaKey: data?.[3][0],
+      title: data?.[3][1],
+      startTimestamp: data?.[3][2][5],
+      endTimestamp: data?.[3][2][6],
+      lastActivityTimestamp: data?.[3][2][7],
+      createdTimestamp: data?.[3][2][8],
+      newestOperationTimestamp: data?.[3][2][9],
+      totalItemCount: data?.[3][2][21],
+      authKey: data?.[3][19],
+      owner: actorParse(data?.[3][5]),
+      members: data?.[3][9]?.map((memberData) => actorParse(memberData)),
     };
   }
 
@@ -141,11 +169,11 @@ export default function parser(data, rpcid) {
 
   function itemBulkMediaInfoParse(rawItemData) {
     return {
-      productId: rawItemData?.[0],
+      mediaKey: rawItemData?.[0],
       descriptionFull: rawItemData?.[1]?.[2],
       fileName: rawItemData?.[1]?.[3],
       timestamp: rawItemData?.[1]?.[6],
-      timestampTimezone: rawItemData?.[1]?.[7],
+      timezoneOffset: rawItemData?.[1]?.[7],
       creationTimestamp: rawItemData?.[1]?.[8],
       size: rawItemData?.[1]?.[9],
       takesUpSpace: rawItemData?.[1]?.at(-1)?.[0] === undefined ? null : rawItemData?.[1]?.at(-1)?.[0] === 1,
@@ -176,13 +204,23 @@ export default function parser(data, rpcid) {
 
     source[1] = rawItemData[0]?.[27]?.[1]?.[2] ? sourceMapSecondary[rawItemData[0][27][1][2]] : null;
 
+    // this is a mess, for some items it is in 27, for some in 28
+    // for now it is better to just ignore it and use info from itemInfo, it is much more reliable
+    // let owner = null;
+    // if (rawItemData[0]?.[27]?.length > 0){
+    //   owner = actorParse(rawItemData[0]?.[27]?.[3]?.[0]?.[11]?.[0] || rawItemData[0]?.[27]?.[4]?.[0]?.[11]?.[0]);
+    // }
+    // if (!owner){
+    //   owner = actorParse(rawItemData[0]?.[28]);
+    // }
+
     return {
-      productId: rawItemData[0]?.[0],
-      mediaId: rawItemData[0]?.[11],
+      mediaKey: rawItemData[0]?.[0],
+      dedupKey: rawItemData[0]?.[11],
       descriptionFull: rawItemData[0]?.[1],
       fileName: rawItemData[0]?.[2],
       timestamp: rawItemData[0]?.[3],
-      timestampTimezone: rawItemData[0]?.[4],
+      timezoneOffset: rawItemData[0]?.[4],
       size: rawItemData[0]?.[5],
       resWidth: rawItemData[0]?.[6],
       resHeight: rawItemData[0]?.[7],
@@ -193,24 +231,25 @@ export default function parser(data, rpcid) {
       spaceTaken: rawItemData[0]?.[30]?.[1],
       isOriginalQuality: rawItemData[0]?.[30]?.[2] === undefined ? null : rawItemData[0][30][2] === 2,
       savedToYourPhotos: rawItemData[0]?.[12].filter((subArray) => subArray.includes(20)).length === 0,
-      sharedByUserName: rawItemData[0]?.[27]?.[3]?.[0]?.[11]?.[0] || rawItemData[0]?.[27]?.[4]?.[0]?.[11]?.[0],
-      sharedByUserId: rawItemData[0]?.[27]?.[3]?.[0]?.[1] || rawItemData[0]?.[27]?.[4]?.[0]?.[1],
+      // owner: owner,
       geoLocation: {
-        coordinates: rawItemData[0]?.[13]?.[0],
+        coordinates: rawItemData[0]?.[9]?.[0] || rawItemData[0]?.[13]?.[0],
         name: rawItemData[0]?.[13]?.[2]?.[0]?.[1]?.[0]?.[0],
         mapThumb: rawItemData?.[1],
       },
+      other: rawItemData[0]?.[31],
     };
   }
 
   function itemInfoParse(rawItemData) {
     return {
-      productId: rawItemData[0]?.[0],
-      mediaId: rawItemData[0]?.[3],
+      mediaKey: rawItemData[0]?.[0],
+      dedupKey: rawItemData[0]?.[3],
       resWidth: rawItemData[0]?.[1]?.[1],
       resHeight: rawItemData[0]?.[1]?.[2],
       timestamp: rawItemData[0]?.[2],
-      timestampTimezone: rawItemData[0]?.[4],
+      owner: actorParse(rawItemData[3]),
+      timezoneOffset: rawItemData[0]?.[4],
       creationTimestamp: rawItemData[0]?.[5],
       downloadUrl: rawItemData?.[1],
       downloadOriginalUrl: rawItemData?.[7], // url to download the original if item was modified after the upload
@@ -224,6 +263,7 @@ export default function parser(data, rpcid) {
       isLivePhoto: rawItemData[0]?.[15]?.[146008172] ? true : false,
       livePhotoDuration: rawItemData[0]?.[15]?.[146008172]?.[1],
       livePhotoVideoDownloadUrl: rawItemData[0]?.[15]?.[146008172]?.[3],
+      trashTimestamp: rawItemData[0]?.[15]?.[225032867]?.[0],
       descriptionFull: rawItemData[10],
       thumb: rawItemData[12],
     };
@@ -231,6 +271,15 @@ export default function parser(data, rpcid) {
 
   function bulkMediaInfo(data) {
     return data.map((rawItemData) => itemBulkMediaInfoParse(rawItemData));
+  }
+
+  function downloadTokenCheckParse(data) {
+    return {
+      fileName: data?.[0]?.[0]?.[0]?.[2]?.[0]?.[0],
+      downloadUrl: data?.[0]?.[0]?.[0]?.[2]?.[0]?.[1],
+      downloadSize: data?.[0]?.[0]?.[0]?.[2]?.[0]?.[2],
+      unzippedSize: data?.[0]?.[0]?.[0]?.[2]?.[0]?.[3],
+    };
   }
 
   if (!data?.length) return null;
@@ -244,4 +293,5 @@ export default function parser(data, rpcid) {
   if (rpcid === 'VrseUb') return itemInfoParse(data);
   if (rpcid === 'fDcn4b') return itemInfoExtParse(data);
   if (rpcid === 'EWgK9e') return bulkMediaInfo(data);
+  if (rpcid === 'dnv2s') return downloadTokenCheckParse(data);
 }

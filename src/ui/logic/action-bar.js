@@ -49,8 +49,8 @@ async function runAction(actionId) {
   let targetAlbum = null;
   let newTargetAlbumName = null;
   if (actionId === 'toExistingAlbum') {
-    const albumProductId = document.getElementById(action?.targetId)?.value;
-    targetAlbum = getFromStorage('albums').find((album) => album.productId === albumProductId);
+    const albumMediaKey = document.getElementById(action?.targetId)?.value;
+    targetAlbum = getFromStorage('albums').find((album) => album.mediaKey === albumMediaKey);
   } else {
     newTargetAlbumName = document.getElementById(action?.targetId)?.value;
   }

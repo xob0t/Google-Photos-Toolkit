@@ -20,3 +20,18 @@ export function isPatternValid(pattern) {
     return e;
   }
 }
+export function assertType(variable, expectedType) {
+  const actualType = typeof variable;
+
+  if (actualType !== expectedType) {
+    throw new TypeError(`Expected type ${expectedType} but got ${actualType}`);
+  }
+}
+
+export function assertInstance(variable, expectedClass) {
+  const actualClass = variable.constructor.name;
+
+  if (!(variable instanceof expectedClass)) {
+    throw new TypeError(`Expected instance of ${expectedClass.name} but got ${actualClass}`);
+  }
+}

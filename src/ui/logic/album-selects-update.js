@@ -12,9 +12,9 @@ export function addAlbums(albums) {
       for (const album of albums) {
         if (parseInt(album.itemCount) === 0 && !addEmpty) continue;
         const option = document.createElement('option');
-        option.value = album.productId;
-        option.title = `Name: ${album.name}\nItems: ${album.itemCount}`;
-        option.textContent = album.name;
+        option.value = album.mediaKey;
+        option.title = `Name: ${album.title}\nItems: ${album.itemCount}`;
+        option.textContent = album.title;
         if (album.isShared) option.classList.add('shared');
         albumSelect.appendChild(option);
       }

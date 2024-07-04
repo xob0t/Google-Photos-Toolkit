@@ -104,7 +104,7 @@ export default function parser(data, rpcid) {
 
   function albumItemParse(rawItemData) {
     return {
-      albumMediaKey: rawItemData?.[0],
+      mediaKey: rawItemData?.[0],
       thumb: rawItemData?.[1]?.[0],
       resWidth: rawItemData[1]?.[1],
       resHeight: rawItemData[1]?.[2],

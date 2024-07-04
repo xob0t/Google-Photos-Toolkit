@@ -1,7 +1,7 @@
 {
   "name": "google-photos-toolkit",
   "nameFull": "Google Photos Toolkit",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "Bulk organize your media",
   "userScript": {
     "namespace": "https://github.com/xob0t/Google-Photos-Toolkit",

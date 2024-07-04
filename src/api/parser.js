@@ -237,6 +237,7 @@ export default function parser(data, rpcid) {
         name: rawItemData[0]?.[13]?.[2]?.[0]?.[1]?.[0]?.[0],
         mapThumb: rawItemData?.[1],
       },
+      other: rawItemData[0]?.[31],
     };
   }
 

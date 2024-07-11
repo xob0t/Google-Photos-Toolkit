@@ -392,6 +392,22 @@ export default class Api {
     }
   }
 
+  async getStorageQuota(parseResponse = true) {
+    // type assertion
+    if (parseResponse) assertType(parseResponse, 'boolean');
+
+    const rpcid = 'EzwWhf';
+    const requestData = [];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      if (parseResponse) return parser(response, rpcid);
+      return response;
+    } catch (error) {
+      console.error('Error in getDownloadUrl:', error);
+      throw error;
+    }
+  }
+
   // there are at least two rpcid's that are used for file downloading
   // getDownloadUrl uses `pLFTfd`
   // getDownloadToken uses `yCLA7`

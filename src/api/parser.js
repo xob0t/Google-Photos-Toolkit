@@ -282,6 +282,14 @@ export default function parser(data, rpcid) {
     };
   }
 
+  function storageQuotaParse(data){
+    return{
+      totalUsed: data[6][0],
+      totalAvailable: data[6][1],
+      usedByGPhotos: data[6][3],
+    };
+  }
+
   if (!data?.length) return null;
   if (rpcid === 'lcxiM') return libraryTimelinePage(data);
   if (rpcid === 'nMFwOc') return lockedFolderPage(data);
@@ -294,4 +302,5 @@ export default function parser(data, rpcid) {
   if (rpcid === 'fDcn4b') return itemInfoExtParse(data);
   if (rpcid === 'EWgK9e') return bulkMediaInfo(data);
   if (rpcid === 'dnv2s') return downloadTokenCheckParse(data);
+  if (rpcid === 'EzwWhf') return storageQuotaParse(data);
 }

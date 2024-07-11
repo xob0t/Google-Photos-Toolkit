@@ -4,8 +4,8 @@ export default function parser(data, rpcid) {
 
   add =w417-h174-k-no?authuser=0 to thumbnail url to set custon size, remove 'video' watermark, remove auth requirement
 
-  dedup key is a base64 encoded SHA1 of a the file
-
+  TODO:
+  make all functions use the same convetion for naming `data` and `rawItemData`
   */
 
 
@@ -290,6 +290,26 @@ export default function parser(data, rpcid) {
     };
   }
 
+  function remoteMatchParse(data){
+    return{
+      hash: data[0],
+      mediaKey: data[1][0],
+      thumb: data[1][1][0],
+      resWidth: data[1][1][1],
+      resHeight: data[1][1][2],
+      timestamp: data[1][2],
+      dedupKey: data[1][3],
+      timezoneOffset: data[1][4],
+      creationTimestamp: data[1][5],
+      duration: data[1]?.at(-1)?.[76647426]?.[0],
+      cameraInfo: data[1][1][8],
+    };
+  }
+
+  function remoteMatchesParse(data) {
+    return data[0].map((rawItemData) => remoteMatchParse(rawItemData));
+  }
+
   if (!data?.length) return null;
   if (rpcid === 'lcxiM') return libraryTimelinePage(data);
   if (rpcid === 'nMFwOc') return lockedFolderPage(data);
@@ -303,4 +323,5 @@ export default function parser(data, rpcid) {
   if (rpcid === 'EWgK9e') return bulkMediaInfo(data);
   if (rpcid === 'dnv2s') return downloadTokenCheckParse(data);
   if (rpcid === 'EzwWhf') return storageQuotaParse(data);
+  if (rpcid === 'swbisb') return remoteMatchesParse(data);
 }

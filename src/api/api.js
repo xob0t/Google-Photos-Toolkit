@@ -105,6 +105,24 @@ export default class Api {
     }
   }
 
+  async getRemoteMatchesByHash(hashArray, parseResponse = true) {
+    // each hash is a base64-encoded SHA1 of a file
+    // type assertion
+    if (hashArray) assertInstance(hashArray, Array);
+    if (parseResponse) assertType(parseResponse, 'boolean');
+
+    const rpcid = 'swbisb';
+    const requestData = [hashArray,null,3,0];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      if (parseResponse) return parser(response, rpcid);
+      return response;
+    } catch (error) {
+      console.error('Error in getRemoteMatchesByHash:', error);
+      throw error;
+    }
+  }
+
   async getFavoriteItems(pageId = null, parseResponse = true) {
     // type assertion
     if (pageId) assertType(pageId, 'string');

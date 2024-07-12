@@ -106,7 +106,9 @@ export default class Api {
   }
 
   async getRemoteMatchesByHash(hashArray, parseResponse = true) {
-    // each hash is a base64-encoded SHA1 of a file
+    // each hash is a base64-encoded binary SHA1 hash of a file
+    // $ sha1sum "/path/to"/file" | xxd -r -p | base64
+
     // type assertion
     if (hashArray) assertInstance(hashArray, Array);
     if (parseResponse) assertType(parseResponse, 'boolean');

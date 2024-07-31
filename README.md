@@ -48,6 +48,7 @@ In your browser, utilizing GP's undocumented web api
 
   ### Use GPTK's api
   GPTK exports it's api class globally so you can use it in your browser's console.
+  It's much more powerful than the UI!
 
   Example usage.
   ```js
@@ -58,6 +59,11 @@ In your browser, utilizing GP's undocumented web api
   console.log(itemInfo)
   ```
 
+## Contributions welcome
+If you want to learn more about how GP's api works, read https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c  
+I just found this post, after doing all the work from zero :D
+
+Also, i've made a userscript that parses all responses and logs them to console in a more readable way, you can find it here - https://github.com/xob0t/Google-Photos-Toolkit/tree/main/tools
 
 ## BUGS
 If something does not work, open an [issue](https://github.com/xob0t/Google-Photos-Toolkit/issues) and describe it in detail

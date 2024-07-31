@@ -1,4 +1,20 @@
-import type { Node as EstreeNode, Program } from 'estree';
+import type * as estree from 'estree';
+
+declare module 'estree' {
+	export interface Decorator extends estree.BaseNode {
+		type: 'Decorator';
+		expression: estree.Expression;
+	}
+	interface PropertyDefinition {
+		decorators: estree.Decorator[];
+	}
+	interface MethodDefinition {
+		decorators: estree.Decorator[];
+	}
+	interface BaseClass {
+		decorators: estree.Decorator[];
+	}
+}
 
 export const VERSION: string;
 
@@ -996,8 +1012,8 @@ type OmittedEstreeKeys =
 	| 'comments';
 type RollupAstNode<T> = Omit<T, OmittedEstreeKeys> & AstNodeLocation;
 
-type ProgramNode = RollupAstNode<Program>;
-export type AstNode = RollupAstNode<EstreeNode>;
+type ProgramNode = RollupAstNode<estree.Program>;
+export type AstNode = RollupAstNode<estree.Node>;
 
 export function defineConfig(options: RollupOptions): RollupOptions;
 export function defineConfig(options: RollupOptions[]): RollupOptions[];

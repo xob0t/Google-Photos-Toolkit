@@ -114,7 +114,7 @@ export default class Api {
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'swbisb';
-    const requestData = [hashArray,null,3,0];
+    const requestData = [hashArray, null, 3, 0];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);

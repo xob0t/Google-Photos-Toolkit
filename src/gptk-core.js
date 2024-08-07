@@ -141,26 +141,18 @@ export default class Core {
       do {
         if (!this.isProcessRunning) return;
         let mediaPage = await this.api.getItemsByTakenDate(nextPageTimestamp, source, nextPageId);
-        if (!mediaPage?.items?.length) {
-          log('No media items on the page!', 'error');
-          return mediaItems;
-        }
         nextPageId = mediaPage.nextPageId;
         nextPageTimestamp = mediaPage.lastItemTimestamp - 1;
         mediaPage.items = mediaPage.items.filter((item) => item.timestamp >= lowerBoundaryDate && item.timestamp <= higherBoundaryDate);
-        if (mediaPage?.items?.length === 0) continue;
+        if (!mediaPage.items || mediaPage?.items?.length === 0) continue;
         log(`Found ${mediaPage?.items?.length} items`);
         mediaItems.push(...mediaPage.items);
-      } while (nextPageTimestamp && nextPageTimestamp > lowerBoundaryDate);
+      } while ((nextPageId && !nextPageTimestamp) || (nextPageTimestamp && nextPageTimestamp > lowerBoundaryDate));
     } else if (Number.isInteger(lowerBoundaryDate || Number.isInteger(higherBoundaryDate)) && filter.intervalType === 'exclude') {
       let nextPageTimestamp = null;
       do {
         if (!this.isProcessRunning) return;
         let mediaPage = await this.api.getItemsByTakenDate(nextPageTimestamp, source, nextPageId);
-        if (!mediaPage?.items?.length) {
-          log('No media items on the page!', 'error');
-          return mediaItems;
-        }
 
         nextPageId = mediaPage.nextPageId;
         mediaPage.items = mediaPage.items.filter((item) => item.timestamp < lowerBoundaryDate || item.timestamp > higherBoundaryDate);
@@ -171,25 +163,22 @@ export default class Core {
           nextPageTimestamp = mediaPage.lastItemTimestamp - 1;
         }
 
-        if (mediaPage?.items?.length === 0) continue;
+        if (!mediaPage.items || mediaPage?.items?.length === 0) continue;
 
         log(`Found ${mediaPage?.items?.length} items`);
         mediaItems.push(...mediaPage.items);
-      } while (nextPageTimestamp);
+      } while (nextPageId);
     } else {
       let nextPageTimestamp = null;
       do {
         if (!this.isProcessRunning) return;
         let mediaPage = await this.api.getItemsByTakenDate(nextPageTimestamp, source, nextPageId);
-        if (!mediaPage?.items?.length) {
-          log('No media items on the page!', 'error');
-          return mediaItems;
-        }
         nextPageId = mediaPage.nextPageId;
         nextPageTimestamp = mediaPage.lastItemTimestamp - 1;
+        if (!mediaPage.items || mediaPage?.items?.length === 0) continue;
         log(`Found ${mediaPage?.items?.length} items`);
         mediaItems.push(...mediaPage.items);
-      } while (nextPageTimestamp);
+      } while (nextPageId);
     }
 
     return mediaItems;
@@ -211,10 +200,6 @@ export default class Core {
     do {
       if (!this.isProcessRunning) return;
       let mediaPage = await this.api.getItemsByUploadedDate(nextPageId);
-      if (!mediaPage?.items?.length) {
-        log('No media items on the page!', 'error');
-        return mediaItems;
-      }
       const lastTimeStamp = mediaPage.items.at(-1).creationTimestamp;
       nextPageId = mediaPage.nextPageId;
       if (filter.intervalType === 'include') {
@@ -225,7 +210,7 @@ export default class Core {
       } else if (filter.intervalType === 'exclude') {
         mediaPage.items = mediaPage.items.filter((item) => item.creationTimestamp < lowerBoundaryDate || item.creationTimestamp > higherBoundaryDate);
       }
-
+      if (!mediaPage.items || mediaPage?.items?.length === 0) continue;
       log(`Found ${mediaPage?.items?.length} items`);
       mediaItems.push(...mediaPage.items);
     } while (nextPageId && !skipTheRest);

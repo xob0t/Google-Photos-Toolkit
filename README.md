@@ -51,12 +51,23 @@ In your browser, utilizing GP's undocumented web api
   It's much more powerful than the UI!
 
   Example usage.
+  Scan the whole library for media owbed by `ownerName` and move it to trash if found
   ```js
-  // getting the fist page of the library by taken date
-  const libraryPage = await gptkApi.getItemsByTakenDate()
-  // getting the info of the first item on the page
-  const itemInfo = await gptkApi.getItemInfo(libraryPage.items[0].mediaKey)
-  console.log(itemInfo)
+let nextPageId = null;
+const ownerName = 'John';
+do {
+  const page = await gptkApi.getItemsByUploadedDate(nextPageId);
+  for (const item of page.items){
+    if (item.isOwned) continue
+    const itemInfo = await gptkApi.getItemInfo(item.mediaKey);
+    if (itemInfo.owner.name == ownerName){
+      await gptkApi.moveItemsToTrash([itemInfo.dedupKey]);
+      console.log('item moved to trash', itemInfo);
+    }
+  }
+  nextPageId = page.nextPageId;
+} while (nextPageId);
+console.log("DONE")
   ```
 
 ## Contributions welcome

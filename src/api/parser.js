@@ -152,7 +152,6 @@ export default function parser(data, rpcid) {
       newestOperationTimestamp: data?.[3][2][9],
       totalItemCount: data?.[3][2][21],
       authKey: data?.[3][19],
-      owner: actorParse(data?.[3][5]),
       members: data?.[3][9]?.map((itemData) => actorParse(itemData)),
     };
   }
@@ -201,15 +200,13 @@ export default function parser(data, rpcid) {
 
     source[1] = itemData[0]?.[27]?.[1]?.[2] ? sourceMapSecondary[itemData[0][27][1][2]] : null;
 
-    // this is a mess, for some items it is in 27, for some in 28
-    // for now it is better to just ignore it and use info from itemInfo, it is much more reliable
-    // let owner = null;
-    // if (itemData[0]?.[27]?.length > 0){
-    //   owner = actorParse(itemData[0]?.[27]?.[3]?.[0]?.[11]?.[0] || itemData[0]?.[27]?.[4]?.[0]?.[11]?.[0]);
-    // }
-    // if (!owner){
-    //   owner = actorParse(itemData[0]?.[28]);
-    // }
+    let owner = null;
+    if (itemData[0]?.[27]?.length > 0){
+      owner = actorParse(itemData[0]?.[27]?.[3]?.[0] || itemData[0]?.[27]?.[4]?.[0]);
+    }
+    if (!owner?.actorId){
+      owner = actorParse(itemData[0]?.[28]);
+    }
 
     return {
       mediaKey: itemData[0]?.[0],
@@ -228,7 +225,7 @@ export default function parser(data, rpcid) {
       spaceTaken: itemData[0]?.[30]?.[1],
       isOriginalQuality: itemData[0]?.[30]?.[2] === undefined ? null : itemData[0][30][2] === 2,
       savedToYourPhotos: itemData[0]?.[12].filter((subArray) => subArray.includes(20)).length === 0,
-      // owner: owner,
+      owner: owner,
       geoLocation: {
         coordinates: itemData[0]?.[9]?.[0] || itemData[0]?.[13]?.[0],
         name: itemData[0]?.[13]?.[2]?.[0]?.[1]?.[0]?.[0],
@@ -246,7 +243,6 @@ export default function parser(data, rpcid) {
       resHeight: itemData[0]?.[1]?.[2],
       isPartialUpload: itemData[0]?.[1]?.[9] === undefined,
       timestamp: itemData[0]?.[2],
-      owner: actorParse(itemData[3]),
       timezoneOffset: itemData[0]?.[4],
       creationTimestamp: itemData[0]?.[5],
       downloadUrl: itemData?.[1],

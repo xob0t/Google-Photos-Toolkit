@@ -61,6 +61,7 @@ export function updateUI() {
       description: document.querySelector('.description'),
       space: document.querySelector('.space'),
       excludeAlbums: document.querySelector('.exclude-albums'),
+      uploadStatus: document.querySelector('.upload-status'),
       archive: document.querySelector('.archive'),
       excludeShared: document.querySelector('.exclude-shared'),
       excludeFavorite: document.querySelector('.exclude-favorites'),
@@ -75,6 +76,7 @@ export function updateUI() {
     }
     if (['library', 'search', 'favorites'].some(isActiveTab)) {
       toggleVisibility(filterElements.owned, true);
+      toggleVisibility(filterElements.uploadStatus, true);
     }
     if (isActiveTab('search')) {
       toggleVisibility(filterElements.search, true);

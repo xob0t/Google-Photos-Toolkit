@@ -90,6 +90,7 @@ export default class Core {
       });
     }
     if (mediaItems?.length && filter.owned) mediaItems = this.filterOwned(mediaItems, filter);
+    if (mediaItems?.length && filter.uploadStatus) mediaItems = this.filterByUploadStatus(mediaItems, filter);
     if (mediaItems?.length && filter.archived) mediaItems = this.filterArchived(mediaItems, filter);
     if ((mediaItems?.length && filter.favorite) || filter.excludeFavorites) mediaItems = this.filterFavorite(mediaItems, filter);
     if (mediaItems?.length && filter.type) mediaItems = this.filterByMediaType(mediaItems, filter);
@@ -314,6 +315,18 @@ export default class Core {
     } else if (filter.owned === 'false') {
       mediaItems = mediaItems.filter((item) => item?.isOwned !== true);
     }
+    log(`Item count after filtering: ${mediaItems?.length}`);
+    return mediaItems;
+  }
+
+  filterByUploadStatus(mediaItems, filter) {
+    log('Filtering by upload status');
+    if (filter.uploadStatus === 'full') {
+      mediaItems = mediaItems.filter((item) => item?.isPartialUpload === false);
+    } else if (filter.uploadStatus === 'partial') {
+      mediaItems = mediaItems.filter((item) => item?.isPartialUpload === true);
+    }
+
     log(`Item count after filtering: ${mediaItems?.length}`);
     return mediaItems;
   }

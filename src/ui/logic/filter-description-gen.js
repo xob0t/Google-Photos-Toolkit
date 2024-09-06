@@ -11,6 +11,9 @@ export function generateFilterDescription(filter) {
   if (filter.space === 'consuming') descriptionParts.push('space consuming');
   if (filter.space === 'non-consuming') descriptionParts.push('non-space consuming');
 
+  if (filter.uploadStatus === 'full') descriptionParts.push('fully uploaded');
+  if (filter.uploadStatus === 'partial') descriptionParts.push('partially uploaded');
+
   if (filter.excludeShared === 'true') descriptionParts.push('non-shared');
 
   if (filter.favorite === 'true') descriptionParts.push('favorite');

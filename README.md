@@ -58,11 +58,11 @@ As simple as selecting "Library" source, clicking `Move to trash`, then clearing
 
 ### Use GPTK's api
 
-GPTK exports it's api class globally so you can use it in your browser's console.
+GPTK exports it's api class globally so you can use it in your browser's console.  
 It's much more powerful than the UI!
 
 Example usage.
-Scan the whole library for media owbed by `ownerName` and move it to trash if found
+Scan the whole library for media owned by `ownerName` and move it to trash if found.
 
 ```js
 let nextPageId = null;

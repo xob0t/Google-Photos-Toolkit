@@ -81,7 +81,7 @@ export default function parser(data, rpcid) {
   function albumParse(itemData) {
     return {
       mediaKey: itemData?.[0],
-      viewerActorId: itemData?.[6]?.[0],
+      ownerActorId: itemData?.[6]?.[0],
       title: itemData?.at(-1)?.[72930366]?.[1],
       thumb: itemData?.[1]?.[0],
       itemCount: itemData?.at(-1)?.[72930366]?.[3],
@@ -145,6 +145,7 @@ export default function parser(data, rpcid) {
       nextPageId: data?.[2],
       mediaKey: data?.[3][0],
       title: data?.[3][1],
+      owner: actorParse(data?.[3][5]),
       startTimestamp: data?.[3][2][5],
       endTimestamp: data?.[3][2][6],
       lastActivityTimestamp: data?.[3][2][7],

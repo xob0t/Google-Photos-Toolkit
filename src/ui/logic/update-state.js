@@ -77,6 +77,7 @@ export function updateUI() {
     if (['library', 'search', 'favorites'].some(isActiveTab)) {
       toggleVisibility(filterElements.owned, true);
       toggleVisibility(filterElements.uploadStatus, true);
+      toggleVisibility(filterElements.archive, true);
     }
     if (isActiveTab('search')) {
       toggleVisibility(filterElements.search, true);

@@ -82,7 +82,6 @@ export function updateUI() {
     if (isActiveTab('search')) {
       toggleVisibility(filterElements.search, true);
       toggleVisibility(filterElements.favorite, true);
-      toggleVisibility(filterElements.archive, true);
     }
     if (!isActiveTab('trash')) {
       toggleVisibility(filterElements.livePhotoType, true);

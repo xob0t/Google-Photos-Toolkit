@@ -231,7 +231,7 @@ export default class Api {
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'Z5xsfc';
-    const requestData = [pageId, null, null, null, 1, null, null, pageSize];
+    const requestData = [pageId, null, null, null, 1, null, null, pageSize, [2], 5];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);

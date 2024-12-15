@@ -263,14 +263,14 @@ export default class Api {
     }
   }
 
-  async removeItemsFromAlbum(itemalbumMediaKeyArray) {
+  async removeItemsFromAlbum(itemAlbumMediaKeyArray) {
     // regular mediaKey's won't cut it, you need to get them from an album
 
     // type assertion
-    if (itemalbumMediaKeyArray) assertInstance(itemalbumMediaKeyArray, Array);
+    if (itemAlbumMediaKeyArray) assertInstance(itemAlbumMediaKeyArray, Array);
 
     const rpcid = 'ycV3Nd';
-    const requestData = [itemalbumMediaKeyArray];
+    const requestData = [itemAlbumMediaKeyArray];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response;

@@ -1,5 +1,4 @@
 export default function parser(data, rpcid) {
-
   /* notes
 
   add =w417-h174-k-no?authuser=0 to thumbnail url to set custon size, remove 'video' watermark, remove auth requirement
@@ -99,6 +98,23 @@ export default function parser(data, rpcid) {
     };
   }
 
+  function partnerSharedItemParse(itemData) {
+    return {
+      mediaKey: itemData?.[0],
+      thumb: itemData?.[1]?.[0],
+      resWidth: itemData[1]?.[1],
+      resHeight: itemData[1]?.[2],
+      timestamp: itemData?.[2],
+      timezoneOffset: itemData?.[4],
+      creationTimestamp: itemData?.[5],
+      dedupKey: itemData?.[3],
+      saved: itemData?.[7]?.[3]?.[0] !== 20,
+      isLivePhoto: itemData?.at(-1)?.[146008172] ? true : false,
+      livePhotoDuration: itemData?.at(-1)?.[146008172]?.[1],
+      duration: itemData?.at(-1)?.[76647426]?.[0],
+    };
+  }
+
   function albumItemParse(itemData) {
     return {
       mediaKey: itemData?.[0],
@@ -136,6 +152,16 @@ export default function parser(data, rpcid) {
       name: data?.[11]?.[0],
       gender: data?.[11]?.[2],
       profiePhotoUrl: data?.[12]?.[0],
+    };
+  }
+
+  function partnerSharedItemsPage(data) {
+    return {
+      nextPageId: data?.[0],
+      items: data?.[1]?.map((itemData) => partnerSharedItemParse(itemData)),
+      members: data?.[2]?.map((itemData) => actorParse(itemData)),
+      parnterActorId: data?.[4],
+      gaiaId: data?.[5],
     };
   }
 
@@ -202,10 +228,10 @@ export default function parser(data, rpcid) {
     source[1] = itemData[0]?.[27]?.[1]?.[2] ? sourceMapSecondary[itemData[0][27][1][2]] : null;
 
     let owner = null;
-    if (itemData[0]?.[27]?.length > 0){
+    if (itemData[0]?.[27]?.length > 0) {
       owner = actorParse(itemData[0]?.[27]?.[3]?.[0] || itemData[0]?.[27]?.[4]?.[0]);
     }
-    if (!owner?.actorId){
+    if (!owner?.actorId) {
       owner = actorParse(itemData[0]?.[28]);
     }
 
@@ -277,16 +303,16 @@ export default function parser(data, rpcid) {
     };
   }
 
-  function storageQuotaParse(data){
-    return{
+  function storageQuotaParse(data) {
+    return {
       totalUsed: data?.[6]?.[0],
       totalAvailable: data?.[6]?.[1],
       usedByGPhotos: data?.[6]?.[3],
     };
   }
 
-  function remoteMatchParse(itemData){
-    return{
+  function remoteMatchParse(itemData) {
+    return {
       hash: itemData?.[0],
       mediaKey: itemData?.[1]?.[0],
       thumb: itemData?.[1]?.[1]?.[0],
@@ -312,6 +338,7 @@ export default function parser(data, rpcid) {
   if (rpcid === 'F2A0H') return linksPage(data);
   if (rpcid === 'Z5xsfc') return albumsPage(data);
   if (rpcid === 'snAcKc') return albumItemsPage(data);
+  if (rpcid === 'e9T5je') return partnerSharedItemsPage(data);
   if (rpcid === 'zy0IHe') return trashPage(data);
   if (rpcid === 'VrseUb') return itemInfoParse(data);
   if (rpcid === 'fDcn4b') return itemInfoExtParse(data);

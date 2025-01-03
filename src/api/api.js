@@ -472,6 +472,7 @@ export default class Api {
 
     // type assertion
     if (dlToken) assertType(dlToken, 'string');
+    if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'dnv2s';
     const requestData = [[dlToken]];
@@ -501,6 +502,60 @@ export default class Api {
       return response;
     } catch (error) {
       console.error('Error in removeItemsFromSharedAlbum:', error);
+      throw error;
+    }
+  }
+
+  async saveSharedMediaToLibrary(albumMediaKey, mediaKeyArray) {
+    // save shared media to own library
+    // type assertion
+    if (albumMediaKey) assertType(albumMediaKey, 'string');
+    if (mediaKeyArray) assertInstance(mediaKeyArray, Array);
+
+    const rpcid = 'V8RKJ';
+    const requestData = [mediaKeyArray, null, albumMediaKey];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      return response;
+    } catch (error) {
+      console.error('Error in saveSharedMediaToLibrary:', error);
+      throw error;
+    }
+  }
+
+  async savePartnerSharedMediaToLibrary(mediaKeyArray) {
+    // save partner shared media to own library
+    // type assertion
+    if (mediaKeyArray) assertInstance(mediaKeyArray, Array);
+
+    const rpcid = 'Es7fke';
+    mediaKeyArray = mediaKeyArray.map((id) => [id]);
+    const requestData = [mediaKeyArray];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      return response;
+    } catch (error) {
+      console.error('Error in savePartnerSharedMediaToLibrary:', error);
+      throw error;
+    }
+  }
+
+  async getPartnerSharedMedia(partnerActorId, gaiaId, pageId, parseResponse = true) {
+    // partner's actorId, your account's gaiaId
+    // type assertion
+    if (partnerActorId) assertType(partnerActorId, 'string');
+    if (gaiaId) assertType(gaiaId, 'string');
+    if (pageId) assertType(pageId, 'string');
+    if (parseResponse) assertType(parseResponse, 'boolean');
+
+    const rpcid = 'e9T5je';
+    const requestData = [pageId, null, [null, [[[2, 1]]], [partnerActorId], [null, gaiaId], 1]];
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      if (parseResponse) return parser(response, rpcid);
+      return response;
+    } catch (error) {
+      console.error('Error in getPartnerSharedMedia:', error);
       throw error;
     }
   }

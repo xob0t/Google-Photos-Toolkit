@@ -1,9 +1,10 @@
 {
   // "editor.formatOnSave": true, // causes problems with eslint
   // "prettier.eslintIntegration": true // causes problems with eslint
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit"
-    },
-    "eslint.validate": ["javascript"]
-  }
-  
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.validate": ["javascript"],
+  "prettier.printWidth": 150,
+  "prettier.singleQuote": true
+}

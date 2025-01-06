@@ -431,9 +431,9 @@ export default class Api {
   // there are at least two rpcid's that are used for file downloading
   // getDownloadUrl uses `pLFTfd`
   // getDownloadToken uses `yCLA7`
-  // `pLFTfd` is simple, send array of keys, get a dl url, can use authKey to download shared media
-  // getDownloadToken receives a token, which is then used to check if the dl url is ready with checkDownloadToken
-  // using `pLFTfd` seems like a no-brainer, but `yCLA7` is also implemeted, just in case
+  // Both take mediaKeyArray as an argument
+  // getDownloadUrl receives a dl url, and can use authKey to download shared media - dl url does not have a Content-Length header
+  // getDownloadToken receives a token, which is then used to check if the dl url is ready with checkDownloadToken - dl url has a Content-Length header
 
   async getDownloadUrl(mediaKeyArray, authKey = null) {
     // type assertion
@@ -457,7 +457,8 @@ export default class Api {
     if (mediaKeyArray) assertInstance(mediaKeyArray, Array);
 
     const rpcid = 'yCLA7';
-    const requestData = [[mediaKeyArray]];
+    mediaKeyArray = mediaKeyArray.map((id) => [id]);
+    const requestData = [mediaKeyArray];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response[0];

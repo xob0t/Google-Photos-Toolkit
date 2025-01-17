@@ -100,10 +100,17 @@ If you have a question, open a [discussion](https://github.com/xob0t/Google-Phot
 
 Borrowed some code and UI inspiration from [undiscord](https://github.com/victornpb/undiscord)
 
+## My Other Google Photos Projects
+
+- GP mobile python client: https://github.com/xob0t/gphotos_mobile_client
+- Disguse any file as media for GP to accept and store it: https://github.com/xob0t/gp-file-hide
+
 ## ♥
 
 If GPTK is useful to you, please consider supporting the project:
 
-[Steam](https://steamcommunity.com/tradeoffer/new/?partner=108584965&token=BXrJr_O7)
-
-BTC `12znTocLytrrYhQT4AJVeJdR8KTULWbKb7`
+BTC `12znTocLytrrYhQT4AJVeJdR8KTULWbKb7`  
+BTC Cash `qq7w48d6s3rddgxshl6ae48k7c5jyck76crvppqenn`  
+DOGE `DQjBzT2qMuXkLMawUXG7umTf3k9VeT4Y6K`  
+Etherium `0xcfe559D9F6056F82a6CFdEDA51c00132035955c8`  
+Litecoin `ltc1qcgc873py5k28qm85sk5d53yfwzle4cztmvkh6l`

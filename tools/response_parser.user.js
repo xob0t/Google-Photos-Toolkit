@@ -9,23 +9,18 @@
 // @noframes
 // ==/UserScript==
 
-
 const logData = (url, data) => {
-  const customRequest = !(url.includes('&_reqid'));
+  const customRequest = !url.includes('&_reqid');
   try {
     // Split by line breaks and filter for lines containing "wrb.fr"
-    const jsonLines = data.split('\n').filter(line => line.includes('wrb.fr'));
+    const jsonLines = data.split('\n').filter((line) => line.includes('wrb.fr'));
 
     for (const line of jsonLines) {
       let parsedData = JSON.parse(line);
       const rpcid = parsedData[0][1];
       parsedData = JSON.parse(parsedData[0][2]);
       if (customRequest) {
-        console.log(
-          '%c' + rpcid,
-          'background: blue; color: white; font-weight: bold;',
-          parsedData
-        );
+        console.log('%c' + rpcid, 'background: blue; color: white; font-weight: bold;', parsedData);
       } else {
         console.log(rpcid, parsedData);
       }
@@ -41,7 +36,7 @@ const logResponseData = (matches = []) => {
   const originalFetch = window.fetch;
   window.fetch = async (...args) => {
     const [url] = args;
-    if (urlPatterns.some(pattern => url.includes(pattern))) {
+    if (urlPatterns.some((pattern) => url.includes(pattern))) {
       try {
         const response = await originalFetch(...args);
         const clonedResponse = response.clone();
@@ -57,7 +52,7 @@ const logResponseData = (matches = []) => {
 
   const originalOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function (method, url) {
-    if (urlPatterns.some(pattern => url.includes(pattern))) {
+    if (urlPatterns.some((pattern) => url.includes(pattern))) {
       this.addEventListener('load', function () {
         logData(url, this.responseText);
       });

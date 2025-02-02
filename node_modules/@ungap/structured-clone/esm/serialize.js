@@ -29,6 +29,8 @@ const typeOf = value => {
       return [MAP, EMPTY];
     case 'Set':
       return [SET, EMPTY];
+    case 'DataView':
+      return [ARRAY, asString];
   }
 
   if (asString.includes('Array'))
@@ -78,9 +80,17 @@ const serializer = (strict, json, $, _) => {
         return as([TYPE, entry], value);
       }
       case ARRAY: {
-        if (type)
-          return as([type, [...value]], value);
-  
+        if (type) {
+          let spread = value;
+          if (type === 'DataView') {
+            spread = new Uint8Array(value.buffer);
+          }
+          else if (type === 'ArrayBuffer') {
+            spread = new Uint8Array(value);
+          }
+          return as([type, [...spread]], value);
+        }
+
         const arr = [];
         const index = as([TYPE, arr], value);
         for (const entry of value)

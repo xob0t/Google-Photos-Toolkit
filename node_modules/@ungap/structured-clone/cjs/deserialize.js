@@ -58,6 +58,12 @@ const deserializer = ($, _) => {
         return as(BigInt(value), index);
       case 'BigInt':
         return as(Object(BigInt(value)), index);
+      case 'ArrayBuffer':
+        return as(new Uint8Array(value).buffer, value);
+      case 'DataView': {
+        const { buffer } = new Uint8Array(value);
+        return as(new DataView(buffer), value);
+      }
     }
     return as(new env[type](value), index);
   };

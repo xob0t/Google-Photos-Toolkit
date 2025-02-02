@@ -662,7 +662,7 @@ export default class Api {
     if (parseResponse) assertType(parseResponse, 'boolean');
 
     const rpcid = 'fDcn4b';
-    const requestData = [mediaKey, 1, authKey];
+    const requestData = [mediaKey, 1, authKey, null, 1];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       if (parseResponse) return parser(response, rpcid);

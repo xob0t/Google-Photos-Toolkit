@@ -8,8 +8,10 @@ import { albumSelectsControlsSetUp } from './album-selects-controls.js';
 import controlButttonsListeners from './main-control-buttons.js';
 import advancedSettingsListenersSetUp from './advanced-settings.js';
 import filterListenersSetUp from './filter-listeners.js';
+import registerMenuCommand from './register-menu-command.js';
 
 export default async function initUI() {
+  registerMenuCommand();
   insertUi();
   actionsListenersSetUp();
   filterListenersSetUp();

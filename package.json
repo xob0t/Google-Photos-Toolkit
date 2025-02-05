@@ -11,7 +11,10 @@
     "icon": "https://raw.githubusercontent.com/xob0t/Google-Photos-Toolkit/main/media/icon.png",
     "downloadURL": "https://github.com/xob0t/Google-Photos-Toolkit/releases/latest/download/google_photos_toolkit.user.js",
     "run-at": "body",
-    "grant": "none",
+    "grant": [
+      "GM_registerMenuCommand",
+      "unsafeWindow"
+    ],
     "noframes": ""
   },
   "main": "google_photos_toolkit.user.js",

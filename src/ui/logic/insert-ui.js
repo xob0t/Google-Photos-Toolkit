@@ -32,7 +32,7 @@ export function insertUi() {
   baseListenersSetUp();
 }
 
-function showMainMenu() {
+export function showMainMenu() {
   const overlay = document.querySelector('.overlay');
   document.getElementById('gptk').style.display = 'flex';
   overlay.style.display = 'block';

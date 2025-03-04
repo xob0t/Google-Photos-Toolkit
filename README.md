@@ -1,5 +1,3 @@
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/xob0t/Google-Photos-Toolkit/total)
-
 # Google Photos Toolkit
 
 Bulk organize your media
@@ -85,10 +83,10 @@ console.log("DONE");
 
 ## Contributions welcome
 
-If you want to learn more about how GP's api works, read https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c  
+If you want to learn more about how GP's api works, read [https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c](https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c)  
 I just found this post, after doing all the work from zero :D
 
-Also, i've made a userscript that parses all responses and logs them to console in a more readable way, you can find it here - https://github.com/xob0t/Google-Photos-Toolkit/tree/main/tools
+Also, i've made a userscript that parses all responses and logs them to console in a more readable way, you can find it here - [https://github.com/xob0t/Google-Photos-Toolkit/tree/main/tools](https://github.com/xob0t/Google-Photos-Toolkit/tree/main/tools)
 
 ## BUGS
 
@@ -102,8 +100,8 @@ Borrowed some code and UI inspiration from [undiscord](https://github.com/victor
 
 ## My Other Google Photos Projects
 
-- GP mobile python client: https://github.com/xob0t/gphotos_mobile_client
-- Disguse any file as media for GP to accept and store it: https://github.com/xob0t/gp-file-hide
+- Python client with unlimited uploads: [https://github.com/xob0t/gphotos_mobile_client](https://github.com/xob0t/gphotos_mobile_client)
+- Disguse any file as media for GP to accept and store it: [https://github.com/xob0t/gp-file-hide](https://github.com/xob0t/gp-file-hide)
 
 ## ♥
 

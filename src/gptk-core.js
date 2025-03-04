@@ -1,6 +1,6 @@
 import Api from './api/api.js';
 import ApiUtils from './api/api-utils.js';
-import { dateToHHMMSS, timeToHHMMSS, isPatternValid } from './utils/helpers.js';
+import { timeToHHMMSS, isPatternValid } from './utils/helpers.js';
 import log from './ui/logic/log.js';
 import { apiSettingsDefault } from './api/api-utils-deafault-presets.js';
 
@@ -378,7 +378,6 @@ export default class Core {
 
     try {
       const startTime = new Date();
-      log(`Start Time ${dateToHHMMSS(startTime)}`);
       const mediaItems = await this.getAndFilterMedia(filter, source, apiSettings);
       if (!mediaItems?.length) log('No items to process.');
       else {

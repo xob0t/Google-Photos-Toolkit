@@ -395,7 +395,7 @@ export default class Core {
         log(`Task completed in ${timeToHHMMSS(new Date() - startTime)}`, 'success');
       }
     } catch (error) {
-      log(error, 'error');
+      log(error.stack, 'error');
     }
     this.isProcessRunning = false;
   }

@@ -2,6 +2,7 @@ import Api from './api/api.js';
 import ApiUtils from './api/api-utils.js';
 import { timeToHHMMSS, isPatternValid } from './utils/helpers.js';
 import log from './ui/logic/log.js';
+import * as filters from './filters.js';
 import { apiSettingsDefault } from './api/api-utils-deafault-presets.js';
 
 export default class Core {
@@ -90,7 +91,7 @@ export default class Core {
     const filtersToApply = [
       {
         condition: source !== 'library' && (filter.lowerBoundaryDate || filter.higherBoundaryDate),
-        method: () => this.filterByDate(filteredItems, filter),
+        method: () => filters.filterByDate(filteredItems, filter),
       },
       {
         condition: filter.albumsExclude,
@@ -102,23 +103,23 @@ export default class Core {
       },
       {
         condition: filter.owned,
-        method: () => this.filterOwned(filteredItems, filter),
+        method: () => filters.filterOwned(filteredItems, filter),
       },
       {
         condition: filter.uploadStatus,
-        method: () => this.filterByUploadStatus(filteredItems, filter),
+        method: () => filters.filterByUploadStatus(filteredItems, filter),
       },
       {
         condition: filter.archived,
-        method: () => this.filterArchived(filteredItems, filter),
+        method: () => filters.filterArchived(filteredItems, filter),
       },
       {
         condition: filter.favorite || filter.excludeFavorites,
-        method: () => this.filterFavorite(filteredItems, filter),
+        method: () => filters.filterFavorite(filteredItems, filter),
       },
       {
         condition: filter.type,
-        method: () => this.filterByMediaType(filteredItems, filter),
+        method: () => filters.filterByMediaType(filteredItems, filter),
       },
     ];
 
@@ -305,130 +306,6 @@ export default class Core {
       mediaItems.push(...mediaPage.items);
     } while (nextPageId && !skipTheRest);
 
-    return mediaItems;
-  }
-
-  fileNameFilter(mediaItems, filter) {
-    log('Filtering by filename');
-    const regex = new RegExp(filter.fileNameRegex);
-    if (filter?.fileNameMatchType === 'include') mediaItems = mediaItems.filter((item) => regex.test(item.fileName));
-    else if (filter?.fileNameMatchType === 'exclude') mediaItems = mediaItems.filter((item) => !regex.test(item.fileName));
-    log(`Item count after filtering: ${mediaItems?.length}`);
-    return mediaItems;
-  }
-
-  descriptionFilter(mediaItems, filter) {
-    log('Filtering by description');
-    const regex = new RegExp(filter.descriptionRegex);
-    if (filter?.descriptionMatchType === 'include') mediaItems = mediaItems.filter((item) => regex.test(item.descriptionFull));
-    else if (filter?.descriptionMatchType === 'exclude') mediaItems = mediaItems.filter((item) => !regex.test(item.descriptionFull));
-    log(`Item count after filtering: ${mediaItems?.length}`);
-    return mediaItems;
-  }
-
-  sizeFilter(mediaItems, filter) {
-    log('Filtering by size');
-    if (parseInt(filter?.higherBoundarySize) > 0) mediaItems = mediaItems.filter((item) => item.size < filter.higherBoundarySize);
-    if (parseInt(filter?.lowerBoundarySize) > 0) mediaItems = mediaItems.filter((item) => item.size > filter.lowerBoundarySize);
-    log(`Item count after filtering: ${mediaItems?.length}`);
-    return mediaItems;
-  }
-
-  qualityFilter(mediaItems, filter) {
-    log('Filtering by quality');
-    if (filter.quality == 'original') mediaItems = mediaItems.filter((item) => item.isOriginalQuality);
-    else if (filter.quality == 'storage-saver') mediaItems = mediaItems.filter((item) => !item.isOriginalQuality);
-    log(`Item count after filtering: ${mediaItems?.length}`);
-    return mediaItems;
-  }
-
-  spaceFilter(mediaItems, filter) {
-    log('Filtering by space');
-    if (filter.space === 'consuming') mediaItems = mediaItems.filter((item) => item.takesUpSpace);
-    else if (filter.space === 'non-consuming') mediaItems = mediaItems.filter((item) => !item.takesUpSpace);
-    log(`Item count after filtering: ${mediaItems?.length}`);
-    return mediaItems;
-  }
-
-  filterByDate(mediaItems, filter) {
-    log('Filtering by date');
-    let lowerBoundaryDate = new Date(filter.lowerBoundaryDate).getTime();
-    let higherBoundaryDate = new Date(filter.higherBoundaryDate).getTime();
-
-    lowerBoundaryDate = isNaN(lowerBoundaryDate) ? -Infinity : lowerBoundaryDate;
-    higherBoundaryDate = isNaN(higherBoundaryDate) ? Infinity : higherBoundaryDate;
-
-    if (filter.intervalType === 'include') {
-      if (filter.dateType === 'taken') {
-        mediaItems = mediaItems.filter((item) => item.timestamp >= lowerBoundaryDate && item.timestamp <= higherBoundaryDate);
-      } else if (filter.dateType === 'uploaded') {
-        mediaItems = mediaItems.filter((item) => item.creationTimestamp >= lowerBoundaryDate && item.creationTimestamp <= higherBoundaryDate);
-      }
-    } else if (filter.intervalType === 'exclude') {
-      if (filter.dateType === 'taken') {
-        mediaItems = mediaItems.filter((item) => item.timestamp < lowerBoundaryDate || item.timestamp > higherBoundaryDate);
-      } else if (filter.dateType === 'uploaded') {
-        mediaItems = mediaItems.filter((item) => item.creationTimestamp < lowerBoundaryDate || item.creationTimestamp > higherBoundaryDate);
-      }
-    }
-    log(`Item count after filtering: ${mediaItems?.length}`);
-    return mediaItems;
-  }
-
-  filterByMediaType(mediaItems, filter) {
-    // if has duration - video, else image
-    log('Filtering by media type');
-    if (filter.type === 'video') mediaItems = mediaItems.filter((item) => item.duration);
-    else if (filter.type === 'image') mediaItems = mediaItems.filter((item) => !item.duration);
-    else if (filter.type === 'live') mediaItems = mediaItems.filter((item) => item.isLivePhoto);
-    log(`Item count after filtering: ${mediaItems?.length}`);
-    return mediaItems;
-  }
-
-  filterFavorite(mediaItems, filter) {
-    log('Filtering favorites');
-    if (filter.favorite === 'true') {
-      mediaItems = mediaItems.filter((item) => item?.isFavorite !== false);
-    } else if (filter.favorite === 'false' || filter.excludeFavorites) {
-      mediaItems = mediaItems.filter((item) => item?.isFavorite !== true);
-    }
-
-    log(`Item count after filtering: ${mediaItems?.length}`);
-    return mediaItems;
-  }
-
-  filterOwned(mediaItems, filter) {
-    log('Filtering owned');
-    if (filter.owned === 'true') {
-      mediaItems = mediaItems.filter((item) => item?.isOwned !== false);
-    } else if (filter.owned === 'false') {
-      mediaItems = mediaItems.filter((item) => item?.isOwned !== true);
-    }
-    log(`Item count after filtering: ${mediaItems?.length}`);
-    return mediaItems;
-  }
-
-  filterByUploadStatus(mediaItems, filter) {
-    log('Filtering by upload status');
-    if (filter.uploadStatus === 'full') {
-      mediaItems = mediaItems.filter((item) => item?.isPartialUpload === false);
-    } else if (filter.uploadStatus === 'partial') {
-      mediaItems = mediaItems.filter((item) => item?.isPartialUpload === true);
-    }
-
-    log(`Item count after filtering: ${mediaItems?.length}`);
-    return mediaItems;
-  }
-
-  filterArchived(mediaItems, filter) {
-    log('Filtering archived');
-    if (filter.archived === 'true') {
-      mediaItems = mediaItems.filter((item) => item?.isArchived !== false);
-    } else if (filter.archived === 'false') {
-      mediaItems = mediaItems.filter((item) => item?.isArchived !== true);
-    }
-
-    log(`Item count after filtering: ${mediaItems?.length}`);
     return mediaItems;
   }
 

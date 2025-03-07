@@ -11,102 +11,187 @@ export default class Core {
   }
 
   async getAndFilterMedia(filter, source) {
-    let mediaItems = [];
-    if (source === 'library') {
-      log('Reading library');
-      if (filter.dateType === 'uploaded') mediaItems = await this.getLibraryItemsByUploadDate(filter);
-      else if (filter.dateType === 'taken') mediaItems = await this.getLibraryItemsByTakenDate(filter);
-    } else if (source === 'search') {
-      log('Reading search results');
-      mediaItems = await this.apiUtils.getAllSearchItems(filter.searchQuery);
-    } else if (source === 'trash') {
-      log('Getting trash items');
-      mediaItems = await this.apiUtils.getAllTrashItems();
-    } else if (source === 'lockedFolder') {
-      log('Getting locked folder items');
-      mediaItems = await this.apiUtils.getAllLockedFolderItems();
-    } else if (source === 'favorites') {
-      log('Getting favorite items');
-      mediaItems = await this.apiUtils.getAllFavoriteItems();
-    } else if (source === 'sharedLinks') {
-      log('Getting shared links');
-      const sharedLinks = await this.apiUtils.getAllSharedLinks();
-      if (!sharedLinks) {
-        log('No shared links found', 'error');
-        return;
-      }
-      log(`Shared Links Found: ${sharedLinks.length}`);
-      for (const sharedLink of sharedLinks) {
-        log('Getting shared link items');
-        const sharedLinkItems = await this.apiUtils.getAllMediaInSharedLink(sharedLink.linkId);
-        mediaItems.push(...sharedLinkItems);
-      }
-    } else if (source === 'albums') {
-      if (!filter.albumsInclude) {
-        log('No target album!', 'error');
-        throw new Error('no target album!');
-      }
-      filter.albumsInclude = Array.isArray(filter.albumsInclude) ? filter.albumsInclude : [filter.albumsInclude];
-      for (const albumMediaKey of filter.albumsInclude) {
-        log('Getting album items');
-        mediaItems.push(...(await this.apiUtils.getAllMediaInAlbum(albumMediaKey)));
-      }
+    const mediaItems = await this.fetchMediaItems(source, filter);
+    log(`Found items: ${mediaItems.length}`);
+    if (!this.isProcessRunning || !mediaItems?.length) return mediaItems;
+
+    const filteredItems = await this.applyFilters(mediaItems, filter, source);
+    return filteredItems;
+  }
+
+  async fetchMediaItems(source, filter) {
+    const sourceHandlers = {
+      library: async () => {
+        log('Reading library');
+        return filter.dateType === 'uploaded' ? await this.getLibraryItemsByUploadDate(filter) : await this.getLibraryItemsByTakenDate(filter);
+      },
+      search: async () => {
+        log('Reading search results');
+        return await this.apiUtils.getAllSearchItems(filter.searchQuery);
+      },
+      trash: async () => {
+        log('Getting trash items');
+        return await this.apiUtils.getAllTrashItems();
+      },
+      lockedFolder: async () => {
+        log('Getting locked folder items');
+        return await this.apiUtils.getAllLockedFolderItems();
+      },
+      favorites: async () => {
+        log('Getting favorite items');
+        return await this.apiUtils.getAllFavoriteItems();
+      },
+      sharedLinks: async () => {
+        log('Getting shared links');
+        const sharedLinks = await this.apiUtils.getAllSharedLinks();
+        if (!sharedLinks) {
+          log('No shared links found', 'error');
+          return [];
+        }
+        log(`Shared Links Found: ${sharedLinks.length}`);
+        const sharedLinkItems = await Promise.all(
+          sharedLinks.map(async (sharedLink) => {
+            log('Getting shared link items');
+            return await this.apiUtils.getAllMediaInSharedLink(sharedLink.linkId);
+          })
+        );
+        return sharedLinkItems.flat();
+      },
+      albums: async () => {
+        if (!filter.albumsInclude) {
+          log('No target album!', 'error');
+          throw new Error('no target album!');
+        }
+        const albumMediaKeys = Array.isArray(filter.albumsInclude) ? filter.albumsInclude : [filter.albumsInclude];
+        const albumItems = await Promise.all(
+          albumMediaKeys.map(async (albumMediaKey) => {
+            log('Getting album items');
+            return await this.apiUtils.getAllMediaInAlbum(albumMediaKey);
+          })
+        );
+        return albumItems.flat();
+      },
+    };
+
+    const handler = sourceHandlers[source];
+    if (!handler) {
+      log(`Unknown source: ${source}`, 'error');
+      return [];
     }
 
+    const mediaItems = await handler();
     log('Source read complete');
-    log(`Found items: ${mediaItems?.length}`);
+    return mediaItems;
+  }
 
-    if (!this.isProcessRunning) return;
+  async applyFilters(mediaItems, filter, source) {
+    let filteredItems = mediaItems;
 
-    if (mediaItems?.length && (filter.lowerBoundaryDate || filter.higherBoundaryDate) && source !== 'library') {
-      // library has its own date filter
-      mediaItems = this.filterByDate(mediaItems, filter);
-    }
+    const filtersToApply = [
+      {
+        condition: source !== 'library' && (filter.lowerBoundaryDate || filter.higherBoundaryDate),
+        method: () => this.filterByDate(filteredItems, filter),
+      },
+      {
+        condition: filter.albumsExclude,
+        method: async () => await this.excludeAlbumItems(filteredItems, filter),
+      },
+      {
+        condition: filter.excludeShared,
+        method: async () => await this.excludeSharedItems(filteredItems),
+      },
+      {
+        condition: filter.owned,
+        method: () => this.filterOwned(filteredItems, filter),
+      },
+      {
+        condition: filter.uploadStatus,
+        method: () => this.filterByUploadStatus(filteredItems, filter),
+      },
+      {
+        condition: filter.archived,
+        method: () => this.filterArchived(filteredItems, filter),
+      },
+      {
+        condition: filter.favorite || filter.excludeFavorites,
+        method: () => this.filterFavorite(filteredItems, filter),
+      },
+      {
+        condition: filter.type,
+        method: () => this.filterByMediaType(filteredItems, filter),
+      },
+    ];
 
-    if (mediaItems?.length && filter.albumsExclude) {
-      const itemsToExclude = [];
-      filter.albumsExclude = Array.isArray(filter.albumsExclude) ? filter.albumsExclude : [filter.albumsExclude];
-
-      for (const albumMediaKey of filter.albumsExclude) {
-        log('Getting album items to exclude');
-        itemsToExclude.push(...(await this.apiUtils.getAllMediaInAlbum(albumMediaKey)));
+    let i = 0;
+    do {
+      const { condition, method } = filtersToApply[i];
+      if (condition && filteredItems.length) {
+        filteredItems = await method();
       }
-      log('Excluding album items');
-      mediaItems = mediaItems.filter((mediaItem) => {
-        return !itemsToExclude.some((excludeItem) => excludeItem.dedupKey === mediaItem.dedupKey);
-      });
-    }
-    if (mediaItems?.length && filter.excludeShared) {
-      log('Getting shared links\' items to exclude');
-      const itemsToExclude = [];
-      const sharedLinks = await this.apiUtils.getAllSharedLinks();
-      for (const sharedLink of sharedLinks) {
-        const sharedLinkItems = await this.apiUtils.getAllMediaInSharedLink(sharedLink.linkId);
-        itemsToExclude.push(...sharedLinkItems);
-      }
-      log('Excluding shared items');
-      mediaItems = mediaItems.filter((mediaItem) => {
-        return !itemsToExclude.some((excludeItem) => excludeItem.dedupKey === mediaItem.dedupKey);
-      });
-    }
-    if (mediaItems?.length && filter.owned) mediaItems = this.filterOwned(mediaItems, filter);
-    if (mediaItems?.length && filter.uploadStatus) mediaItems = this.filterByUploadStatus(mediaItems, filter);
-    if (mediaItems?.length && filter.archived) mediaItems = this.filterArchived(mediaItems, filter);
-    if ((mediaItems?.length && filter.favorite) || filter.excludeFavorites) mediaItems = this.filterFavorite(mediaItems, filter);
-    if (mediaItems?.length && filter.type) mediaItems = this.filterByMediaType(mediaItems, filter);
+      i++;
+    } while (i < filtersToApply.length && filteredItems.length);
 
+    // Apply filters based in extended media info (if applicable)
     if (
-      mediaItems?.length &&
+      filteredItems.length &&
       (filter.space || filter.quality || filter.lowerBoundarySize || filter.higherBoundarySize || filter.fileNameRegex || filter.descriptionRegex)
     ) {
-      mediaItems = await this.extendMediaItemsWithMediaInfo(mediaItems);
-      if (mediaItems?.length && filter.fileNameRegex) mediaItems = this.fileNameFilter(mediaItems, filter);
-      if (mediaItems?.length && filter.descriptionRegex) mediaItems = this.desctiptionFilter(mediaItems, filter);
-      if (mediaItems?.length && filter.space) mediaItems = this.spaceFilter(mediaItems, filter);
-      if (mediaItems?.length && filter.quality) mediaItems = this.qualityFilter(mediaItems, filter);
-      if (mediaItems?.length && (filter.lowerBoundarySize || filter.higherBoundarySize)) mediaItems = this.sizeFilter(mediaItems, filter);
+      filteredItems = await this.extendMediaItemsWithMediaInfo(filteredItems);
+
+      const extendedFilters = [
+        { condition: filter.fileNameRegex, method: () => this.fileNameFilter(filteredItems, filter) },
+        { condition: filter.descriptionRegex, method: () => this.descriptionFilter(filteredItems, filter) },
+        { condition: filter.space, method: () => this.spaceFilter(filteredItems, filter) },
+        { condition: filter.quality, method: () => this.qualityFilter(filteredItems, filter) },
+        {
+          condition: filter.lowerBoundarySize || filter.higherBoundarySize,
+          method: () => this.sizeFilter(filteredItems, filter),
+        },
+      ];
+
+      i = 0;
+      do {
+        const { condition, method } = extendedFilters[i];
+        if (condition && filteredItems.length) {
+          filteredItems = await method();
+        }
+        i++;
+      } while (i < extendedFilters.length && filteredItems.length);
     }
-    return mediaItems;
+
+    return filteredItems;
+  }
+
+  async excludeAlbumItems(mediaItems, filter) {
+    const itemsToExclude = [];
+    const albumMediaKeys = Array.isArray(filter.albumsExclude) ? filter.albumsExclude : [filter.albumsExclude];
+
+    await Promise.all(
+      albumMediaKeys.map(async (albumMediaKey) => {
+        log('Getting album items to exclude');
+        const excludedItems = await this.apiUtils.getAllMediaInAlbum(albumMediaKey);
+        itemsToExclude.push(...excludedItems);
+      })
+    );
+
+    log('Excluding album items');
+    return mediaItems.filter((mediaItem) => !itemsToExclude.some((excludeItem) => excludeItem.dedupKey === mediaItem.dedupKey));
+  }
+
+  async excludeSharedItems(mediaItems) {
+    log('Getting shared links items to exclude');
+    const itemsToExclude = [];
+    const sharedLinks = await this.apiUtils.getAllSharedLinks();
+
+    await Promise.all(
+      sharedLinks.map(async (sharedLink) => {
+        const sharedLinkItems = await this.apiUtils.getAllMediaInSharedLink(sharedLink.linkId);
+        itemsToExclude.push(...sharedLinkItems);
+      })
+    );
+
+    log('Excluding shared items');
+    return mediaItems.filter((mediaItem) => !itemsToExclude.some((excludeItem) => excludeItem.dedupKey === mediaItem.dedupKey));
   }
 
   async extendMediaItemsWithMediaInfo(mediaItems) {
@@ -232,7 +317,7 @@ export default class Core {
     return mediaItems;
   }
 
-  desctiptionFilter(mediaItems, filter) {
+  descriptionFilter(mediaItems, filter) {
     log('Filtering by description');
     const regex = new RegExp(filter.descriptionRegex);
     if (filter?.descriptionMatchType === 'include') mediaItems = mediaItems.filter((item) => regex.test(item.descriptionFull));

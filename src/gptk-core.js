@@ -122,7 +122,7 @@ export default class Core {
         method: () => filters.filterByMediaType(filteredItems, filter),
       },
     ];
-
+    // filtering with basic filters
     let i = 0;
     do {
       const { condition, method } = filtersToApply[i];
@@ -132,7 +132,7 @@ export default class Core {
       i++;
     } while (i < filtersToApply.length && filteredItems.length);
 
-    // Apply filters based in extended media info (if applicable)
+    // filtering with filters based on extended media info
     if (
       filteredItems.length &&
       (filter.space || filter.quality || filter.lowerBoundarySize || filter.higherBoundarySize || filter.fileNameRegex || filter.descriptionRegex)
@@ -158,6 +158,11 @@ export default class Core {
         }
         i++;
       } while (i < extendedFilters.length && filteredItems.length);
+    }
+
+    // filtering by similarity
+    if (filteredItems.length > 0 && filter.similarityThreshold) {
+      filteredItems = filters.filterSimilar(this, filteredItems, filter);
     }
 
     return filteredItems;
@@ -342,6 +347,7 @@ export default class Core {
       const startTime = new Date();
       const mediaItems = await this.getAndFilterMedia(filter, source, apiSettings);
       if (!mediaItems?.length) log('No items to process.');
+      if (!this.isProcessRunning) return;
       else {
         log(`Items to process: ${mediaItems?.length}`);
         if (action.elementId === 'restoreTrash' || source === 'trash') await this.apiUtils.restoreFromTrash(mediaItems);

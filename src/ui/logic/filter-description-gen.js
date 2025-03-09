@@ -45,6 +45,8 @@ export function generateFilterDescription(filter) {
     descriptionParts.push(`regex "${filter.descriptionRegex}"`);
   }
 
+  if (filter.similarityThreshold) descriptionParts.push(`with similarity more than "${filter.similarityThreshold}"`);
+
   if (parseInt(filter.lowerBoundarySize) > 0) descriptionParts.push(`larger than ${parseInt(filter.lowerBoundarySize)} bytes`);
   if (parseInt(filter.lowerBoundarySize) > 0 && parseInt(filter.higherBoundarySize) > 0) descriptionParts.push('and');
   if (parseInt(filter.higherBoundarySize) > 0) descriptionParts.push(`smaller than ${parseInt(filter.higherBoundarySize)} bytes`);

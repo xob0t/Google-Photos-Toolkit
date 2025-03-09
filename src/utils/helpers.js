@@ -35,3 +35,8 @@ export function assertInstance(variable, expectedClass) {
     throw new TypeError(`Expected instance of ${expectedClass.name} but got ${actualClass}`);
   }
 }
+
+// Defer execution to prevent UI blocking
+export function defer(fn) {
+  return new Promise((resolve) => setTimeout(() => resolve(fn()), 0));
+}

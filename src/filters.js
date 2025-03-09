@@ -124,7 +124,6 @@ export function filterArchived(mediaItems, filter) {
   log(`Item count after filtering: ${mediaItems?.length}`);
   return mediaItems;
 }
-
 // Process images in small batches with yield points
 async function processBatch(items, processFn, batchSize = 5, core) {
   const results = [];

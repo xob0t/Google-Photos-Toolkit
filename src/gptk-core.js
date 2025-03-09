@@ -140,13 +140,13 @@ export default class Core {
       filteredItems = await this.extendMediaItemsWithMediaInfo(filteredItems);
 
       const extendedFilters = [
-        { condition: filter.fileNameRegex, method: () => this.fileNameFilter(filteredItems, filter) },
-        { condition: filter.descriptionRegex, method: () => this.descriptionFilter(filteredItems, filter) },
-        { condition: filter.space, method: () => this.spaceFilter(filteredItems, filter) },
-        { condition: filter.quality, method: () => this.qualityFilter(filteredItems, filter) },
+        { condition: filter.fileNameRegex, method: () => filters.fileNameFilter(filteredItems, filter) },
+        { condition: filter.descriptionRegex, method: () => filters.descriptionFilter(filteredItems, filter) },
+        { condition: filter.space, method: () => filters.spaceFilter(filteredItems, filter) },
+        { condition: filter.quality, method: () => filters.qualityFilter(filteredItems, filter) },
         {
           condition: filter.lowerBoundarySize || filter.higherBoundarySize,
-          method: () => this.sizeFilter(filteredItems, filter),
+          method: () => filters.sizeFilter(filteredItems, filter),
         },
       ];
 

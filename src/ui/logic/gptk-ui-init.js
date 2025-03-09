@@ -25,4 +25,12 @@ export default async function initUI() {
     log('Cached Albums Restored');
     addAlbums(cachedAlbums);
   }
+
+  // confirm exit if process is running
+  window.addEventListener('beforeunload', function (e) {
+    if (unsafeWindow.gptkCore.isProcessRunning) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
 }

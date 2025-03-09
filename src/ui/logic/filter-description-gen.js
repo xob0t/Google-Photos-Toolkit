@@ -81,6 +81,8 @@ export function generateFilterDescription(filter) {
     }
   }
 
+  if (filter.sortBySize) descriptionParts.push('sorted by size');
+
   let filterDescriptionString = descriptionParts.join(' ');
   if (filterDescriptionString == 'Filter: All media') filterDescriptionString = 'Filter: None';
   return filterDescriptionString;

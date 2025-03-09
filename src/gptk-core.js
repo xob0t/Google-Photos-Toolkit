@@ -160,6 +160,11 @@ export default class Core {
       } while (i < extendedFilters.length && filteredItems.length);
     }
 
+    if (filter.sortBySize && filteredItems.length) {
+      filteredItems = await this.extendMediaItemsWithMediaInfo(filteredItems);
+      filteredItems.sort((a, b) => (a.size || 0) - (b.size || 0));
+    }
+
     // filtering by similarity
     if (filteredItems.length > 0 && filter.similarityThreshold) {
       filteredItems = filters.filterSimilar(this, filteredItems, filter);

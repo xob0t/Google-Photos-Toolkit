@@ -188,7 +188,7 @@ export default class ApiUtils {
   async getBatchMediaInfoChunked(mediaItems) {
     log("Getting items' media info");
     const mediaKeyArray = mediaItems.map((item) => item.mediaKey);
-    const mediaInfoData = await this.executeWithConcurrency(this.api.getBatchMediaInfo, null, this.infoSize, mediaKeyArray);
+    const mediaInfoData = await this.executeWithConcurrency(this.api.getBatchMediaInfo, this.infoSize, mediaKeyArray);
     return mediaInfoData;
   }
 }

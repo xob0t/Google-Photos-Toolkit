@@ -22,7 +22,7 @@ In your browser, utilizing GP's undocumented web api
 ## How to use
 
 <details>
-  <summary>Tutorial</summary>
+  <summary><strong>🚀 Click to expand: Tutorial</strong></summary>
 
 1. Go to [photos.google.com](https://photos.google.com/) and click the GPTK icon in the top bar to open it
 
@@ -49,6 +49,15 @@ This example groups all space-consuming media in one album.
 1. Make sure "Library" is the selected source
 2. Select `SPACE-CONSUMING` in the `Space` filter
 3. Select action `Add to new album`
+
+### Identify media not in any albums
+
+Select all albums in the `Exclude albums` filter, then use appropriate action.
+
+### Identifying dublicates/similar images
+
+Use `Similarity` filter with action `Add to new album`
+Media with similar thumbnails will be added to the album.
 
 ### Deleting all media in the library
 

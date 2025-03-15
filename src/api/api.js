@@ -343,6 +343,32 @@ export default class Api {
     }
   }
 
+  async setAlbumItemOrder(albumMediaKey, albumItemKeys, insertAfter = null) {
+    // type assertion
+    if (albumMediaKey) assertType(albumMediaKey, 'string');
+    if (albumItemKeys) assertInstance(albumItemKeys, Array);
+
+    const rpcid = 'QD9nKf';
+
+    const albumItemKeysArray = albumItemKeys.map((item) => [[item]]);
+
+    let requestData = null;
+
+    if (insertAfter) {
+      requestData = [albumMediaKey, null, 3, null, albumItemKeysArray, [[insertAfter]]];
+    } else {
+      requestData = [albumMediaKey, null, 1, null, albumItemKeysArray];
+    }
+
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      return response;
+    } catch (error) {
+      console.error('Error in setAlbumItemOrder:', error);
+      throw error;
+    }
+  }
+
   async setFavorite(dedupKeyArray, action = true) {
     // type assertion
     if (dedupKeyArray) assertInstance(dedupKeyArray, Array);

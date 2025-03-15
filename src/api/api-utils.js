@@ -167,22 +167,46 @@ export default class ApiUtils {
     await this.executeWithConcurrency(this.api.setFavorite, this.operationSize, dedupKeyArray, false);
   }
 
-  async addToExistingAlbum(mediaItems, targetAlbum) {
+  async addToExistingAlbum(mediaItems, targetAlbum, preserveOrder = false) {
     log(`Adding ${mediaItems.length} items to album "${targetAlbum.title}"`);
     const mediaKeyArray = mediaItems.map((item) => item.mediaKey);
 
     const addItemFunction = targetAlbum.isShared ? this.api.addItemsToSharedAlbum : this.api.addItemsToAlbum;
 
     await this.executeWithConcurrency(addItemFunction, this.operationSize, mediaKeyArray, targetAlbum.mediaKey);
+
+    if (preserveOrder) {
+      log('Setting album item order');
+      const albumItems = await this.getAllMediaInAlbum(targetAlbum.mediaKey);
+      console.log('mediaItems');
+      console.log(mediaItems);
+      console.log('albumItems');
+      console.log(albumItems);
+      const orderMap = new Map();
+      mediaItems.forEach((item, index) => {
+        orderMap.set(item.dedupKey, index);
+      });
+      const sortedAlbumItems = [...albumItems].sort((a, b) => {
+        const indexA = orderMap.has(a.dedupKey) ? orderMap.get(a.dedupKey) : Infinity;
+        const indexB = orderMap.has(b.dedupKey) ? orderMap.get(b.dedupKey) : Infinity;
+        return indexA - indexB;
+      });
+      const sortedMediaKeys = sortedAlbumItems.map((item) => item.mediaKey);
+      console.log('sortedMediaKeys');
+      console.log(sortedMediaKeys);
+      for (const key of sortedMediaKeys.reverse()) {
+        await this.api.setAlbumItemOrder(targetAlbum.mediaKey, [key]);
+      }
+    }
   }
 
-  async addToNewAlbum(mediaItems, targetAlbumName) {
+  async addToNewAlbum(mediaItems, targetAlbumName, preserveOrder = false) {
     log(`Creating new album "${targetAlbumName}"`);
     const album = {};
     album.title = targetAlbumName;
     album.shared = false;
     album.mediaKey = await this.api.createAlbum(targetAlbumName);
-    await this.addToExistingAlbum(mediaItems, album);
+    await this.addToExistingAlbum(mediaItems, album, preserveOrder);
   }
 
   async getBatchMediaInfoChunked(mediaItems) {

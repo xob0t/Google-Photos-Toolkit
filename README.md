@@ -110,7 +110,7 @@ Borrowed some code and UI inspiration from [undiscord](https://github.com/victor
 ## My Other Google Photos Projects
 
 - Python client with unlimited uploads: [https://github.com/xob0t/gphotos_mobile_client](https://github.com/xob0t/gphotos_mobile_client)
-- Disguse any file as media for GP to accept and store it: [https://github.com/xob0t/gp-file-hide](https://github.com/xob0t/gp-file-hide)
+- Disguise any file as media for GP to accept and store it: [https://github.com/xob0t/gp-file-hide](https://github.com/xob0t/gp-file-hide)
 
 ## ♥
 

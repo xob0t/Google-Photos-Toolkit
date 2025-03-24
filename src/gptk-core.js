@@ -162,7 +162,7 @@ export default class Core {
 
     if (filter.sortBySize && filteredItems.length) {
       filteredItems = await this.extendMediaItemsWithMediaInfo(filteredItems);
-      filteredItems.sort((a, b) => (a.size || 0) - (b.size || 0));
+      filteredItems.sort((a, b) => (b.size || 0) - (a.size || 0));
     }
 
     // filtering by similarity

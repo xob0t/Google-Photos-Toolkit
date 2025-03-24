@@ -162,7 +162,7 @@ export default class Core {
 
     if (filter.sortBySize && filteredItems.length) {
       filteredItems = await this.extendMediaItemsWithMediaInfo(filteredItems);
-      filteredItems.sort((a, b) => (a.size || 0) - (b.size || 0));
+      filteredItems.sort((a, b) => (b.size || 0) - (a.size || 0));
     }
 
     // filtering by similarity
@@ -347,6 +347,7 @@ export default class Core {
     document.dispatchEvent(new Event('change'));
 
     this.apiUtils = new ApiUtils(this, apiSettings || apiSettingsDefault);
+    const preserveOrder = Boolean(filter.similarityThreshold || filter.sortBySize);
 
     try {
       const startTime = new Date();
@@ -358,8 +359,8 @@ export default class Core {
         if (action.elementId === 'restoreTrash' || source === 'trash') await this.apiUtils.restoreFromTrash(mediaItems);
         if (action.elementId === 'unLock' || source === 'lockedFolder') await this.apiUtils.removeFromLockedFolder(mediaItems);
         if (action.elementId === 'lock') await this.apiUtils.moveToLockedFolder(mediaItems);
-        if (action.elementId === 'toExistingAlbum') await this.apiUtils.addToExistingAlbum(mediaItems, targetAlbum);
-        if (action.elementId === 'toNewAlbum') await this.apiUtils.addToNewAlbum(mediaItems, newTargetAlbumName);
+        if (action.elementId === 'toExistingAlbum') await this.apiUtils.addToExistingAlbum(mediaItems, targetAlbum, preserveOrder);
+        if (action.elementId === 'toNewAlbum') await this.apiUtils.addToNewAlbum(mediaItems, newTargetAlbumName, preserveOrder);
         if (action.elementId === 'toTrash') await this.apiUtils.moveToTrash(mediaItems);
         if (action.elementId === 'toArchive') await this.apiUtils.sendToArchive(mediaItems);
         if (action.elementId === 'unArchive') await this.apiUtils.unArchive(mediaItems);

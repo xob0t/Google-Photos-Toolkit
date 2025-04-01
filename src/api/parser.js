@@ -177,7 +177,7 @@ export default function parser(data, rpcid) {
       lastActivityTimestamp: data?.[3][2][7],
       creationTimestamp: data?.[3][2][8],
       newestOperationTimestamp: data?.[3][2][9],
-      totalItemCount: data?.[3][2][21],
+      itemCount: data?.[3][21],
       authKey: data?.[3][19],
       members: data?.[3][9]?.map((itemData) => actorParse(itemData)),
     };

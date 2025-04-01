@@ -124,7 +124,8 @@ export function filterArchived(mediaItems, filter) {
   log(`Item count after filtering: ${mediaItems?.length}`);
   return mediaItems;
 }
-// Process images in small batches with yield points
+
+// Process images in batches with yield points
 async function processBatch(items, processFn, batchSize = 5, core) {
   const results = [];
   for (let i = 0; i < items.length; i += batchSize) {
@@ -144,7 +145,8 @@ async function processBatch(items, processFn, batchSize = 5, core) {
   return results;
 }
 
-// Efficient dHash implementation with non-blocking behavior
+// This being a usersctipt prevents it from using web workers
+// dHash implementation with non-blocking behavior
 async function generateImageHash(hashSize, blob, core) {
   if (!blob) return null;
   if (!core.isProcessRunning) return null;
@@ -333,7 +335,7 @@ export async function filterSimilar(core, mediaItems, filter) {
       const hash = await generateImageHash(hashSize, item.blob, core);
       return hash ? { ...item, hash } : null;
     },
-    50, // Process 3 images per batch
+    50, // Process 50 images per batch
     core
   );
   if (!core.isProcessRunning) return [];

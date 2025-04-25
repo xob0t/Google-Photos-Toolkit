@@ -26,9 +26,9 @@ export function albumSelectsControlsSetUp() {
     resetAlbumSelectionButton?.addEventListener('click', resetAlbumSelection);
   }
 
-  const refreshAlumbsButtons = document.querySelectorAll('.refresh-albums');
-  for (const refreshAlumbsButton of refreshAlumbsButtons) {
-    refreshAlumbsButton?.addEventListener('click', refreshAlbums);
+  const refreshAlbumsButtons = document.querySelectorAll('.refresh-albums');
+  for (const refreshAlbumsButton of refreshAlbumsButtons) {
+    refreshAlbumsButton?.addEventListener('click', refreshAlbums);
   }
 }
 
@@ -76,7 +76,7 @@ async function refreshAlbums() {
     addAlbums(albums);
     saveToStorage('albums', albums);
     log('Albums Refreshed');
-  } catch (e){
+  } catch (e) {
     log(`Error refreshing albums ${e}`, 'error');
   }
   core.isProcessRunning = false;

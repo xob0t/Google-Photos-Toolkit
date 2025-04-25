@@ -140,7 +140,7 @@ async function processBatch(items, processFn, batchSize = 5, core) {
     );
     results.push(...batchResults.filter(Boolean));
     // Yield to UI thread after each batch
-    await defer(() => {});
+    await defer(() => { });
   }
   return results;
 }
@@ -166,7 +166,7 @@ async function generateImageHash(hashSize, blob, core) {
   }
 
   // Yield to UI thread after image loads
-  await defer(() => {});
+  await defer(() => { });
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -259,7 +259,7 @@ async function groupSimilarImages(imageHashes, similarityThreshold, hashSize = 8
     }
 
     // Yield to UI thread after each batch
-    await defer(() => {});
+    await defer(() => { });
   }
 
   return groups.filter((group) => group.length > 1);
@@ -267,18 +267,52 @@ async function groupSimilarImages(imageHashes, similarityThreshold, hashSize = 8
 
 // Fetch image blobs with concurrency control
 async function fetchImageBlobs(mediaItems, maxConcurrency, imageHeight, core) {
-  const fetchWithLimit = async (item) => {
+  const fetchWithLimit = async (item, retries = 3) => {
     if (!core.isProcessRunning) return null;
 
     try {
-      const url = item.thumb + `=h${imageHeight}`; // Resize image
-      const response = await fetch(url, { cache: 'force-cache', credentials: 'include' });
+      // Ensure proper URL construction
+      const baseUrl = item.thumb || '';
+      if (!baseUrl) {
+        log(`Missing thumbnail URL for item: ${item.mediaKey}`, 'error');
+        return null;
+      }
+
+      // Add height parameter and ensure no double '='
+      const url = baseUrl.includes('=') ?
+        baseUrl.replace(/=([^=]*)$/, `=h${imageHeight}`) :
+        `${baseUrl}=h${imageHeight}`;
+
+      // Set up timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      const response = await fetch(url, {
+        cache: 'force-cache',
+        credentials: 'include',
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
       if (!core.isProcessRunning) return null;
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const blob = await response.blob();
       return { ...item, blob };
     } catch (error) {
-      log(`Error fetching image ${item.thumb}:`, error);
+      if (error.name === 'AbortError') {
+        log(`Timeout fetching image ${item.mediaKey}`, 'error');
+      } else {
+        log(`Error fetching image ${item.mediaKey}: ${error.message}`, 'error');
+      }
+
+      // Retry logic
+      if (retries > 0 && core.isProcessRunning) {
+        log(`Retrying fetch for ${item.mediaKey} (${retries} attempts remaining)`);
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
+        return fetchWithLimit(item, retries - 1);
+      }
       return null;
     }
   };

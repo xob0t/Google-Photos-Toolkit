@@ -342,35 +342,52 @@ export default class Core {
     }
 
     this.isProcessRunning = true;
-
-    // dispatching event to upate the ui without importing it
+    // dispatch event to upate the ui without importing it
     document.dispatchEvent(new Event('change'));
-
     this.apiUtils = new ApiUtils(this, apiSettings || apiSettingsDefault);
-    const preserveOrder = Boolean(filter.similarityThreshold || filter.sortBySize);
 
     try {
       const startTime = new Date();
       const mediaItems = await this.getAndFilterMedia(filter, source, apiSettings);
-      if (!mediaItems?.length) log('No items to process');
-      if (!this.isProcessRunning) return;
-      else {
-        log(`Items to process: ${mediaItems?.length}`);
-        if (action.elementId === 'restoreTrash' || source === 'trash') await this.apiUtils.restoreFromTrash(mediaItems);
-        if (action.elementId === 'unLock' || source === 'lockedFolder') await this.apiUtils.removeFromLockedFolder(mediaItems);
-        if (action.elementId === 'lock') await this.apiUtils.moveToLockedFolder(mediaItems);
-        if (action.elementId === 'toExistingAlbum') await this.apiUtils.addToExistingAlbum(mediaItems, targetAlbum, preserveOrder);
-        if (action.elementId === 'toNewAlbum') await this.apiUtils.addToNewAlbum(mediaItems, newTargetAlbumName, preserveOrder);
-        if (action.elementId === 'toTrash') await this.apiUtils.moveToTrash(mediaItems);
-        if (action.elementId === 'toArchive') await this.apiUtils.sendToArchive(mediaItems);
-        if (action.elementId === 'unArchive') await this.apiUtils.unArchive(mediaItems);
-        if (action.elementId === 'toFavorite') await this.apiUtils.setAsFavorite(mediaItems);
-        if (action.elementId === 'unFavorite') await this.apiUtils.unFavorite(mediaItems);
-        log(`Task completed in ${timeToHHMMSS(new Date() - startTime)}`, 'success');
+
+      // Early exit if no items to process
+      if (!mediaItems?.length) {
+        log('No items to process');
+        return;
       }
+
+      // Exit if process was stopped externally
+      if (!this.isProcessRunning) return;
+
+      // Execute the appropriate action
+      await this.executeAction(action, {
+        mediaItems,
+        source,
+        targetAlbum,
+        newTargetAlbumName,
+        preserveOrder: Boolean(filter.similarityThreshold || filter.sortBySize),
+      });
+
+      log(`Task completed in ${timeToHHMMSS(new Date() - startTime)}`, 'success');
     } catch (error) {
       log(error.stack, 'error');
+    } finally {
+      this.isProcessRunning = false;
     }
-    this.isProcessRunning = false;
+  }
+
+  async executeAction(action, params) {
+    const { mediaItems, source, targetAlbum, newTargetAlbumName, preserveOrder } = params;
+    log(`Items to process: ${mediaItems?.length}`);
+    if (action.elementId === 'restoreTrash' || source === 'trash') await this.apiUtils.restoreFromTrash(mediaItems);
+    if (action.elementId === 'unLock' || source === 'lockedFolder') await this.apiUtils.removeFromLockedFolder(mediaItems);
+    if (action.elementId === 'lock') await this.apiUtils.moveToLockedFolder(mediaItems);
+    if (action.elementId === 'toExistingAlbum') await this.apiUtils.addToExistingAlbum(mediaItems, targetAlbum, preserveOrder);
+    if (action.elementId === 'toNewAlbum') await this.apiUtils.addToNewAlbum(mediaItems, newTargetAlbumName, preserveOrder);
+    if (action.elementId === 'toTrash') await this.apiUtils.moveToTrash(mediaItems);
+    if (action.elementId === 'toArchive') await this.apiUtils.sendToArchive(mediaItems);
+    if (action.elementId === 'unArchive') await this.apiUtils.unArchive(mediaItems);
+    if (action.elementId === 'toFavorite') await this.apiUtils.setAsFavorite(mediaItems);
+    if (action.elementId === 'unFavorite') await this.apiUtils.unFavorite(mediaItems);
   }
 }

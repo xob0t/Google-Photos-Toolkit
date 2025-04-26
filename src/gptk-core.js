@@ -61,7 +61,7 @@ export default class Core {
       albums: async () => {
         if (!filter.albumsInclude) {
           log('No target album!', 'error');
-          throw new Error('no target album!');
+          throw new Error('no target album');
         }
         const albumMediaKeys = Array.isArray(filter.albumsInclude) ? filter.albumsInclude : [filter.albumsInclude];
         const albumItems = await Promise.all(
@@ -352,7 +352,7 @@ export default class Core {
     try {
       const startTime = new Date();
       const mediaItems = await this.getAndFilterMedia(filter, source, apiSettings);
-      if (!mediaItems?.length) log('No items to process.');
+      if (!mediaItems?.length) log('No items to process');
       if (!this.isProcessRunning) return;
       else {
         log(`Items to process: ${mediaItems?.length}`);

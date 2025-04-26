@@ -359,6 +359,6 @@ export async function filterSimilar(core, mediaItems, filter) {
   // Flatten the groups into a single array of items
   const flattenedGroups = groups.flat();
 
-  log(`Found ${flattenedGroups.length} similar items across ${groups.length} groups.`);
+  log(`Found ${flattenedGroups.length} similar items across ${groups.length} groups`);
   return flattenedGroups;
 }

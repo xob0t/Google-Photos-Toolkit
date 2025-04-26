@@ -13,7 +13,7 @@ export default function getFromStorage(key) {
       return null;
     }
   } else {
-    console.log('Sorry, your browser does not support localStorage.');
+    console.log('Sorry, your browser does not support localStorage');
     return null;
   }
 }

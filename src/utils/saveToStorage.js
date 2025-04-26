@@ -7,6 +7,6 @@ export default function saveToStorage(key, value) {
     localStorage.setItem(windowGlobalData.account, JSON.stringify(userStorage));
     console.log('Data saved to localStorage:', key);
   } else {
-    console.log('Sorry, your browser does not support localStorage.');
+    console.log('Sorry, your browser does not support localStorage');
   }
 }

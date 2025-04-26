@@ -128,7 +128,7 @@ export default class ApiUtils {
     mediaItems = mediaItems.filter((item) => item?.isArchived !== true);
     const dedupKeyArray = mediaItems.map((item) => item.dedupKey);
     if (!mediaItems) {
-      log('All target items are already archived!');
+      log('All target items are already archived');
       return;
     }
     await this.executeWithConcurrency(this.api.setArchive, this.operationSize, dedupKeyArray, true);
@@ -139,7 +139,7 @@ export default class ApiUtils {
     mediaItems = mediaItems.filter((item) => item?.isArchived !== false);
     const dedupKeyArray = mediaItems.map((item) => item.dedupKey);
     if (!mediaItems) {
-      log('All target items are not archived!');
+      log('All target items are not archived');
       return;
     }
     await this.executeWithConcurrency(this.api.setArchive, this.operationSize, dedupKeyArray, false);
@@ -149,7 +149,7 @@ export default class ApiUtils {
     log(`Setting ${mediaItems.length} items as favorite`);
     mediaItems = mediaItems.filter((item) => item?.isFavorite !== true);
     if (!mediaItems) {
-      log('All target items are already favorite!');
+      log('All target items are already favorite');
       return;
     }
     const dedupKeyArray = mediaItems.map((item) => item.dedupKey);
@@ -160,7 +160,7 @@ export default class ApiUtils {
     log(`Removing ${mediaItems.length} items from favorites`);
     mediaItems = mediaItems.filter((item) => item?.isFavorite !== false);
     if (!mediaItems) {
-      log('All target items are not favorite!');
+      log('All target items are not favorite');
       return;
     }
     const dedupKeyArray = mediaItems.map((item) => item.dedupKey);

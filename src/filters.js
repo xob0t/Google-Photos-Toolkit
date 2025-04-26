@@ -140,7 +140,7 @@ async function processBatch(items, processFn, batchSize = 5, core) {
     );
     results.push(...batchResults.filter(Boolean));
     // Yield to UI thread after each batch
-    await defer(() => { });
+    await defer(() => {});
   }
   return results;
 }
@@ -166,7 +166,7 @@ async function generateImageHash(hashSize, blob, core) {
   }
 
   // Yield to UI thread after image loads
-  await defer(() => { });
+  await defer(() => {});
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -259,7 +259,7 @@ async function groupSimilarImages(imageHashes, similarityThreshold, hashSize = 8
     }
 
     // Yield to UI thread after each batch
-    await defer(() => { });
+    await defer(() => {});
   }
 
   return groups.filter((group) => group.length > 1);

@@ -54,7 +54,7 @@ This example groups all space-consuming media in one album.
 
 Select all albums in the `Exclude albums` filter, then use appropriate action.
 
-### Identifying dublicates/similar images
+### Identifying duplicates/similar images
 
 Use `Similarity` filter with action `Add to new album`
 Media with similar thumbnails will be added to the album.

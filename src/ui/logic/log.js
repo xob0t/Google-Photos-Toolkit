@@ -11,6 +11,7 @@ export default function log(logMessage, type = null) {
   logDiv.textContent = `[${timestamp}] ${logMessage}`;
 
   if (type) logDiv.classList.add(type);
+
   console.log(`${logPrefix} [${timestamp}] ${logMessage}`);
 
   // Append the log message to the log container

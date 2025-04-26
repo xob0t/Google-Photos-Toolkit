@@ -268,52 +268,31 @@ async function groupSimilarImages(imageHashes, similarityThreshold, hashSize = 8
 // Fetch image blobs with concurrency control
 async function fetchImageBlobs(mediaItems, maxConcurrency, imageHeight, core) {
   const fetchWithLimit = async (item, retries = 3) => {
-    if (!core.isProcessRunning) return null;
-
-    try {
-      // Ensure proper URL construction
-      const baseUrl = item.thumb || '';
-      if (!baseUrl) {
-        log(`Missing thumbnail URL for item: ${item.mediaKey}`, 'error');
-        return null;
-      }
-
-      // Add height parameter and ensure no double '='
-      const url = baseUrl.includes('=') ?
-        baseUrl.replace(/=([^=]*)$/, `=h${imageHeight}`) :
-        `${baseUrl}=h${imageHeight}`;
-
-      // Set up timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-      const response = await fetch(url, {
-        cache: 'force-cache',
-        credentials: 'include',
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
+    for (let attempt = 1; attempt <= retries; attempt++) {
       if (!core.isProcessRunning) return null;
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-      const blob = await response.blob();
-      return { ...item, blob };
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        log(`Timeout fetching image ${item.mediaKey}`, 'error');
-      } else {
-        log(`Error fetching image ${item.mediaKey}: ${error.message}`, 'error');
-      }
+      const url = item.thumb + `=h${imageHeight}`; // Resize image
+      try {
+        const response = await fetch(url, {
+          cache: 'force-cache',
+          credentials: 'include',
+          signal: AbortSignal.timeout(10000), // fetch timeout 10s
+        });
 
-      // Retry logic
-      if (retries > 0 && core.isProcessRunning) {
-        log(`Retrying fetch for ${item.mediaKey} (${retries} attempts remaining)`);
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
-        return fetchWithLimit(item, retries - 1);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (!core.isProcessRunning) return null;
+
+        const blob = await response.blob();
+        return { ...item, blob };
+      } catch (error) {
+        if (attempt < retries) {
+          log(`Attempt ${attempt} failed for ${item.mediaKey} (${error.message}). Retrying...`, 'error');
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt)); // backoff
+        } else {
+          log(`Failed to fetch thumb ${item.mediaKey} after ${retries} attempts. Final error: ${error.message}`, 'error');
+          return null;
+        }
       }
-      return null;
     }
   };
 

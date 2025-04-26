@@ -65,7 +65,7 @@ As simple as selecting "Library" source, clicking `Move to trash`, then clearing
 
 ### Use GPTK's api
 
-GPTK exports it's api class globally so you can use it in your browser's console.
+GPTK exports it's api class globally so you can use it in your browser's console.  
 It's much more powerful than the UI!
 
 Example usage.
@@ -92,7 +92,7 @@ console.log("DONE");
 
 ## Contributions welcome
 
-If you want to learn more about how GP's api works, read [https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c](https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c)
+If you want to learn more about how GP's api works, read [https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c](https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c)  
 I just found this post, after doing all the work from zero :D
 
 Also, i've made a userscript that parses all responses and logs them to console in a more readable way, you can find it here - [https://github.com/xob0t/Google-Photos-Toolkit/tree/main/tools](https://github.com/xob0t/Google-Photos-Toolkit/tree/main/tools)
@@ -116,8 +116,8 @@ Borrowed some code and UI inspiration from [undiscord](https://github.com/victor
 
 If GPTK is useful to you, please consider supporting the project:
 
-BTC `12znTocLytrrYhQT4AJVeJdR8KTULWbKb7`
-BTC Cash `qq7w48d6s3rddgxshl6ae48k7c5jyck76crvppqenn`
-DOGE `DQjBzT2qMuXkLMawUXG7umTf3k9VeT4Y6K`
-Etherium `0xcfe559D9F6056F82a6CFdEDA51c00132035955c8`
+BTC `12znTocLytrrYhQT4AJVeJdR8KTULWbKb7`  
+BTC Cash `qq7w48d6s3rddgxshl6ae48k7c5jyck76crvppqenn`  
+DOGE `DQjBzT2qMuXkLMawUXG7umTf3k9VeT4Y6K`  
+Etherium `0xcfe559D9F6056F82a6CFdEDA51c00132035955c8`  
 Litecoin `ltc1qcgc873py5k28qm85sk5d53yfwzle4cztmvkh6l`

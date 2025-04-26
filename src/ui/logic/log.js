@@ -10,14 +10,7 @@ export default function log(logMessage, type = null) {
   const logDiv = document.createElement('div');
   logDiv.textContent = `[${timestamp}] ${logMessage}`;
 
-  // Only add class if it's a valid class name (no spaces)
-  if (type && !type.includes(' ')) {
-    logDiv.classList.add(type);
-  } else if (type) {
-    // If type contains spaces, use 'error' as the class and keep the full message in the text
-    logDiv.classList.add('error');
-    logDiv.textContent = `[${timestamp}] Error: ${logMessage}`;
-  }
+  if (type) logDiv.classList.add(type);
 
   console.log(`${logPrefix} [${timestamp}] ${logMessage}`);
 

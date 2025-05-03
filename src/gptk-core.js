@@ -241,6 +241,7 @@ export default class Core {
         nextPageId = mediaPage?.nextPageId;
         if (!mediaPage) break;
         nextPageTimestamp = mediaPage.lastItemTimestamp - 1;
+        if (!mediaPage.items || mediaPage?.items?.length === 0) continue;
         mediaPage.items = mediaPage.items.filter((item) => item.timestamp >= lowerBoundaryDate && item.timestamp <= higherBoundaryDate);
         if (!mediaPage.items || mediaPage?.items?.length === 0) continue;
         log(`Found ${mediaPage?.items?.length} items`);
@@ -254,6 +255,7 @@ export default class Core {
         nextPageId = mediaPage?.nextPageId;
         if (!mediaPage) break;
         nextPageTimestamp = mediaPage.lastItemTimestamp - 1;
+        if (!mediaPage.items || mediaPage?.items?.length === 0) continue;
         mediaPage.items = mediaPage.items.filter((item) => item.timestamp < lowerBoundaryDate || item.timestamp > higherBoundaryDate);
 
         if (nextPageTimestamp > lowerBoundaryDate && nextPageTimestamp < higherBoundaryDate) {
@@ -303,6 +305,7 @@ export default class Core {
       const lastTimeStamp = mediaPage.items.at(-1).creationTimestamp;
       nextPageId = mediaPage?.nextPageId;
       if (!mediaPage) break;
+      if (!mediaPage.items || mediaPage?.items?.length === 0) continue;
       if (filter.intervalType === 'include') {
         mediaPage.items = mediaPage.items.filter(
           (item) => item.creationTimestamp >= lowerBoundaryDate && item.creationTimestamp <= higherBoundaryDate

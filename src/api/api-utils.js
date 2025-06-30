@@ -8,7 +8,7 @@ export default class ApiUtils {
     this.api = new Api();
     this.executeWithConcurrency = this.executeWithConcurrency.bind(this);
     this.getAllItems = this.getAllItems.bind(this);
-    this.setOneDescriptionToOther = this.setOneDescriptionToOther.bind(this);
+    this.copyOneDescriptionFromOther = this.copyOneDescriptionFromOther.bind(this);
     this.core = core;
     let { maxConcurrentSingleApiReq, maxConcurrentBatchApiReq, operationSize, infoSize, lockedFolderOpSize } =
       settings || apiSettingsDefault;
@@ -44,6 +44,8 @@ export default class ApiUtils {
           results.push(...result);
           if (!Array.isArray(result)) {
             log(`Error executing action ${apiMethod.name}`, 'error');
+          } else if (operationSize == 1 && results.length % 100 == 0) {
+            log(`Processed ${results.length} items`);
           }
         })
         .catch((error) => {
@@ -221,7 +223,7 @@ export default class ApiUtils {
     return mediaInfoData;
   }
 
-  async setOneDescriptionToOther(mediaItems) {
+  async copyOneDescriptionFromOther(mediaItems) {
     try {
       const item = mediaItems[0];
       const itemInfoExt = await this.api.getItemInfoExt(item.mediaKey);
@@ -239,19 +241,19 @@ export default class ApiUtils {
       }
       return [false];
     } catch (error) {
-      console.error('Error in setOneDescriptionToOther:', error);
+      console.error('Error in copyOneDescriptionFromOther:', error);
       throw error;
     }
   }
 
-  async setDescriptionToOther(mediaItems) {
+  async copyDescriptionFromOther(mediaItems) {
     // Note that api.getBatchMediaInfo cannot be used to optimize this process
     // since that method returns a non-empty descriptionFull field if either
     // the actual "descriptionFull" field or the "other" field is set.  Only
     // api.getItemInfoExt distinguishes between the two.
-    log(`Setting up to ${mediaItems.length} empty descriptions from 'Other' field`);
-    const results = await this.executeWithConcurrency(this.setOneDescriptionToOther, null, 1, mediaItems);
+    log(`Copying up to ${mediaItems.length} descriptions from 'Other' field`);
+    const results = await this.executeWithConcurrency(this.copyOneDescriptionFromOther, 1, mediaItems);
     const count = results.filter(Boolean).length;
-    log(`Set ${count} descriptions from "Other" field`);
+    log(`Copied ${count} descriptions from 'Other' field`);
   }
 }

@@ -23,6 +23,7 @@ const actions = [
   { elementId: 'unFavorite' },
   { elementId: 'lock' },
   { elementId: 'unLock' },
+  { elementId: 'setDescToOther' },
 ];
 
 function userConfirmation(action, filter, source) {

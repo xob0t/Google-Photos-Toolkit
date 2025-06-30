@@ -8,10 +8,13 @@ export default class ApiUtils {
     this.api = new Api();
     this.executeWithConcurrency = this.executeWithConcurrency.bind(this);
     this.getAllItems = this.getAllItems.bind(this);
+    this.setOneDescriptionToOther = this.setOneDescriptionToOther.bind(this);
     this.core = core;
-    let { maxConcurrentApiReq, operationSize, infoSize, lockedFolderOpSize } = settings || apiSettingsDefault;
+    let { maxConcurrentSingleApiReq, maxConcurrentBatchApiReq, operationSize, infoSize, lockedFolderOpSize } =
+      settings || apiSettingsDefault;
 
-    this.maxConcurrentApiReq = parseInt(maxConcurrentApiReq);
+    this.maxConcurrentSingleApiReq = parseInt(maxConcurrentSingleApiReq);
+    this.maxConcurrentBatchApiReq = parseInt(maxConcurrentBatchApiReq);
     this.operationSize = parseInt(operationSize);
     this.lockedFolderOpSize = parseInt(lockedFolderOpSize);
     this.infoSize = parseInt(infoSize);
@@ -21,15 +24,17 @@ export default class ApiUtils {
     const promisePool = new Set();
     const results = [];
     const chunkedItems = splitArrayIntoChunks(itemsArray, operationSize);
+    const maxConcurrentApiReq =
+      operationSize == 1 ? this.maxConcurrentSingleApiReq : this.maxConcurrentBatchApiReq;
 
     for (const chunk of chunkedItems) {
       if (!this.core.isProcessRunning) return;
 
-      while (promisePool.size >= this.maxConcurrentApiReq) {
+      while (promisePool.size >= maxConcurrentApiReq) {
         await Promise.race(promisePool);
       }
 
-      log(`Processing ${chunk.length} items`);
+      if (operationSize != 1) log(`Processing ${chunk.length} items`);
 
       const promise = apiMethod.call(this.api, chunk, ...args);
       promisePool.add(promise);
@@ -214,5 +219,39 @@ export default class ApiUtils {
     const mediaKeyArray = mediaItems.map((item) => item.mediaKey);
     const mediaInfoData = await this.executeWithConcurrency(this.api.getBatchMediaInfo, this.infoSize, mediaKeyArray);
     return mediaInfoData;
+  }
+
+  async setOneDescriptionToOther(mediaItems) {
+    try {
+      const item = mediaItems[0];
+      const itemInfoExt = await this.api.getItemInfoExt(item.mediaKey);
+      if (!itemInfoExt.descriptionFull && itemInfoExt.other) {
+        // The Google Photos API doesn't allow the description to be identical
+        // to the "Other" field.  Adding leading or trailing spaces doesn't
+        // work - if you try this using the web app, it simply deletes the
+        // description, and if you set it using the API directly then it
+        // ignores the description at display time.  However it *does* work to
+        // add a zero-width space (U+200B) since that character is not
+        // considered to be whitespace.
+        const description = itemInfoExt.other + "\u200B";
+        await this.api.setItemDescription(item.dedupKey, description);
+        return [true];
+      }
+      return [false];
+    } catch (error) {
+      console.error('Error in setOneDescriptionToOther:', error);
+      throw error;
+    }
+  }
+
+  async setDescriptionToOther(mediaItems) {
+    // Note that api.getBatchMediaInfo cannot be used to optimize this process
+    // since that method returns a non-empty descriptionFull field if either
+    // the actual "descriptionFull" field or the "other" field is set.  Only
+    // api.getItemInfoExt distinguishes between the two.
+    log(`Setting up to ${mediaItems.length} empty descriptions from 'Other' field`);
+    const results = await this.executeWithConcurrency(this.setOneDescriptionToOther, null, 1, mediaItems);
+    const count = results.filter(Boolean).length;
+    log(`Set ${count} descriptions from "Other" field`);
   }
 }

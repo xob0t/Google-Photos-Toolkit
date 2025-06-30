@@ -46,6 +46,7 @@ export function updateUI() {
     document.getElementById('toTrash').disabled = isActiveTab('trash');
     document.getElementById('lock').disabled = isActiveTab('lockedFolder');
     document.getElementById('unLock').disabled = !isActiveTab('lockedFolder');
+    document.getElementById('setDescToOther').disabled = isActiveTab('trash');
   }
 
   function updateFilterVisibility() {

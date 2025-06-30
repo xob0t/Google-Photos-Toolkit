@@ -165,6 +165,12 @@
         background-color: var(--color-accent-dark);
     }
 
+    option:checked {
+        background-color: #007bff; /* A distinct blue */
+        color: white;
+        font-weight: bold;
+    }
+    
     hr {
         border: none;
         margin: 0px;
@@ -310,7 +316,8 @@
         }
 
         fieldset {
-            display: flex;
+            /* display: flex; */
+            /* (causes inconsistent rendering of the album selection fieldsets) */
             flex-direction: column;
             margin: 0 20px;
             padding-left: 20px;

@@ -107,11 +107,13 @@
 
     .refresh-albums {
         cursor: pointer;
-        fill: var(--color-surface-400);
+        fill: var(--main-text-color);
+        background-color: var(--color-surface-200);
     }
 
     .refresh-albums:hover {
-        fill: var(--color-surface-600);
+        fill: var(--main-text-color-hover);
+        background-color: var(--color-surface-300);
     }
 
     .dateForm {

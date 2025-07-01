@@ -1,7 +1,7 @@
 import Api from './api.js';
 import log from '../ui/logic/log.js';
 import splitArrayIntoChunks from '../utils/splitArrayIntoChunks.js';
-import { apiSettingsDefault } from './api-utils-deafault-presets.js';
+import { apiSettingsDefault } from './api-utils-default-presets.js';
 
 export default class ApiUtils {
   constructor(core = null, settings) {

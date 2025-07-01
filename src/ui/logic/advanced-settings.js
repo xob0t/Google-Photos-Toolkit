@@ -1,7 +1,7 @@
 import saveToStorage from '../../utils/saveToStorage.js';
 import getFromStorage from '../../utils/getFromStorage.js';
 import log from './log.js';
-import { apiSettingsDefault } from '../../api/api-utils-deafault-presets.js';
+import { apiSettingsDefault } from '../../api/api-utils-default-presets.js';
 import getFormData from './utils/getFormData.js';
 
 export default function advancedSettingsListenersSetUp() {

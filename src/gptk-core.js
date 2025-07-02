@@ -392,5 +392,6 @@ export default class Core {
     if (action.elementId === 'unArchive') await this.apiUtils.unArchive(mediaItems);
     if (action.elementId === 'toFavorite') await this.apiUtils.setAsFavorite(mediaItems);
     if (action.elementId === 'unFavorite') await this.apiUtils.unFavorite(mediaItems);
+    if (action.elementId === 'copyDescFromOther') await this.apiUtils.copyDescriptionFromOther(mediaItems);
   }
 }

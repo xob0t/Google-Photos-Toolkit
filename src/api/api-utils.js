@@ -224,22 +224,29 @@ export default class ApiUtils {
   }
 
   async copyOneDescriptionFromOther(mediaItems) {
+    // This method returns an array containing a single boolean indicating
+    // whether the description was copied.  This lets us do two things: (1)
+    // log progress as we go along (since this operation is slow compared to
+    // batch operations), and (2) report to the user how many descriptions
+    // were actually copied (since sometimes they aren't, see below).
     try {
       const item = mediaItems[0];
       const itemInfoExt = await this.api.getItemInfoExt(item.mediaKey);
-      if (!itemInfoExt.descriptionFull && itemInfoExt.other) {
-        // The Google Photos API doesn't allow the description to be identical
-        // to the "Other" field.  Adding leading or trailing spaces doesn't
-        // work - if you try this using the web app, it simply deletes the
-        // description, and if you set it using the API directly then it
-        // ignores the description at display time.  However it *does* work to
-        // add a zero-width space (U+200B) since that character is not
-        // considered to be whitespace.
-        const description = itemInfoExt.other + "\u200B";
-        await this.api.setItemDescription(item.dedupKey, description);
-        return [true];
+      // To be safe, we only copy the description if the Google Photos
+      // description field is empty and the 'Other' description is non-empty.
+      if (itemInfoExt.descriptionFull || !itemInfoExt.other) {
+        return [false];
       }
-      return [false];
+      // The Google Photos API doesn't allow the description to be identical
+      // to the "Other" field.  Adding leading or trailing spaces doesn't
+      // work - if you try this using the web app, it simply deletes the
+      // description, and if you set it using the API directly then it
+      // ignores the description at display time.  However it *does* work to
+      // add a zero-width space (U+200B) since that character is not
+      // considered to be whitespace.
+      const description = itemInfoExt.other + "\u200B";
+      await this.api.setItemDescription(item.dedupKey, description);
+      return [true];
     } catch (error) {
       console.error('Error in copyOneDescriptionFromOther:', error);
       throw error;
@@ -253,7 +260,6 @@ export default class ApiUtils {
     // api.getItemInfoExt distinguishes between the two.
     log(`Copying up to ${mediaItems.length} descriptions from 'Other' field`);
     const results = await this.executeWithConcurrency(this.copyOneDescriptionFromOther, 1, mediaItems);
-    const count = results.filter(Boolean).length;
-    log(`Copied ${count} descriptions from 'Other' field`);
+    log(`Copied ${results.filter(Boolean).length} descriptions from 'Other' field`);
   }
 }

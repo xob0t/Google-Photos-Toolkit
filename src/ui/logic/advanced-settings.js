@@ -20,13 +20,15 @@ export default function advancedSettingsListenersSetUp() {
     saveToStorage('apiSettings', apiSettingsDefault);
 
     // Update the form with default values
-    maxConcurrentApiReqInput.value = apiSettingsDefault.maxConcurrentApiReq;
+    maxConcurrentSingleApiReqInput.value = apiSettingsDefault.maxConcurrentSingleApiReq;
+    maxConcurrentBatchApiReqInput.value = apiSettingsDefault.maxConcurrentBatchApiReq;
     operationSizeInput.value = apiSettingsDefault.operationSize;
     lockedFolderOpSizeInput.value = apiSettingsDefault.lockedFolderOpSize;
     infoSizeInput.value = apiSettingsDefault.infoSize;
     log('Default api settings restored');
   }
-  const maxConcurrentApiReqInput = document.querySelector('input[name="maxConcurrentApiReq"]');
+  const maxConcurrentSingleApiReqInput = document.querySelector('input[name="maxConcurrentSingleApiReq"]');
+  const maxConcurrentBatchApiReqInput = document.querySelector('input[name="maxConcurrentBatchApiReq"]');
   const operationSizeInput = document.querySelector('input[name="operationSize"]');
   const lockedFolderOpSizeInput = document.querySelector('input[name="lockedFolderOpSize"]');
   const infoSizeInput = document.querySelector('input[name="infoSize"]');
@@ -35,7 +37,10 @@ export default function advancedSettingsListenersSetUp() {
 
   const restoredSettings = getFromStorage('apiSettings');
 
-  maxConcurrentApiReqInput.value = restoredSettings?.maxConcurrentApiReq || apiSettingsDefault.maxConcurrentApiReq;
+  maxConcurrentSingleApiReqInput.value =
+    restoredSettings?.maxConcurrentSingleApiReq || apiSettingsDefault.maxConcurrentSingleApiReq;
+  maxConcurrentBatchApiReqInput.value =
+    restoredSettings?.maxConcurrentBatchApiReq || apiSettingsDefault.maxConcurrentBatchApiReq;
   operationSizeInput.value = restoredSettings?.operationSize || apiSettingsDefault.operationSize;
   lockedFolderOpSizeInput.value = restoredSettings?.lockedFolderOpSize || apiSettingsDefault.lockedFolderOpSize;
   infoSizeInput.value = restoredSettings?.infoSize || apiSettingsDefault.infoSize;

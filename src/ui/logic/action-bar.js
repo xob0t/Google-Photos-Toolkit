@@ -23,6 +23,7 @@ const actions = [
   { elementId: 'unFavorite' },
   { elementId: 'lock' },
   { elementId: 'unLock' },
+  { elementId: 'copyDescFromOther' },
 ];
 
 function userConfirmation(action, filter, source) {

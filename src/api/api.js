@@ -176,18 +176,39 @@ export default class Api {
     }
   }
 
-  async moveItemsToTrash(dedupKeyArray) {
+  async moveItemsToTrash(dedupKeyArray, mediaKeyArray = null) {
     // type assertion
     if (dedupKeyArray) assertInstance(dedupKeyArray, Array);
 
     const rpcid = 'XwAOJf';
-    const requestData = [null, 1, dedupKeyArray, 3];
+    const requestData = [null, 1, dedupKeyArray, 3, null, mediaKeyArray];
     // note: It seems that '3' here corresponds to items' location
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
       return response[0];
     } catch (error) {
       console.error('Error in moveItemsToTrash:', error);
+      throw error;
+    }
+  }
+
+  async moveItemsToTrashBatch(itemPairs) {
+    // itemPairs is an array of {dedupKey, mediaKey} objects
+    // type assertion
+    if (itemPairs) assertInstance(itemPairs, Array);
+
+    const dedupKeyArray = itemPairs.map(item => item.dedupKey);
+    const mediaKeyArray = itemPairs.map(item => item.mediaKey);
+
+    const rpcid = 'XwAOJf';
+    const requestData = [null, 1, dedupKeyArray, 3, null, mediaKeyArray];
+    // note: It seems that '3' here corresponds to items' location
+    // Google now requires mediaKeys as 5th parameter (after null)
+    try {
+      const response = await this.makeApiRequest(rpcid, requestData);
+      return response[0];
+    } catch (error) {
+      console.error('Error in moveItemsToTrashBatch:', error);
       throw error;
     }
   }

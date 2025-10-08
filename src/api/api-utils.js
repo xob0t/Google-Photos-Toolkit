@@ -120,8 +120,9 @@ export default class ApiUtils {
 
   async moveToTrash(mediaItems) {
     log(`Moving ${mediaItems.length} items to trash`);
-    const dedupKeyArray = mediaItems.map((item) => item.dedupKey);
-    await this.executeWithConcurrency(this.api.moveItemsToTrash, this.operationSize, dedupKeyArray);
+    // Pass full mediaItems so we can extract both dedupKey and mediaKey in the API call
+    const itemPairs = mediaItems.map((item) => ({ dedupKey: item.dedupKey, mediaKey: item.mediaKey }));
+    await this.executeWithConcurrency(this.api.moveItemsToTrashBatch, this.operationSize, itemPairs);
   }
 
   async restoreFromTrash(trashItems) {

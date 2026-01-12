@@ -35,10 +35,38 @@ export default class Api {
         credentials: 'include',
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const responseBody = await response.text();
       const jsonLines = responseBody.split('\n').filter((line) => line.includes('wrb.fr'));
-      let parsedData = JSON.parse(jsonLines[0]);
-      return JSON.parse(parsedData[0][2]);
+
+      if (!jsonLines || jsonLines.length === 0) {
+        throw new Error('Invalid API response: no valid data lines found in response');
+      }
+
+      let parsedData;
+      try {
+        parsedData = JSON.parse(jsonLines[0]);
+      } catch (parseError) {
+        throw new Error(`Failed to parse API response: ${parseError.message}`);
+      }
+
+      if (!parsedData || !Array.isArray(parsedData) || !parsedData[0]) {
+        throw new Error('Unexpected API response structure');
+      }
+
+      const innerData = parsedData[0][2];
+      if (innerData === null || innerData === undefined) {
+        throw new Error('API returned empty data (possible rate limiting or quota exceeded)');
+      }
+
+      try {
+        return JSON.parse(innerData);
+      } catch (parseError) {
+        throw new Error(`Failed to parse inner API data: ${parseError.message}`);
+      }
     } catch (error) {
       console.error(`Error in ${rpcid} request:`, error);
       throw error;
@@ -185,7 +213,10 @@ export default class Api {
     // note: It seems that '3' here corresponds to items' location
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
-      return response[0];
+      if (!response || !Array.isArray(response)) {
+        throw new Error('Invalid response from moveItemsToTrash');
+      }
+      return response[0] || [];
     } catch (error) {
       console.error('Error in moveItemsToTrash:', error);
       throw error;
@@ -200,7 +231,10 @@ export default class Api {
     const requestData = [null, 3, dedupKeyArray, 2];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
-      return response[0];
+      if (!response || !Array.isArray(response)) {
+        throw new Error('Invalid response from restoreFromTrash');
+      }
+      return response[0] || [];
     } catch (error) {
       console.error('Error in restoreFromTrash:', error);
       throw error;
@@ -290,6 +324,9 @@ export default class Api {
     let requestData = [albumName, null, 2];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
+      if (!response || !Array.isArray(response) || !response[0] || !Array.isArray(response[0])) {
+        throw new Error('Invalid response from createAlbum');
+      }
       return response[0][0];
     } catch (error) {
       console.error('Error in createAlbum:', error);
@@ -469,6 +506,9 @@ export default class Api {
     const requestData = [mediaKeyArray, null, authKey];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
+      if (!response || !Array.isArray(response)) {
+        throw new Error('Invalid response from getDownloadUrl');
+      }
       return response[0];
     } catch (error) {
       console.error('Error in getDownloadUrl:', error);
@@ -487,6 +527,9 @@ export default class Api {
     const requestData = [mediaKeyArray];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
+      if (!response || !Array.isArray(response)) {
+        throw new Error('Invalid response from getDownloadToken');
+      }
       return response[0];
     } catch (error) {
       console.error('Error in getDownloadToken:', error);
@@ -710,6 +753,9 @@ export default class Api {
     const requestData = [[[mediaKeyArray], [[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, [], null, null, null, null, null, null, null, null, null, null, []]]]];
     try {
       let response = await this.makeApiRequest(rpcid, requestData);
+      if (!response || !Array.isArray(response) || !response[0] || !Array.isArray(response[0])) {
+        throw new Error('Invalid response from getBatchMediaInfo');
+      }
       response = response[0][1];
       if (parseResponse) return parser(response, rpcid);
       return response;

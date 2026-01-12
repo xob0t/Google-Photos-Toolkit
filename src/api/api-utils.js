@@ -41,15 +41,19 @@ export default class ApiUtils {
 
       promise
         .then((result) => {
-          results.push(...result);
-          if (!Array.isArray(result)) {
-            log(`Error executing action ${apiMethod.name}`, 'error');
-          } else if (operationSize == 1 && results.length % 100 == 0) {
-            log(`Processed ${results.length} items`);
+          if (result === null || result === undefined) {
+            log(`${apiMethod.name} returned no data (possible API error)`, 'error');
+          } else if (!Array.isArray(result)) {
+            log(`Error executing action ${apiMethod.name}: unexpected result type`, 'error');
+          } else {
+            results.push(...result);
+            if (operationSize == 1 && results.length % 100 == 0) {
+              log(`Processed ${results.length} items`);
+            }
           }
         })
         .catch((error) => {
-          log(`${apiMethod.name} Api error ${error}`, 'error');
+          log(`${apiMethod.name} Api error: ${error.message || error}`, 'error');
         })
         .finally(() => {
           promisePool.delete(promise);
@@ -63,13 +67,19 @@ export default class ApiUtils {
     const items = [];
     let nextPageId = null;
     do {
-      if (!this.core.isProcessRunning) return;
-      const page = await apiMethod.call(this.api, ...args, nextPageId);
-      if (page?.items?.length > 0) {
-        log(`Found ${page.items.length} items`);
-        items.push(...page.items);
+      if (!this.core.isProcessRunning) return items;
+      try {
+        const page = await apiMethod.call(this.api, ...args, nextPageId);
+        if (page?.items?.length > 0) {
+          log(`Found ${page.items.length} items`);
+          items.push(...page.items);
+        }
+        nextPageId = page?.nextPageId;
+      } catch (error) {
+        log(`Error fetching items: ${error.message || error}`, 'error');
+        // Return what we have so far instead of failing completely
+        break;
       }
-      nextPageId = page?.nextPageId;
     } while (nextPageId);
     return items;
   }
@@ -233,7 +243,7 @@ export default class ApiUtils {
       const item = mediaItems[0];
       const itemInfoExt = await this.api.getItemInfoExt(item.mediaKey);
       // To be safe, we only copy the description if the Google Photos
-      // description field is empty and the 'Other' description is non-empty.
+      // description field is empty and the "Other" description is non-empty.
       if (itemInfoExt.descriptionFull || !itemInfoExt.other) {
         return [false];
       }
@@ -258,7 +268,7 @@ export default class ApiUtils {
     // since that method returns a non-empty descriptionFull field if either
     // the actual "descriptionFull" field or the "other" field is set.  Only
     // api.getItemInfoExt distinguishes between the two.
-    log(`Copying up to ${mediaItems.length} descriptions from 'Other' field`);
+    log(`Copying up to ${mediaItems.length} descriptions from "Other" field`);
     const results = await this.executeWithConcurrency(this.copyOneDescriptionFromOther, 1, mediaItems);
     log(`Copied ${results.filter(Boolean).length} descriptions from 'Other' field`);
   }

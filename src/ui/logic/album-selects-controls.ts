@@ -44,7 +44,6 @@ function selectAllAlbums(this: HTMLElement): void {
 }
 
 function selectSharedAlbums(this: HTMLElement): void {
-  updateUI();
   const parent = this.parentNode?.parentNode as HTMLElement | null;
   const closestSelect = parent?.querySelector('select') as HTMLSelectElement | null;
   if (closestSelect) {

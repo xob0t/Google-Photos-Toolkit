@@ -20,20 +20,6 @@ export function isPatternValid(pattern: string): true | Error {
   }
 }
 
-export function assertType(variable: unknown, expectedType: string): void {
-  const actualType = typeof variable;
-  if (actualType !== expectedType) {
-    throw new TypeError(`Expected type ${expectedType} but got ${actualType}`);
-  }
-}
-
-export function assertInstance(variable: unknown, expectedClass: new (...args: unknown[]) => unknown): void {
-  if (!(variable instanceof expectedClass)) {
-    const actualClass = (variable as object)?.constructor?.name ?? typeof variable;
-    throw new TypeError(`Expected instance of ${expectedClass.name} but got ${actualClass}`);
-  }
-}
-
 /** Defer execution to prevent UI blocking */
 export function defer<T>(fn: () => T): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(fn()), 0));

@@ -5,8 +5,5 @@ export default function saveToStorage(key: string, value: unknown): void {
     const userStorage = JSON.parse(localStorage.getItem(windowGlobalData.account) ?? '{}') as Record<string, unknown>;
     userStorage[key] = value;
     localStorage.setItem(windowGlobalData.account, JSON.stringify(userStorage));
-    console.log('Data saved to localStorage:', key);
-  } else {
-    console.log('Sorry, your browser does not support localStorage');
   }
 }

@@ -306,18 +306,15 @@ export function hammingDistance(hash1: bigint | null, hash2: bigint | null): num
   return distance;
 }
 
-interface ImageHashEntry {
-  hash: bigint;
-  [key: string]: unknown;
-}
+type HashedMediaItem = MediaItem & { hash: bigint };
 
 async function groupSimilarImages(
-  imageHashes: ImageHashEntry[],
+  imageHashes: HashedMediaItem[],
   similarityThreshold: number,
   hashSize = 8,
   core: Core
-): Promise<ImageHashEntry[][]> {
-  const groups: ImageHashEntry[][] = [];
+): Promise<HashedMediaItem[][]> {
+  const groups: HashedMediaItem[][] = [];
 
   // Process in small batches to prevent UI blocking
   const batchSize = 10;
@@ -462,14 +459,14 @@ export async function filterSimilar(core: Core, mediaItems: MediaItem[], filter:
 
   log('Grouping similar images');
   const groups = await groupSimilarImages(
-    itemsWithHashes as ImageHashEntry[],
+    itemsWithHashes as HashedMediaItem[],
     similarityThreshold,
     hashSize,
     core
   );
 
   // Flatten the groups into a single array of items
-  const flattenedGroups = groups.flat() as unknown as MediaItem[];
+  const flattenedGroups: MediaItem[] = groups.flat();
 
   log(`Found ${flattenedGroups.length} similar items across ${groups.length} groups`);
   return flattenedGroups;

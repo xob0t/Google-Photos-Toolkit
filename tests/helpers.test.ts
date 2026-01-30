@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { timeToHHMMSS, isPatternValid, assertType, assertInstance, defer } from '../src/utils/helpers';
+import { timeToHHMMSS, isPatternValid, defer } from '../src/utils/helpers';
 
 describe('timeToHHMMSS', () => {
   it('formats zero milliseconds', () => {
@@ -54,43 +54,6 @@ describe('isPatternValid', () => {
   it('returns an Error for unbalanced parentheses', () => {
     const result = isPatternValid('(unclosed');
     expect(result).toBeInstanceOf(Error);
-  });
-});
-
-describe('assertType', () => {
-  it('does not throw for matching type', () => {
-    expect(() => assertType('hello', 'string')).not.toThrow();
-    expect(() => assertType(42, 'number')).not.toThrow();
-    expect(() => assertType(true, 'boolean')).not.toThrow();
-    expect(() => assertType(undefined, 'undefined')).not.toThrow();
-  });
-
-  it('throws TypeError for mismatching type', () => {
-    expect(() => assertType('hello', 'number')).toThrow(TypeError);
-    expect(() => assertType(42, 'string')).toThrow(TypeError);
-  });
-
-  it('includes expected and actual types in message', () => {
-    expect(() => assertType('hello', 'number')).toThrow('Expected type number but got string');
-  });
-});
-
-describe('assertInstance', () => {
-  it('does not throw for correct instance', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(() => assertInstance(new Date(), Date as any)).not.toThrow();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(() => assertInstance(new Error(), Error as any)).not.toThrow();
-  });
-
-  it('throws TypeError for wrong instance', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(() => assertInstance('hello', Date as any)).toThrow(TypeError);
-  });
-
-  it('includes class names in message', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(() => assertInstance('hello', Date as any)).toThrow('Expected instance of Date but got String');
   });
 });
 

@@ -31,7 +31,6 @@ export default function initUI(): void {
   window.addEventListener('beforeunload', function (e: BeforeUnloadEvent) {
     if (unsafeWindow.gptkCore.isProcessRunning) {
       e.preventDefault();
-      e.returnValue = '';
     }
   });
 }

@@ -119,14 +119,46 @@ export function filterFavorite(mediaItems: MediaItem[], filter: Filter): MediaIt
   return result;
 }
 
+// Coordinates from Google's API are in microdegrees (×10⁷).
+// Convert to decimal degrees for comparison.
+function toDecimalDegrees(microDeg: number): number {
+  // Values > 360 or < -360 are clearly microdegrees
+  return Math.abs(microDeg) > 360 ? microDeg / 1e7 : microDeg;
+}
+
 export function filterByLocation(mediaItems: MediaItem[], filter: Filter): MediaItem[] {
   log('Filtering by location');
   let result = mediaItems;
   if (filter.hasLocation === 'true') {
-    result = mediaItems.filter((item) => item.geoLocation?.coordinates?.length);
+    result = result.filter((item) => item.geoLocation?.coordinates?.length);
   } else if (filter.hasLocation === 'false') {
-    result = mediaItems.filter((item) => !item.geoLocation?.coordinates?.length);
+    result = result.filter((item) => !item.geoLocation?.coordinates?.length);
   }
+
+  // Bounding box filter
+  const south = parseFloat(filter.boundSouth ?? '');
+  const west = parseFloat(filter.boundWest ?? '');
+  const north = parseFloat(filter.boundNorth ?? '');
+  const east = parseFloat(filter.boundEast ?? '');
+  const hasBounds = !isNaN(south) && !isNaN(west) && !isNaN(north) && !isNaN(east);
+
+  if (hasBounds) {
+    log(`Filtering by bounding box: S${south} W${west} N${north} E${east}`);
+    result = result.filter((item) => {
+      const coords = item.geoLocation?.coordinates;
+      if (!coords?.length) return false;
+      const lat = toDecimalDegrees(coords[0]);
+      const lng = toDecimalDegrees(coords[1]);
+      if (lat < south || lat > north) return false;
+      // Handle boxes that cross the antimeridian (west > east)
+      if (west <= east) {
+        return lng >= west && lng <= east;
+      } else {
+        return lng >= west || lng <= east;
+      }
+    });
+  }
+
   log(`Item count after filtering: ${result.length}`);
   return result;
 }

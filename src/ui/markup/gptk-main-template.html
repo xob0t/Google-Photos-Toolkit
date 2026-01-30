@@ -240,7 +240,15 @@
           <label class="form-control"><input name="hasLocation" value="" type="radio" checked="checked"> Any</label>
           <label class="form-control"><input name="hasLocation" value="true" type="radio"> Has Location</label>
           <label class="form-control"><input name="hasLocation" value="false" type="radio"> No Location</label>
-        </div></fieldset></details>
+        </div></fieldset>
+        <fieldset>
+          <legend>Bounding Box (optional)</legend>
+          <span class="filter-note">Only items within this area are kept. Use decimal degrees (e.g. 48.85 for Paris).</span>
+          <legend>South Latitude</legend><div class="input-wrapper"><input name="boundSouth" type="number" placeholder="-90 to 90" step="any" min="-90" max="90"></div>
+          <legend>West Longitude</legend><div class="input-wrapper"><input name="boundWest" type="number" placeholder="-180 to 180" step="any" min="-180" max="180"></div>
+          <legend>North Latitude</legend><div class="input-wrapper"><input name="boundNorth" type="number" placeholder="-90 to 90" step="any" min="-90" max="90"></div>
+          <legend>East Longitude</legend><div class="input-wrapper"><input name="boundEast" type="number" placeholder="-180 to 180" step="any" min="-180" max="180"></div>
+        </fieldset></details>
 
         <details class="favorite"><summary>Favorite</summary><fieldset><div class="radio-group">
           <label class="form-control"><input name="favorite" value="" type="radio" checked="checked"> Any</label>

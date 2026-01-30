@@ -147,7 +147,7 @@ export default class Core {
         method: () => filters.filterOwned(filteredItems, filter),
       },
       {
-        condition: !!filter.hasLocation,
+        condition: Boolean(filter.hasLocation ?? filter.boundSouth ?? filter.boundWest ?? filter.boundNorth ?? filter.boundEast),
         method: () => filters.filterByLocation(filteredItems, filter),
       },
       {
@@ -395,6 +395,18 @@ export default class Core {
     const maxH = parseInt(filter.maxHeight ?? '0');
     if (minH > 0 && maxH > 0 && minH >= maxH) {
       throw new Error('Invalid Resolution Filter: Min Height must be less than Max Height');
+    }
+    const bS = parseFloat(filter.boundSouth ?? '');
+    const bW = parseFloat(filter.boundWest ?? '');
+    const bN = parseFloat(filter.boundNorth ?? '');
+    const bE = parseFloat(filter.boundEast ?? '');
+    const hasSomeBounds = [bS, bW, bN, bE].some((v) => !isNaN(v));
+    const hasAllBounds = [bS, bW, bN, bE].every((v) => !isNaN(v));
+    if (hasSomeBounds && !hasAllBounds) {
+      throw new Error('Bounding Box: All four coordinates (South, West, North, East) are required');
+    }
+    if (hasAllBounds && bS >= bN) {
+      throw new Error('Bounding Box: South latitude must be less than North latitude');
     }
   }
 

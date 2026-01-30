@@ -337,6 +337,10 @@ export interface Filter {
   favorite?: 'true' | 'false';
   excludeFavorites?: string;
   hasLocation?: 'true' | 'false';
+  boundSouth?: string;
+  boundWest?: string;
+  boundNorth?: string;
+  boundEast?: string;
   uploadStatus?: 'full' | 'partial';
   fileNameRegex?: string;
   fileNameMatchType?: 'include' | 'exclude';

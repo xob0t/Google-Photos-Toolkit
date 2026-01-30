@@ -58,6 +58,12 @@ const rules: DescriptionRule[] = [
   { test: (f) => f.hasLocation === 'true',  describe: () => 'with location' },
   { test: (f) => f.hasLocation === 'false', describe: () => 'without location' },
 
+  // bounding box
+  {
+    test: (f) => Boolean(f.boundSouth && f.boundWest && f.boundNorth && f.boundEast),
+    describe: (f) => `within area S${f.boundSouth} W${f.boundWest} N${f.boundNorth} E${f.boundEast}`,
+  },
+
   // archive
   { test: (f) => f.archived === 'true',  describe: () => 'archived' },
   { test: (f) => f.archived === 'false', describe: () => 'non-archived' },
@@ -194,6 +200,17 @@ function validate(filter: Filter): string | null {
   const hi = parseSize(filter.higherBoundarySize);
   if (lo > 0 && hi > 0 && lo >= hi) {
     return 'Error: Invalid Size Filter';
+  }
+
+  const bS = parseFloat(filter.boundSouth ?? '');
+  const bN = parseFloat(filter.boundNorth ?? '');
+  const hasSomeBounds = [bS, parseFloat(filter.boundWest ?? ''), bN, parseFloat(filter.boundEast ?? '')].some((v) => !isNaN(v));
+  const hasAllBounds = [bS, parseFloat(filter.boundWest ?? ''), bN, parseFloat(filter.boundEast ?? '')].every((v) => !isNaN(v));
+  if (hasSomeBounds && !hasAllBounds) {
+    return 'Error: Bounding Box requires all four coordinates';
+  }
+  if (hasAllBounds && bS >= bN) {
+    return 'Error: South latitude must be less than North latitude';
   }
 
   const minW = parseSize(filter.minWidth);

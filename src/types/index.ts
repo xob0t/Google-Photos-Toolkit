@@ -187,8 +187,8 @@ export interface AlbumItemsPage {
   mediaKey?: string;
   title?: string;
   owner?: Actor;
-  startTimestamp?: number;
-  endTimestamp?: number;
+  startTimestamp?: [number, number];
+  endTimestamp?: [number, number];
   lastActivityTimestamp?: number;
   creationTimestamp?: number;
   newestOperationTimestamp?: number;

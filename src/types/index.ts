@@ -336,6 +336,7 @@ export interface Filter {
   archived?: 'true' | 'false';
   favorite?: 'true' | 'false';
   excludeFavorites?: string;
+  hasLocation?: 'true' | 'false';
   uploadStatus?: 'full' | 'partial';
   fileNameRegex?: string;
   fileNameMatchType?: 'include' | 'exclude';

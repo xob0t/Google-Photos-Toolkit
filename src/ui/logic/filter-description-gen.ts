@@ -54,6 +54,10 @@ const rules: DescriptionRule[] = [
   { test: (f) => f.quality === 'original',       describe: () => 'original quality' },
   { test: (f) => f.quality === 'storage-saver',  describe: () => 'storage-saver quality' },
 
+  // location
+  { test: (f) => f.hasLocation === 'true',  describe: () => 'with location' },
+  { test: (f) => f.hasLocation === 'false', describe: () => 'without location' },
+
   // archive
   { test: (f) => f.archived === 'true',  describe: () => 'archived' },
   { test: (f) => f.archived === 'false', describe: () => 'non-archived' },

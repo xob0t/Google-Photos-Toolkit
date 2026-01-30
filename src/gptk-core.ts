@@ -147,6 +147,10 @@ export default class Core {
         method: () => filters.filterOwned(filteredItems, filter),
       },
       {
+        condition: !!filter.hasLocation,
+        method: () => filters.filterByLocation(filteredItems, filter),
+      },
+      {
         condition: !!filter.uploadStatus,
         method: () => filters.filterByUploadStatus(filteredItems, filter),
       },

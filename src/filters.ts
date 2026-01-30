@@ -119,6 +119,18 @@ export function filterFavorite(mediaItems: MediaItem[], filter: Filter): MediaIt
   return result;
 }
 
+export function filterByLocation(mediaItems: MediaItem[], filter: Filter): MediaItem[] {
+  log('Filtering by location');
+  let result = mediaItems;
+  if (filter.hasLocation === 'true') {
+    result = mediaItems.filter((item) => item.geoLocation?.coordinates?.length);
+  } else if (filter.hasLocation === 'false') {
+    result = mediaItems.filter((item) => !item.geoLocation?.coordinates?.length);
+  }
+  log(`Item count after filtering: ${result.length}`);
+  return result;
+}
+
 export function filterOwned(mediaItems: MediaItem[], filter: Filter): MediaItem[] {
   log('Filtering owned');
   let result = mediaItems;

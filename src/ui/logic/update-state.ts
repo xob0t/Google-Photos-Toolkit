@@ -64,6 +64,7 @@ export function updateUI(): void {
       livePhotoType: (document.querySelector('.type input[value=live]'))?.parentNode as HTMLElement | null,
       includeAlbums: document.querySelector<HTMLElement>('.include-albums'),
       owned: document.querySelector<HTMLElement>('.owned'),
+      location: document.querySelector<HTMLElement>('.location'),
       search: document.querySelector<HTMLElement>('.search'),
       favorite: document.querySelector<HTMLElement>('.favorite'),
       quality: document.querySelector<HTMLElement>('.quality'),
@@ -102,6 +103,7 @@ export function updateUI(): void {
       if (filterElements.quality) toggleVisibility(filterElements.quality, true);
       if (filterElements.size) toggleVisibility(filterElements.size, true);
       if (filterElements.resolution) toggleVisibility(filterElements.resolution, true);
+      if (filterElements.location) toggleVisibility(filterElements.location, true);
       if (filterElements.filename) toggleVisibility(filterElements.filename, true);
       if (filterElements.description) toggleVisibility(filterElements.description, true);
       if (filterElements.space) toggleVisibility(filterElements.space, true);

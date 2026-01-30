@@ -287,7 +287,7 @@ export default class Core {
         if (!this.isProcessRunning) return mediaItems;
         const mediaPage: LibraryTimelinePage = await this.api.getItemsByTakenDate(nextPageTimestamp, source ?? null, nextPageId);
         nextPageId = mediaPage?.nextPageId ?? null;
-        if (!mediaPage) break;
+        if (!mediaPage) { log('Empty page response, skipping', 'error'); continue; }
         nextPageTimestamp = mediaPage.lastItemTimestamp - 1;
         if (!mediaPage.items || mediaPage.items.length === 0) continue;
         mediaPage.items = mediaPage.items.filter((item) => item.timestamp >= lowerBoundaryDate && item.timestamp <= higherBoundaryDate);
@@ -302,7 +302,7 @@ export default class Core {
         if (!this.isProcessRunning) return mediaItems;
         const mediaPage: LibraryTimelinePage = await this.api.getItemsByTakenDate(nextPageTimestamp, source ?? null, nextPageId);
         nextPageId = mediaPage?.nextPageId ?? null;
-        if (!mediaPage) break;
+        if (!mediaPage) { log('Empty page response, skipping', 'error'); continue; }
         nextPageTimestamp = mediaPage.lastItemTimestamp - 1;
         if (!mediaPage.items || mediaPage.items.length === 0) continue;
         mediaPage.items = mediaPage.items.filter((item) => item.timestamp < lowerBoundaryDate || item.timestamp > higherBoundaryDate);
@@ -324,7 +324,7 @@ export default class Core {
         if (!this.isProcessRunning) return mediaItems;
         const mediaPage: LibraryTimelinePage = await this.api.getItemsByTakenDate(nextPageTimestamp, source ?? null, nextPageId);
         nextPageId = mediaPage?.nextPageId ?? null;
-        if (!mediaPage) break;
+        if (!mediaPage) { log('Empty page response, skipping', 'error'); continue; }
         nextPageTimestamp = mediaPage.lastItemTimestamp - 1;
         if (!mediaPage.items || mediaPage.items.length === 0) continue;
         log(`Found ${mediaPage.items.length} items`);
@@ -351,7 +351,7 @@ export default class Core {
       if (!this.isProcessRunning) return mediaItems;
       const mediaPage = await this.api.getItemsByUploadedDate(nextPageId);
       nextPageId = mediaPage?.nextPageId ?? null;
-      if (!mediaPage) break;
+      if (!mediaPage) { log('Empty page response, skipping', 'error'); continue; }
       if (!mediaPage.items || mediaPage.items.length === 0) continue;
       const lastTimeStamp = mediaPage.items[mediaPage.items.length - 1].creationTimestamp;
       let filteredPageItems = mediaPage.items;

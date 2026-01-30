@@ -20,7 +20,12 @@
   "main": "google_photos_toolkit.user.js",
   "scripts": {
     "build": "rollup -c",
-    "watch": "rollup -c -w"
+    "watch": "rollup -c -w",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "xob0t",
@@ -31,9 +36,15 @@
   "homepage": "https://github.com/xob0t/Google-Photos-Toolkit#readme",
   "devDependencies": {
     "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-typescript": "^12.3.0",
     "@rollup/pluginutils": "^5.1.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "eslint": "^8.56.0",
     "rollup": "^4.9.6",
-    "rollup-plugin-banner2": "^1.2.2"
+    "rollup-plugin-banner2": "^1.2.2",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   }
 }

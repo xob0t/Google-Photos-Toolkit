@@ -80,7 +80,7 @@
 @media only screen and (max-width: 700px) {
     .window-body {
         display: flex;
-        flex-direction: column-reverse;
+        flex-direction: column;
     }
     #gptk {
         top: 0% !important;
@@ -92,9 +92,21 @@
             display: none;
         }
 
+        .sidebar {
+            flex: 1 1 0;
+            min-height: 0;
+            border-right: none;
+        }
+
         .main {
+            flex: 0 0 auto;
             height: auto !important;
-            max-height: 100% !important;
+            max-height: 40vh !important;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        #logArea {
+            max-height: 20vh;
         }
     }
 }

@@ -264,9 +264,9 @@
 
       <form class="settings-form">
         <details class="settings"><summary>Advanced Settings</summary><fieldset>
-          <legend>Max Concurrent Single API Requests</legend><div class="input-wrapper"><input name="maxConcurrentSingleApiReq" value="30" min="1" type="number" required></div>
-          <legend>Max Concurrent Batch API Requests</legend><div class="input-wrapper"><input name="maxConcurrentBatchApiReq" value="3" min="1" type="number" required></div>
-          <legend>API Operation Batch Size</legend><div class="input-wrapper"><input name="operationSize" value="500" max="500" min="1" type="number" required></div>
+          <legend>Max Concurrent Per-Item Requests</legend><div class="input-wrapper"><input name="maxConcurrentSingleApiReq" value="30" min="1" type="number" required></div>
+          <legend>Max Concurrent Bulk Requests</legend><div class="input-wrapper"><input name="maxConcurrentBatchApiReq" value="3" min="1" type="number" required></div>
+          <legend>API Operation Batch Size</legend><div class="input-wrapper"><input name="operationSize" value="250" max="500" min="1" type="number" required></div>
           <legend>Locked Folder API Operation Size</legend><div class="input-wrapper"><input name="lockedFolderOpSize" value="100" max="100" min="1" type="number" required></div>
           <legend>Bulk Info API Batch Size</legend><div class="input-wrapper"><input name="infoSize" value="5000" max="10000" min="1" type="number" required></div>
           <div class="settings-controls">

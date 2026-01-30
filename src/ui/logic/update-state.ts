@@ -137,4 +137,52 @@ export function updateUI(): void {
 
   updateFilterVisibility();
   filterPreviewUpdate();
+  highlightActiveFilters();
+}
+
+function hasChangedFromDefault(container: HTMLElement): boolean {
+  // Text, number, date inputs — compare value to defaultValue
+  const textInputs = container.querySelectorAll<HTMLInputElement>('input[type="text"], input[type="input"], input[type="number"], input[type="datetime-local"]');
+  for (const input of textInputs) {
+    if (input.value.trim() !== input.defaultValue.trim()) return true;
+  }
+
+  // Radio buttons — check if checked state differs from defaultChecked
+  const radios = container.querySelectorAll<HTMLInputElement>('input[type="radio"]');
+  for (const radio of radios) {
+    if (radio.checked !== radio.defaultChecked) return true;
+  }
+
+  // Checkboxes — check if checked state differs from defaultChecked
+  const checkboxes = container.querySelectorAll<HTMLInputElement>('input[type="checkbox"]');
+  for (const checkbox of checkboxes) {
+    if (checkbox.checked !== checkbox.defaultChecked) return true;
+  }
+
+  // Multi-selects — check if selected state differs from defaultSelected
+  const selects = container.querySelectorAll<HTMLSelectElement>('select');
+  for (const select of selects) {
+    for (const option of select.options) {
+      if (option.selected !== option.defaultSelected) return true;
+    }
+  }
+
+  return false;
+}
+
+function highlightActiveFilters(): void {
+  const filtersForm = document.querySelector<HTMLFormElement>('.filters-form');
+  if (!filtersForm) return;
+
+  // Details-based filters
+  const detailsList = filtersForm.querySelectorAll<HTMLDetailsElement>('details');
+  for (const details of detailsList) {
+    details.classList.toggle('filter-active', hasChangedFromDefault(details));
+  }
+
+  // Standalone checkbox fieldsets (exclude-shared, exclude-favorites, sort-by-size)
+  const checkboxFieldsets = filtersForm.querySelectorAll<HTMLElement>(':scope > fieldset');
+  for (const fieldset of checkboxFieldsets) {
+    fieldset.classList.toggle('filter-active', hasChangedFromDefault(fieldset));
+  }
 }

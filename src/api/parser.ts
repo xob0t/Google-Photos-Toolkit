@@ -198,23 +198,23 @@ function albumItemsPage(data: any): AlbumItemsPage {
   return {
     items: data?.[1]?.map((itemData: any) => albumItemParse(itemData)),
     nextPageId: data?.[2],
-    mediaKey: data?.[3][0],
-    title: data?.[3][1],
-    owner: actorParse(data?.[3][5]),
-    startTimestamp: data?.[3][2][5],
-    endTimestamp: data?.[3][2][6],
-    lastActivityTimestamp: data?.[3][2][7],
-    creationTimestamp: data?.[3][2][8],
-    newestOperationTimestamp: data?.[3][2][9],
-    itemCount: data?.[3][21],
-    authKey: data?.[3][19],
-    members: data?.[3][9]?.map((itemData: any) => actorParse(itemData)),
+    mediaKey: data?.[3]?.[0],
+    title: data?.[3]?.[1],
+    owner: actorParse(data?.[3]?.[5]),
+    startTimestamp: data?.[3]?.[2]?.[5],
+    endTimestamp: data?.[3]?.[2]?.[6],
+    lastActivityTimestamp: data?.[3]?.[2]?.[7],
+    creationTimestamp: data?.[3]?.[2]?.[8],
+    newestOperationTimestamp: data?.[3]?.[2]?.[9],
+    itemCount: data?.[3]?.[21],
+    authKey: data?.[3]?.[19],
+    members: data?.[3]?.[9]?.map((itemData: any) => actorParse(itemData)),
   };
 }
 
 function trashPage(data: any): TrashPage {
   return {
-    items: data?.[0].map((itemData: any) => trashItemParse(itemData)),
+    items: data?.[0]?.map((itemData: any) => trashItemParse(itemData)),
     nextPageId: data?.[1],
   };
 }
@@ -357,7 +357,7 @@ function remoteMatchParse(itemData: any): RemoteMatch {
 }
 
 function remoteMatchesParse(data: any): RemoteMatch[] {
-  return data[0].map((itemData: any) => remoteMatchParse(itemData));
+  return data?.[0]?.map((itemData: any) => remoteMatchParse(itemData)) ?? [];
 }
 
 type ParserResult =

@@ -321,7 +321,7 @@ export default class Api {
     const requestData = [albumName, null, 2];
     try {
       const response = await this.makeApiRequest(rpcid, requestData);
-      return response[0][0];
+      return response?.[0]?.[0];
     } catch (error) {
       console.error('Error in createAlbum:', error);
       throw error;
@@ -663,7 +663,7 @@ export default class Api {
     const requestData = [[[mappedKeys], [[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, [], null, null, null, null, null, null, null, null, null, null, []]]]];
     try {
       let response = await this.makeApiRequest(rpcid, requestData);
-      response = response[0][1];
+      response = response?.[0]?.[1];
       if (parseResponse) return parser(response, rpcid) as BulkMediaInfo[];
       return response;
     } catch (error) {

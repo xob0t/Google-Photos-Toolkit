@@ -89,12 +89,18 @@ export default class ApiUtils {
     let nextPageId: string | undefined;
     do {
       if (!this.core.isProcessRunning) return items;
-      const page = await apiMethod.call(this.api, ...args, nextPageId);
-      if (page?.items && page.items.length > 0) {
-        log(`Found ${page.items.length} items`);
-        items.push(...page.items);
+      try {
+        const page = await apiMethod.call(this.api, ...args, nextPageId);
+        if (page?.items && page.items.length > 0) {
+          log(`Found ${page.items.length} items`);
+          items.push(...page.items);
+        }
+        nextPageId = page?.nextPageId;
+      } catch (error) {
+        log(`Error fetching page, skipping: ${error instanceof Error ? error.message : String(error)}`, 'error');
+        // Stop pagination — we can't get nextPageId from a failed request
+        break;
       }
-      nextPageId = page?.nextPageId;
     } while (nextPageId);
     return items;
   }

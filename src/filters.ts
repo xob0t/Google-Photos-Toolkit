@@ -273,15 +273,13 @@ async function generateImageHash(hashSize: number, blob: Blob, core: Core): Prom
 
     for (let y = 0; y < hashSize; y++) {
       for (let x = 0; x < hashSize; x++) {
-        if (!core.isProcessRunning) return null;
-
         // Position in the pixel array
         const pos = (y * (hashSize + 1) + x) * 4;
         const nextPos = (y * (hashSize + 1) + x + 1) * 4;
 
-        // Convert to grayscale
-        const gray1 = (pixels[pos] + pixels[pos + 1] + pixels[pos + 2]) / 3;
-        const gray2 = (pixels[nextPos] + pixels[nextPos + 1] + pixels[nextPos + 2]) / 3;
+        // Convert to grayscale using ITU-R BT.601 luminance weights
+        const gray1 = 0.299 * pixels[pos] + 0.587 * pixels[pos + 1] + 0.114 * pixels[pos + 2];
+        const gray2 = 0.299 * pixels[nextPos] + 0.587 * pixels[nextPos + 1] + 0.114 * pixels[nextPos + 2];
 
         // Set bit if left pixel is brighter than right pixel
         if (gray1 > gray2) {

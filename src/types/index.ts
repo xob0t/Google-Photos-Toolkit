@@ -350,9 +350,9 @@ export interface Filter {
   albumsExclude?: string | string[];
   excludeShared?: string;
   searchQuery?: string;
-  similarityThreshold?: number;
-  imageHeight?: number;
-  sortBySize?: boolean;
+  similarityThreshold?: string;
+  imageHeight?: string;
+  sortBySize?: string;
 }
 
 export type Source = 'library' | 'search' | 'trash' | 'lockedFolder' | 'favorites' | 'sharedLinks' | 'albums';

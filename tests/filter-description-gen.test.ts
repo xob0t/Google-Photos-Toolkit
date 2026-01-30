@@ -125,7 +125,7 @@ describe('generateFilterDescription', () => {
 
   // similarity
   it('includes similarity threshold', () => {
-    const desc = generateFilterDescription(makeFilter({ similarityThreshold: 0.85 }));
+    const desc = generateFilterDescription(makeFilter({ similarityThreshold: '0.85' }));
     expect(desc).toContain('similarity');
     expect(desc).toContain('0.85');
   });
@@ -162,7 +162,7 @@ describe('generateFilterDescription', () => {
 
   // sort
   it('includes sort by size', () => {
-    const desc = generateFilterDescription(makeFilter({ sortBySize: true }));
+    const desc = generateFilterDescription(makeFilter({ sortBySize: 'true' }));
     expect(desc).toContain('sorted by size');
   });
 

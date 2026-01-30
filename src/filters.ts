@@ -432,8 +432,8 @@ export function calculateHashSize(imageHeight: number): number {
 // Main function to filter similar media items
 export async function filterSimilar(core: Core, mediaItems: MediaItem[], filter: Filter): Promise<MediaItem[]> {
   const maxConcurrentFetches = 50;
-  const similarityThreshold = filter.similarityThreshold ?? 0.9;
-  const imageHeight = filter.imageHeight ?? 100;
+  const similarityThreshold = Number(filter.similarityThreshold) || 0.9;
+  const imageHeight = Number(filter.imageHeight) || 100;
   const hashSize = calculateHashSize(imageHeight); // Dynamic hash size
 
   // FIX #82: Skip items that have no thumbnail URL. Expired or missing

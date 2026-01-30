@@ -8,60 +8,6 @@ export interface GeoLocation {
   mapThumb?: string;
 }
 
-export interface LibraryItem {
-  mediaKey: string;
-  timestamp: number;
-  timezoneOffset?: number;
-  creationTimestamp: number;
-  dedupKey: string;
-  thumb?: string;
-  resWidth?: number;
-  resHeight?: number;
-  isPartialUpload?: boolean;
-  isArchived?: boolean;
-  isFavorite?: boolean;
-  duration?: number;
-  descriptionShort?: string;
-  isLivePhoto: boolean;
-  livePhotoDuration?: number;
-  isOwned?: boolean;
-  geoLocation?: GeoLocation;
-}
-
-export interface LockedFolderItem {
-  mediaKey: string;
-  timestamp: number;
-  creationTimestamp: number;
-  dedupKey: string;
-  duration?: number;
-}
-
-export interface AlbumItem {
-  mediaKey: string;
-  thumb?: string;
-  resWidth?: number;
-  resHeight?: number;
-  timestamp: number;
-  timezoneOffset?: number;
-  creationTimestamp: number;
-  dedupKey: string;
-  isLivePhoto: boolean;
-  livePhotoDuration?: number;
-  duration?: number;
-}
-
-export interface TrashItem {
-  mediaKey: string;
-  thumb?: string;
-  resWidth?: number;
-  resHeight?: number;
-  timestamp: number;
-  timezoneOffset?: number;
-  creationTimestamp: number;
-  dedupKey: string;
-  duration?: number;
-}
-
 export interface PartnerSharedItem {
   mediaKey: string;
   thumb?: string;
@@ -168,7 +114,7 @@ export interface LibraryGenericPage {
 
 export interface LockedFolderPage {
   nextPageId?: string;
-  items?: LockedFolderItem[];
+  items?: MediaItem[];
 }
 
 export interface LinksPage {

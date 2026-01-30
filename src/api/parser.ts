@@ -5,7 +5,6 @@
 
 import type {
   MediaItem,
-  LockedFolderItem,
   SharedLink,
   Album,
   Actor,
@@ -74,7 +73,7 @@ function libraryGenericPage(data: any): LibraryGenericPage {
   };
 }
 
-function lockedFolderItemParse(itemData: any): LockedFolderItem {
+function lockedFolderItemParse(itemData: any): MediaItem {
   return {
     mediaKey: itemData?.[0],
     timestamp: itemData?.[2],

@@ -17,6 +17,17 @@ interface ExecuteActionParams {
   preserveOrder: boolean;
 }
 
+/**
+ * Core orchestration class for the Google Photos Toolkit.
+ *
+ * Manages the process lifecycle, fetches media from various sources,
+ * applies a chain of filters, and dispatches actions.
+ *
+ * Exposed globally as `gptkCore` for console scripting:
+ * ```js
+ * gptkCore.isProcessRunning; // check if a process is active
+ * ```
+ */
 export default class Core {
   isProcessRunning: boolean;
   api: Api;
@@ -50,6 +61,13 @@ export default class Core {
     };
   }
 
+  /**
+   * Fetch media items from the given source and apply all active filters.
+   *
+   * @param filter - The filter configuration to apply.
+   * @param source - The media source to read from.
+   * @returns The filtered array of media items.
+   */
   async getAndFilterMedia(filter: Filter, source: Source): Promise<MediaItem[]> {
     const mediaItems = await this.fetchMediaItems(source, filter);
     log(`Found items: ${mediaItems.length}`);
@@ -59,6 +77,13 @@ export default class Core {
     return filteredItems;
   }
 
+  /**
+   * Fetch raw media items from the specified source (before filtering).
+   *
+   * @param source - The media source to read from.
+   * @param filter - The filter (used for date range and search query parameters).
+   * @returns Array of unfiltered media items from the source.
+   */
   async fetchMediaItems(source: Source, filter: Filter): Promise<MediaItem[]> {
     const sourceHandlers: Record<Source, () => Promise<MediaItem[]>> = {
       library: async () => {
@@ -126,6 +151,18 @@ export default class Core {
     return mediaItems;
   }
 
+  /**
+   * Apply all active filters to the media items.
+   *
+   * Filters are applied in a specific order: basic filters first, then
+   * extended info filters (which require an additional API call), and
+   * finally similarity detection.
+   *
+   * @param mediaItems - The items to filter.
+   * @param filter - The filter configuration.
+   * @param source - The media source (affects which filters apply).
+   * @returns The filtered array of media items.
+   */
   async applyFilters(mediaItems: MediaItem[], filter: Filter, source: Source): Promise<MediaItem[]> {
     let filteredItems = mediaItems;
 
@@ -218,42 +255,41 @@ export default class Core {
   }
 
   async excludeAlbumItems(mediaItems: MediaItem[], filter: Filter): Promise<MediaItem[]> {
-    const itemsToExclude: MediaItem[] = [];
     const albumMediaKeys = Array.isArray(filter.albumsExclude) ? filter.albumsExclude : [filter.albumsExclude ?? ''];
 
-    await Promise.all(
+    const excludedItemArrays = await Promise.all(
       albumMediaKeys.map(async (albumMediaKey) => {
         log('Getting album items to exclude');
-        const excludedItems = await this.apiUtils.getAllMediaInAlbum(albumMediaKey);
-        itemsToExclude.push(...excludedItems);
+        return await this.apiUtils.getAllMediaInAlbum(albumMediaKey);
       })
     );
 
     log('Excluding album items');
-    return mediaItems.filter((mediaItem) => !itemsToExclude.some((excludeItem) => excludeItem.dedupKey === mediaItem.dedupKey));
+    const excludeKeys = new Set(excludedItemArrays.flat().map((item) => item.dedupKey));
+    return mediaItems.filter((mediaItem) => !excludeKeys.has(mediaItem.dedupKey));
   }
 
   async excludeSharedItems(mediaItems: MediaItem[]): Promise<MediaItem[]> {
     log('Getting shared links items to exclude');
-    const itemsToExclude: MediaItem[] = [];
     const sharedLinks = await this.apiUtils.getAllSharedLinks();
 
-    await Promise.all(
+    const excludedItemArrays = await Promise.all(
       sharedLinks.map(async (sharedLink) => {
-        const sharedLinkItems = await this.apiUtils.getAllMediaInSharedLink(sharedLink.linkId);
-        itemsToExclude.push(...sharedLinkItems);
+        return await this.apiUtils.getAllMediaInSharedLink(sharedLink.linkId);
       })
     );
 
     log('Excluding shared items');
-    return mediaItems.filter((mediaItem) => !itemsToExclude.some((excludeItem) => excludeItem.dedupKey === mediaItem.dedupKey));
+    const excludeKeys = new Set(excludedItemArrays.flat().map((item) => item.dedupKey));
+    return mediaItems.filter((mediaItem) => !excludeKeys.has(mediaItem.dedupKey));
   }
 
   async extendMediaItemsWithMediaInfo(mediaItems: MediaItem[]): Promise<MediaItem[]> {
     const mediaInfoData = await this.apiUtils.getBatchMediaInfoChunked(mediaItems);
 
+    const infoByKey = new Map(mediaInfoData.map((info) => [info.mediaKey, info]));
     const extendedMediaItems = mediaItems.map((item) => {
-      const matchingInfoItem = mediaInfoData.find((infoItem) => infoItem.mediaKey === item.mediaKey);
+      const matchingInfoItem = infoByKey.get(item.mediaKey);
       return { ...item, ...matchingInfoItem };
     });
     return extendedMediaItems;
@@ -410,6 +446,18 @@ export default class Core {
     }
   }
 
+  /**
+   * Main entry point: fetch, filter, and execute an action on media items.
+   *
+   * This is the method called by the UI when the user clicks an action button.
+   *
+   * @param action - The action to perform (e.g. toTrash, toArchive, toExistingAlbum).
+   * @param filter - The filter configuration from the UI form.
+   * @param source - The media source to read from.
+   * @param targetAlbum - Target album (for "add to existing album" action).
+   * @param newTargetAlbumName - New album name (for "add to new album" action).
+   * @param apiSettings - Optional API settings overrides (concurrency, batch sizes).
+   */
   async actionWithFilter(
     action: Action,
     filter: Filter,

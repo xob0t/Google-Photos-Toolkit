@@ -7,6 +7,18 @@ import type Core from '../gptk-core';
 
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument */
 
+/**
+ * High-level API utilities with pagination, concurrency control, and bulk operations.
+ *
+ * Wraps the low-level {@link Api} methods with automatic chunking, retry,
+ * and album overflow handling.
+ *
+ * Exposed globally as `gptkApiUtils` for console scripting:
+ * ```js
+ * const albums = await gptkApiUtils.getAllAlbums();
+ * const items  = await gptkApiUtils.getAllMediaInAlbum(albums[0].mediaKey);
+ * ```
+ */
 export default class ApiUtils {
   api: Api;
   core: Core;
@@ -105,62 +117,130 @@ export default class ApiUtils {
     return items;
   }
 
+  /**
+   * Fetch all albums across all pages.
+   *
+   * @returns Array of all albums in the user's library.
+   */
   async getAllAlbums(): Promise<Album[]> {
     return await this.getAllItems<Album>(this.api.getAlbums.bind(this.api));
   }
 
+  /**
+   * Fetch all shared links across all pages.
+   *
+   * @returns Array of all shared links created by the user.
+   */
   async getAllSharedLinks(): Promise<SharedLink[]> {
     return await this.getAllItems<SharedLink>(this.api.getSharedLinks.bind(this.api));
   }
 
+  /**
+   * Fetch all media items from a shared link across all pages.
+   *
+   * @param sharedLinkId - The shared link's ID.
+   * @returns Array of all media items in the shared link.
+   */
   async getAllMediaInSharedLink(sharedLinkId: string): Promise<MediaItem[]> {
     return await this.getAllItems<MediaItem>(this.api.getAlbumPage.bind(this.api), sharedLinkId);
   }
 
+  /**
+   * Fetch all media items from an album across all pages.
+   *
+   * @param albumMediaKey - The album's media key.
+   * @returns Array of all media items in the album.
+   */
   async getAllMediaInAlbum(albumMediaKey: string): Promise<MediaItem[]> {
     return await this.getAllItems<MediaItem>(this.api.getAlbumPage.bind(this.api), albumMediaKey);
   }
 
+  /**
+   * Fetch all items in the trash across all pages.
+   *
+   * @returns Array of all trashed media items.
+   */
   async getAllTrashItems(): Promise<MediaItem[]> {
     return await this.getAllItems<MediaItem>(this.api.getTrashItems.bind(this.api));
   }
 
+  /**
+   * Fetch all favorite items across all pages.
+   *
+   * @returns Array of all favorite media items.
+   */
   async getAllFavoriteItems(): Promise<MediaItem[]> {
     return await this.getAllItems<MediaItem>(this.api.getFavoriteItems.bind(this.api));
   }
 
+  /**
+   * Fetch all items matching a search query across all pages.
+   *
+   * @param searchQuery - Free-text search string.
+   * @returns Array of all matching media items.
+   */
   async getAllSearchItems(searchQuery: string): Promise<MediaItem[]> {
     return await this.getAllItems<MediaItem>(this.api.search.bind(this.api), searchQuery);
   }
 
+  /**
+   * Fetch all items in the Locked Folder across all pages.
+   *
+   * @returns Array of all locked folder media items.
+   */
   async getAllLockedFolderItems(): Promise<MediaItem[]> {
     return await this.getAllItems<MediaItem>(this.api.getLockedFolderItems.bind(this.api));
   }
 
+  /**
+   * Move items into the Locked Folder in batches.
+   *
+   * @param mediaItems - Array of media items to move.
+   */
   async moveToLockedFolder(mediaItems: MediaItem[]): Promise<void> {
     log(`Moving ${mediaItems.length} items to locked folder`);
     const dedupKeyArray = mediaItems.map((item) => item.dedupKey);
     await this.executeWithConcurrency(this.api.moveToLockedFolder.bind(this.api), this.lockedFolderOpSize, dedupKeyArray);
   }
 
+  /**
+   * Remove items from the Locked Folder in batches.
+   *
+   * @param mediaItems - Array of media items to remove from the locked folder.
+   */
   async removeFromLockedFolder(mediaItems: MediaItem[]): Promise<void> {
     log(`Moving ${mediaItems.length} items out of locked folder`);
     const dedupKeyArray = mediaItems.map((item) => item.dedupKey);
     await this.executeWithConcurrency(this.api.removeFromLockedFolder.bind(this.api), this.lockedFolderOpSize, dedupKeyArray);
   }
 
+  /**
+   * Move items to the trash in batches.
+   *
+   * @param mediaItems - Array of media items to trash.
+   */
   async moveToTrash(mediaItems: MediaItem[]): Promise<void> {
     log(`Moving ${mediaItems.length} items to trash`);
     const dedupKeyArray = mediaItems.map((item) => item.dedupKey);
     await this.executeWithConcurrency(this.api.moveItemsToTrash.bind(this.api), this.operationSize, dedupKeyArray);
   }
 
+  /**
+   * Restore items from the trash in batches.
+   *
+   * @param trashItems - Array of trashed media items to restore.
+   */
   async restoreFromTrash(trashItems: MediaItem[]): Promise<void> {
     log(`Restoring ${trashItems.length} items from trash`);
     const dedupKeyArray = trashItems.map((item) => item.dedupKey);
     await this.executeWithConcurrency(this.api.restoreFromTrash.bind(this.api), this.operationSize, dedupKeyArray);
   }
 
+  /**
+   * Archive items in batches. Items already archived are skipped.
+   *
+   * @param mediaItems - Array of media items to archive.
+   */
   async sendToArchive(mediaItems: MediaItem[]): Promise<void> {
     log(`Sending ${mediaItems.length} items to archive`);
     const filtered = mediaItems.filter((item) => item?.isArchived !== true);
@@ -173,6 +253,11 @@ export default class ApiUtils {
     await this.executeWithConcurrency(this.api.setArchive.bind(this.api), this.operationSize, dedupKeyArray, true);
   }
 
+  /**
+   * Unarchive items in batches. Items not archived are skipped.
+   *
+   * @param mediaItems - Array of media items to unarchive.
+   */
   async unArchive(mediaItems: MediaItem[]): Promise<void> {
     log(`Removing ${mediaItems.length} items from archive`);
     const filtered = mediaItems.filter((item) => item?.isArchived !== false);
@@ -185,6 +270,11 @@ export default class ApiUtils {
     await this.executeWithConcurrency(this.api.setArchive.bind(this.api), this.operationSize, dedupKeyArray, false);
   }
 
+  /**
+   * Mark items as favorites in batches. Items already favorited are skipped.
+   *
+   * @param mediaItems - Array of media items to favorite.
+   */
   async setAsFavorite(mediaItems: MediaItem[]): Promise<void> {
     log(`Setting ${mediaItems.length} items as favorite`);
     const filtered = mediaItems.filter((item) => item?.isFavorite !== true);
@@ -197,6 +287,11 @@ export default class ApiUtils {
     await this.executeWithConcurrency(this.api.setFavorite.bind(this.api), this.operationSize, dedupKeyArray, true);
   }
 
+  /**
+   * Remove favorite status from items in batches. Non-favorited items are skipped.
+   *
+   * @param mediaItems - Array of media items to unfavorite.
+   */
   async unFavorite(mediaItems: MediaItem[]): Promise<void> {
     log(`Removing ${mediaItems.length} items from favorites`);
     const filtered = mediaItems.filter((item) => item?.isFavorite !== false);
@@ -219,6 +314,16 @@ export default class ApiUtils {
    */
   private static readonly ALBUM_ITEM_LIMIT = 20_000;
 
+  /**
+   * Add items to an existing album with automatic overflow handling.
+   *
+   * If the album would exceed the 20,000 item limit, overflow items are
+   * automatically placed into sequentially numbered albums (e.g. "Album (2)").
+   *
+   * @param mediaItems - Array of media items to add.
+   * @param targetAlbum - The target album object.
+   * @param preserveOrder - When `true`, reorders album items to match the input order.
+   */
   async addToExistingAlbum(
     mediaItems: MediaItem[],
     targetAlbum: Album,
@@ -291,6 +396,15 @@ export default class ApiUtils {
     }
   }
 
+  /**
+   * Create a new album and add items to it.
+   *
+   * Supports overflow: if items exceed 20,000, additional numbered albums are created.
+   *
+   * @param mediaItems - Array of media items to add.
+   * @param targetAlbumName - The name for the new album.
+   * @param preserveOrder - When `true`, reorders album items to match the input order.
+   */
   async addToNewAlbum(
     mediaItems: MediaItem[],
     targetAlbumName: string,
@@ -306,6 +420,12 @@ export default class ApiUtils {
     await this.addToExistingAlbum(mediaItems, album, preserveOrder);
   }
 
+  /**
+   * Get media info (filename, size, quality, etc.) for items in concurrent batches.
+   *
+   * @param mediaItems - Array of media items to get info for.
+   * @returns Array of bulk media info objects.
+   */
   async getBatchMediaInfoChunked(mediaItems: MediaItem[]): Promise<BulkMediaInfo[]> {
     log("Getting items' media info");
     const mediaKeyArray = mediaItems.map((item) => item.mediaKey);
@@ -336,6 +456,13 @@ export default class ApiUtils {
     }
   }
 
+  /**
+   * Copy the EXIF "Other" description field to the Google Photos description.
+   *
+   * Only copies when the Google Photos description is empty and "Other" is non-empty.
+   *
+   * @param mediaItems - Array of media items to process.
+   */
   async copyDescriptionFromOther(mediaItems: MediaItem[]): Promise<void> {
     log(`Copying up to ${mediaItems.length} descriptions from 'Other' field`);
     const results = await this.executeWithConcurrency(

@@ -68,6 +68,7 @@ export function updateUI(): void {
       favorite: document.querySelector<HTMLElement>('.favorite'),
       quality: document.querySelector<HTMLElement>('.quality'),
       size: document.querySelector<HTMLElement>('.size'),
+      resolution: document.querySelector<HTMLElement>('.resolution'),
       filename: document.querySelector<HTMLElement>('.filename'),
       description: document.querySelector<HTMLElement>('.description'),
       space: document.querySelector<HTMLElement>('.space'),
@@ -100,6 +101,7 @@ export function updateUI(): void {
       if (filterElements.livePhotoType) toggleVisibility(filterElements.livePhotoType, true);
       if (filterElements.quality) toggleVisibility(filterElements.quality, true);
       if (filterElements.size) toggleVisibility(filterElements.size, true);
+      if (filterElements.resolution) toggleVisibility(filterElements.resolution, true);
       if (filterElements.filename) toggleVisibility(filterElements.filename, true);
       if (filterElements.description) toggleVisibility(filterElements.description, true);
       if (filterElements.space) toggleVisibility(filterElements.space, true);

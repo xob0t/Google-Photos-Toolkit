@@ -325,6 +325,10 @@ export interface Filter {
   higherBoundaryDate?: string;
   lowerBoundarySize?: string;
   higherBoundarySize?: string;
+  minWidth?: string;
+  maxWidth?: string;
+  minHeight?: string;
+  maxHeight?: string;
   type?: 'video' | 'image' | 'live';
   quality?: 'original' | 'storage-saver';
   space?: 'consuming' | 'non-consuming';

@@ -162,6 +162,10 @@ export default class Core {
         condition: !!filter.type,
         method: () => filters.filterByMediaType(filteredItems, filter),
       },
+      {
+        condition: Boolean(filter.minWidth ?? filter.maxWidth ?? filter.minHeight ?? filter.maxHeight),
+        method: () => filters.resolutionFilter(filteredItems, filter),
+      },
     ];
 
     // Apply basic filters
@@ -377,6 +381,16 @@ export default class Core {
     if (parseInt(filter.lowerBoundarySize ?? '0') >= parseInt(filter.higherBoundarySize ?? '0') &&
         parseInt(filter.lowerBoundarySize ?? '0') > 0 && parseInt(filter.higherBoundarySize ?? '0') > 0) {
       throw new Error('Invalid Size Filter');
+    }
+    const minW = parseInt(filter.minWidth ?? '0');
+    const maxW = parseInt(filter.maxWidth ?? '0');
+    if (minW > 0 && maxW > 0 && minW >= maxW) {
+      throw new Error('Invalid Resolution Filter: Min Width must be less than Max Width');
+    }
+    const minH = parseInt(filter.minHeight ?? '0');
+    const maxH = parseInt(filter.maxHeight ?? '0');
+    if (minH > 0 && maxH > 0 && minH >= maxH) {
+      throw new Error('Invalid Resolution Filter: Min Height must be less than Max Height');
     }
   }
 

@@ -36,6 +36,21 @@ export function sizeFilter(mediaItems: MediaItem[], filter: Filter): MediaItem[]
   return result;
 }
 
+export function resolutionFilter(mediaItems: MediaItem[], filter: Filter): MediaItem[] {
+  log('Filtering by resolution');
+  let result = mediaItems;
+  const minW = parseInt(filter.minWidth ?? '0');
+  const maxW = parseInt(filter.maxWidth ?? '0');
+  const minH = parseInt(filter.minHeight ?? '0');
+  const maxH = parseInt(filter.maxHeight ?? '0');
+  if (minW > 0) result = result.filter((item) => (item.resWidth ?? 0) >= minW);
+  if (maxW > 0) result = result.filter((item) => (item.resWidth ?? 0) <= maxW);
+  if (minH > 0) result = result.filter((item) => (item.resHeight ?? 0) >= minH);
+  if (maxH > 0) result = result.filter((item) => (item.resHeight ?? 0) <= maxH);
+  log(`Item count after filtering: ${result.length}`);
+  return result;
+}
+
 export function qualityFilter(mediaItems: MediaItem[], filter: Filter): MediaItem[] {
   log('Filtering by quality');
   let result = mediaItems;

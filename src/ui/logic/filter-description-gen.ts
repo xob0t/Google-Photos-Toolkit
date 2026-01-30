@@ -101,6 +101,23 @@ const rules: DescriptionRule[] = [
     describe: (f) => `with similarity more than "${f.similarityThreshold}"`,
   },
 
+  // resolution
+  {
+    test: (f) => parseSize(f.minWidth) > 0 || parseSize(f.maxWidth) > 0 || parseSize(f.minHeight) > 0 || parseSize(f.maxHeight) > 0,
+    describe: (f) => {
+      const parts: string[] = [];
+      const minW = parseSize(f.minWidth);
+      const maxW = parseSize(f.maxWidth);
+      const minH = parseSize(f.minHeight);
+      const maxH = parseSize(f.maxHeight);
+      if (minW > 0) parts.push(`width >= ${minW}px`);
+      if (maxW > 0) parts.push(`width <= ${maxW}px`);
+      if (minH > 0) parts.push(`height >= ${minH}px`);
+      if (maxH > 0) parts.push(`height <= ${maxH}px`);
+      return `with resolution ${parts.join(', ')}`;
+    },
+  },
+
   // size range
   {
     test: (f) => parseSize(f.lowerBoundarySize) > 0 || parseSize(f.higherBoundarySize) > 0,
@@ -173,6 +190,18 @@ function validate(filter: Filter): string | null {
   const hi = parseSize(filter.higherBoundarySize);
   if (lo > 0 && hi > 0 && lo >= hi) {
     return 'Error: Invalid Size Filter';
+  }
+
+  const minW = parseSize(filter.minWidth);
+  const maxW = parseSize(filter.maxWidth);
+  if (minW > 0 && maxW > 0 && minW >= maxW) {
+    return 'Error: Invalid Resolution Filter (Width)';
+  }
+
+  const minH = parseSize(filter.minHeight);
+  const maxH = parseSize(filter.maxHeight);
+  if (minH > 0 && maxH > 0 && minH >= maxH) {
+    return 'Error: Invalid Resolution Filter (Height)';
   }
 
   return null;

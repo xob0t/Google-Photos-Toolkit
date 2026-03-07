@@ -199,6 +199,22 @@ export function filterArchived(mediaItems: MediaItem[], filter: Filter): MediaIt
   return result;
 }
 
+export function filterByDuration(mediaItems: MediaItem[], filter: Filter): MediaItem[] {
+  log('Filtering by duration');
+  let result = mediaItems;
+  const minSec = parseFloat(filter.minDuration ?? '');
+  const maxSec = parseFloat(filter.maxDuration ?? '');
+  // duration on MediaItem is in milliseconds
+  if (!isNaN(minSec)) {
+    result = result.filter((item) => item.duration !== undefined && item.duration >= minSec * 1000);
+  }
+  if (!isNaN(maxSec)) {
+    result = result.filter((item) => item.duration !== undefined && item.duration <= maxSec * 1000);
+  }
+  log(`Item count after filtering: ${result.length}`);
+  return result;
+}
+
 // Process images in batches with yield points
 async function processBatch<T, R>(
   items: T[],

@@ -94,7 +94,7 @@ export interface Actor {
   gaiaId?: string;
   name?: string;
   gender?: string;
-  profilePhotoUrl?: string;  // Fixed typo: was "profiePhotoUrl"
+  profilePhotoUrl?: string; // Fixed typo: was "profiePhotoUrl"
 }
 
 // ============================================================
@@ -147,7 +147,7 @@ export interface PartnerSharedItemsPage {
   nextPageId?: string;
   items?: PartnerSharedItem[];
   members?: Actor[];
-  partnerActorId?: string;  // Fixed typo: was "parnterActorId"
+  partnerActorId?: string; // Fixed typo: was "parnterActorId"
   gaiaId?: string;
 }
 
@@ -265,8 +265,8 @@ export interface RemoteMatch {
 // ============================================================
 
 export interface Filter {
-  dateType?: 'taken' | 'uploaded';
-  intervalType?: 'include' | 'exclude';
+  dateType?: "taken" | "uploaded";
+  intervalType?: "include" | "exclude";
   lowerBoundaryDate?: string;
   higherBoundaryDate?: string;
   lowerBoundarySize?: string;
@@ -275,23 +275,23 @@ export interface Filter {
   maxWidth?: string;
   minHeight?: string;
   maxHeight?: string;
-  type?: 'video' | 'image' | 'live';
-  quality?: 'original' | 'storage-saver';
-  space?: 'consuming' | 'non-consuming';
-  owned?: 'true' | 'false';
-  archived?: 'true' | 'false';
-  favorite?: 'true' | 'false';
+  type?: "video" | "image" | "live";
+  quality?: "original" | "storage-saver";
+  space?: "consuming" | "non-consuming";
+  owned?: "true" | "false";
+  archived?: "true" | "false";
+  favorite?: "true" | "false";
   excludeFavorites?: string;
-  hasLocation?: 'true' | 'false';
+  hasLocation?: "true" | "false";
   boundSouth?: string;
   boundWest?: string;
   boundNorth?: string;
   boundEast?: string;
-  uploadStatus?: 'full' | 'partial';
+  uploadStatus?: "full" | "partial";
   fileNameRegex?: string;
-  fileNameMatchType?: 'include' | 'exclude';
+  fileNameMatchType?: "include" | "exclude";
   descriptionRegex?: string;
-  descriptionMatchType?: 'include' | 'exclude';
+  descriptionMatchType?: "include" | "exclude";
   albumsInclude?: string | string[];
   albumsExclude?: string | string[];
   excludeShared?: string;
@@ -299,9 +299,20 @@ export interface Filter {
   similarityThreshold?: string;
   imageHeight?: string;
   sortBySize?: string;
+  /** Minimum video duration in seconds (videos shorter than this are excluded). */
+  minDuration?: string;
+  /** Maximum video duration in seconds (videos longer than this are excluded). */
+  maxDuration?: string;
 }
 
-export type Source = 'library' | 'search' | 'trash' | 'lockedFolder' | 'favorites' | 'sharedLinks' | 'albums';
+export type Source =
+  | "library"
+  | "search"
+  | "trash"
+  | "lockedFolder"
+  | "favorites"
+  | "sharedLinks"
+  | "albums";
 
 // ============================================================
 // API Settings Types
@@ -331,7 +342,7 @@ export interface Action {
 export interface WindowGlobalData {
   rapt?: unknown;
   account: string;
-  'f.sid': string;
+  "f.sid": string;
   bl: string;
   path: string;
   at: string;

@@ -208,6 +208,11 @@ export default class Core {
         condition: Boolean(filter.minWidth ?? filter.maxWidth ?? filter.minHeight ?? filter.maxHeight),
         method: () => filters.resolutionFilter(filteredItems, filter),
       },
+      {
+        // duration is available from the basic timeline response — no extended info needed
+        condition: Boolean(filter.minDuration ?? filter.maxDuration),
+        method: () => filters.filterByDuration(filteredItems, filter),
+      },
     ];
 
     // Apply basic filters
@@ -432,6 +437,11 @@ export default class Core {
     const maxH = parseInt(filter.maxHeight ?? '0');
     if (minH > 0 && maxH > 0 && minH >= maxH) {
       throw new Error('Invalid Resolution Filter: Min Height must be less than Max Height');
+    }
+    const minDur = parseFloat(filter.minDuration ?? '');
+    const maxDur = parseFloat(filter.maxDuration ?? '');
+    if (!isNaN(minDur) && !isNaN(maxDur) && minDur >= maxDur) {
+      throw new Error('Invalid Duration Filter: Min Duration must be less than Max Duration');
     }
     const bS = parseFloat(filter.boundSouth ?? '');
     const bW = parseFloat(filter.boundWest ?? '');

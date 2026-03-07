@@ -11,6 +11,7 @@ import {
   filterOwned,
   filterByUploadStatus,
   filterArchived,
+  filterByDuration,
   hammingDistance,
   calculateHashSize,
 } from '../src/filters';
@@ -359,6 +360,57 @@ describe('filterArchived', () => {
   it('filters non-archived items', () => {
     const result = filterArchived(items, makeFilter({ archived: 'false' }));
     // isArchived !== true → false and undefined
+    expect(result).toHaveLength(2);
+  });
+});
+
+// ─── filterByDuration ───────────────────────────────────────────────
+
+describe('filterByDuration', () => {
+  // duration on MediaItem is stored in milliseconds
+  const items = [
+    makeItem({ duration: 5_000 }),   //  5 s
+    makeItem({ duration: 30_000 }),  // 30 s
+    makeItem({ duration: 60_000 }),  // 60 s
+    makeItem({ duration: 120_000 }), // 120 s
+    makeItem({ duration: undefined }),// image — no duration
+  ];
+
+  it('filters videos longer than minDuration (in seconds)', () => {
+    const result = filterByDuration(items, makeFilter({ minDuration: '30' }));
+    // 30 s, 60 s, and 120 s qualify (>= 30 s); 5 s and undefined are excluded
+    expect(result).toHaveLength(3);
+    expect(result.every((i) => (i.duration ?? 0) >= 30_000)).toBe(true);
+  });
+
+  it('filters videos shorter than maxDuration (in seconds)', () => {
+    const result = filterByDuration(items, makeFilter({ maxDuration: '60' }));
+    // 5 s and 30 s and 60 s qualify (<= 60 s); 120 s and undefined are excluded
+    expect(result).toHaveLength(3);
+    expect(result.every((i) => (i.duration ?? Infinity) <= 60_000)).toBe(true);
+  });
+
+  it('applies both minDuration and maxDuration together', () => {
+    const result = filterByDuration(items, makeFilter({ minDuration: '10', maxDuration: '90' }));
+    // 30 s and 60 s qualify; 5 s, 120 s, and undefined are excluded
+    expect(result).toHaveLength(2);
+    expect(result.map((i) => i.duration)).toEqual([30_000, 60_000]);
+  });
+
+  it('excludes items with no duration (images) when minDuration is set', () => {
+    const result = filterByDuration(items, makeFilter({ minDuration: '1' }));
+    expect(result.every((i) => i.duration !== undefined)).toBe(true);
+  });
+
+  it('returns all items when neither minDuration nor maxDuration is set', () => {
+    const result = filterByDuration(items, makeFilter({}));
+    expect(result).toHaveLength(5);
+  });
+
+  it('handles fractional seconds (e.g. 0.5 s)', () => {
+    const shortClips = [makeItem({ duration: 400 }), makeItem({ duration: 600 }), makeItem({ duration: 1000 })];
+    const result = filterByDuration(shortClips, makeFilter({ minDuration: '0.5' }));
+    // 400 ms = 0.4 s → excluded; 600 ms = 0.6 s, 1000 ms = 1 s → included
     expect(result).toHaveLength(2);
   });
 });

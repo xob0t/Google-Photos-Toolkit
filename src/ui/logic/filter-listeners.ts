@@ -26,11 +26,9 @@ export default function filterListenersSetUp(): void {
     resetButton?.addEventListener('click', resetDateInput as EventListener);
   }
 
-  // Reset all filters button
   const filterResetButton = document.querySelector('#filterResetButton');
   filterResetButton?.addEventListener('click', resetAllFilters);
 
-  // Date reset button animation
   const dateResets = document.querySelectorAll('.date-reset');
   for (const reset of dateResets) {
     reset?.addEventListener('click', toggleClicked as EventListener);

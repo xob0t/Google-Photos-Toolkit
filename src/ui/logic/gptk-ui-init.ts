@@ -5,7 +5,7 @@ import getFromStorage from '../../utils/getFromStorage';
 import { addAlbums } from './album-selects-update';
 import { actionsListenersSetUp } from './action-bar';
 import { albumSelectsControlsSetUp } from './album-selects-controls';
-import controlButtonsListeners from './main-control-buttons';  // Fixed typo: was "controlButttonsListeners"
+import controlButtonsListeners from './main-control-buttons';
 import advancedSettingsListenersSetUp from './advanced-settings';
 import filterListenersSetUp from './filter-listeners';
 import registerMenuCommand from './register-menu-command';
@@ -27,7 +27,6 @@ export default function initUI(): void {
     addAlbums(cachedAlbums);
   }
 
-  // Confirm exit if process is running
   window.addEventListener('beforeunload', function (e: BeforeUnloadEvent) {
     if (unsafeWindow.gptkCore.isProcessRunning) {
       e.preventDefault();

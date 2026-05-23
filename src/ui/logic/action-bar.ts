@@ -23,7 +23,6 @@ const actions: Action[] = [
   { elementId: 'exportMetadata' },
 ];
 
-// Actions that modify data irreversibly and require an extra warning
 const destructiveActions: Record<string, string> = {
   setDateFromFilename: 'WARNING: This will overwrite the original photo dates. This action cannot be undone!',
 };
@@ -40,7 +39,6 @@ function userConfirmation(action: Action, filter: Filter): boolean {
     warning.push(`\n${filterDescription}`);
     warning.push(`\nAction: ${actionElement?.title ?? action.elementId}`);
 
-    // Add extra warning for destructive actions
     const destructiveWarning = destructiveActions[action.elementId];
     if (destructiveWarning) {
       warning.push(`\n\n${destructiveWarning}`);
@@ -56,7 +54,6 @@ async function runAction(actionId: string): Promise<void> {
   const action = actions.find((a) => a.elementId === actionId);
   if (!action) return;
 
-  // Get the target album if action has one
   let targetAlbum: Album | undefined;
   let newTargetAlbumName: string | undefined;
 
@@ -70,36 +67,26 @@ async function runAction(actionId: string): Promise<void> {
     newTargetAlbumName = nameInput?.value;
   }
 
-  // ID of currently selected source element
   const sourceInput = document.querySelector('input[name="source"]:checked');
   const source = (sourceInput?.id ?? 'library') as Source;
 
-  // Check filter validity
   const filtersForm = document.querySelector<HTMLFormElement>('.filters-form');
   if (filtersForm && !filtersForm.checkValidity()) {
     filtersForm.reportValidity();
     return;
   }
 
-  // Parsed filter object
   const filter = getFormData('.filters-form') as unknown as Filter;
-  // Parsed settings object
   const apiSettings = getFormData('.settings-form');
 
   if (!userConfirmation(action, filter)) return;
 
-  // Disable action bar while process is running
   disableActionBar(true);
-  // Add class to indicate which action is running
   const actionEl = document.getElementById(actionId);
   actionEl?.classList.add('running');
-  // Run it
   await core.actionWithFilter(action, filter, source, targetAlbum, newTargetAlbumName, apiSettings as unknown as ApiSettings);
-  // Remove 'running' class
   actionEl?.classList.remove('running');
-  // Update the UI
   updateUI();
-  // Force show main action bar
   showActionButtons();
 }
 

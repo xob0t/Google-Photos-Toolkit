@@ -6,7 +6,6 @@ import * as filters from './filters';
 import { apiSettingsDefault } from './api/api-utils-default-presets';
 import type { MediaItem, Filter, Source, Action, Album, ApiSettings, LibraryTimelinePage } from './types';
 
-// Action handler strategy map (FIX #10: replaces sequential if-chain)
 type ActionHandler = (params: ExecuteActionParams) => Promise<void>;
 
 interface ExecuteActionParams {
@@ -17,17 +16,6 @@ interface ExecuteActionParams {
   preserveOrder: boolean;
 }
 
-/**
- * Core orchestration class for the Google Photos Toolkit.
- *
- * Manages the process lifecycle, fetches media from various sources,
- * applies a chain of filters, and dispatches actions.
- *
- * Exposed globally as `gptkCore` for console scripting:
- * ```js
- * gptkCore.isProcessRunning; // check if a process is active
- * ```
- */
 export default class Core {
   isProcessRunning: boolean;
   api: Api;
@@ -39,7 +27,6 @@ export default class Core {
     this.isProcessRunning = false;
     this.api = new Api();
 
-    // Strategy map for actions — avoids sequential if-chain
     this.actionHandlers = {
       restoreTrash: async (p) => this.apiUtils.restoreFromTrash(p.mediaItems),
       unLock: async (p) => this.apiUtils.removeFromLockedFolder(p.mediaItems),
@@ -63,13 +50,6 @@ export default class Core {
     };
   }
 
-  /**
-   * Fetch media items from the given source and apply all active filters.
-   *
-   * @param filter - The filter configuration to apply.
-   * @param source - The media source to read from.
-   * @returns The filtered array of media items.
-   */
   async getAndFilterMedia(filter: Filter, source: Source): Promise<MediaItem[]> {
     const mediaItems = await this.fetchMediaItems(source, filter);
     log(`Found items: ${mediaItems.length}`);
@@ -79,13 +59,6 @@ export default class Core {
     return filteredItems;
   }
 
-  /**
-   * Fetch raw media items from the specified source (before filtering).
-   *
-   * @param source - The media source to read from.
-   * @param filter - The filter (used for date range and search query parameters).
-   * @returns Array of unfiltered media items from the source.
-   */
   async fetchMediaItems(source: Source, filter: Filter): Promise<MediaItem[]> {
     const sourceHandlers: Record<Source, () => Promise<MediaItem[]>> = {
       library: async () => {
@@ -158,18 +131,6 @@ export default class Core {
     return mediaItems;
   }
 
-  /**
-   * Apply all active filters to the media items.
-   *
-   * Filters are applied in a specific order: basic filters first, then
-   * extended info filters (which require an additional API call), and
-   * finally similarity detection.
-   *
-   * @param mediaItems - The items to filter.
-   * @param filter - The filter configuration.
-   * @param source - The media source (affects which filters apply).
-   * @returns The filtered array of media items.
-   */
   async applyFilters(mediaItems: MediaItem[], filter: Filter, source: Source): Promise<MediaItem[]> {
     let filteredItems = mediaItems;
 
@@ -220,14 +181,12 @@ export default class Core {
       },
     ];
 
-    // Apply basic filters
     for (const { condition, method } of filtersToApply) {
       if (condition && filteredItems.length) {
         filteredItems = await method();
       }
     }
 
-    // Apply filters based on extended media info
     if (
       filteredItems.length &&
       (filter.space ?? filter.quality ?? filter.lowerBoundarySize ?? filter.higherBoundarySize ?? filter.fileNameRegex ?? filter.descriptionRegex)
@@ -257,7 +216,6 @@ export default class Core {
       filteredItems.sort((a, b) => (b.size ?? 0) - (a.size ?? 0));
     }
 
-    // FIX #7: Added missing `await` for filterSimilar (was returning a Promise instead of results)
     if (filteredItems.length > 0 && filter.similarityThreshold) {
       filteredItems = await filters.filterSimilar(this, filteredItems, filter);
     }
@@ -324,10 +282,6 @@ export default class Core {
 
     let nextPageId: string | null = null;
 
-    // FIX #1: Fixed operator precedence bug.
-    // Before: Number.isInteger(lowerBoundaryDate || Number.isInteger(higherBoundaryDate))
-    // The inner Number.isInteger was evaluated first, producing a boolean, which was
-    // then OR'd with lowerBoundaryDate and passed to the outer Number.isInteger.
     if ((Number.isInteger(lowerBoundaryDate) || Number.isInteger(higherBoundaryDate)) && filter.intervalType === 'include') {
       let nextPageTimestamp: number | null = higherBoundaryDate !== Infinity ? higherBoundaryDate : null;
       do {
@@ -467,18 +421,6 @@ export default class Core {
     }
   }
 
-  /**
-   * Main entry point: fetch, filter, and execute an action on media items.
-   *
-   * This is the method called by the UI when the user clicks an action button.
-   *
-   * @param action - The action to perform (e.g. toTrash, toArchive, toExistingAlbum).
-   * @param filter - The filter configuration from the UI form.
-   * @param source - The media source to read from.
-   * @param targetAlbum - Target album (for "add to existing album" action).
-   * @param newTargetAlbumName - New album name (for "add to new album" action).
-   * @param apiSettings - Optional API settings overrides (concurrency, batch sizes).
-   */
   async actionWithFilter(
     action: Action,
     filter: Filter,
@@ -495,7 +437,6 @@ export default class Core {
     }
 
     this.isProcessRunning = true;
-    // Dispatch event to update the UI without importing it
     document.dispatchEvent(new Event('change'));
     this.apiUtils = new ApiUtils(this, apiSettings ?? apiSettingsDefault);
 
@@ -503,16 +444,13 @@ export default class Core {
       const startTime = new Date();
       const mediaItems = await this.getAndFilterMedia(filter, source);
 
-      // Early exit if no items to process
       if (!mediaItems?.length) {
         log('No items to process');
         return;
       }
 
-      // Exit if process was stopped externally
       if (!this.isProcessRunning) return;
 
-      // Execute the appropriate action
       await this.executeAction(action, {
         mediaItems,
         source,
@@ -532,7 +470,6 @@ export default class Core {
   async executeAction(action: Action, params: ExecuteActionParams): Promise<void> {
     log(`Items to process: ${params.mediaItems.length}`);
 
-    // Use strategy map — also handle special cases for source-based actions
     let actionId = action.elementId;
     if (actionId === 'restoreTrash' || params.source === 'trash') actionId = 'restoreTrash';
     if (actionId === 'unLock' || params.source === 'lockedFolder') actionId = 'unLock';

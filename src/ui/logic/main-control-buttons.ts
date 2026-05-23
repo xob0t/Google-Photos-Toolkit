@@ -1,7 +1,6 @@
 import log from './log';
 import { core } from '../../globals';
 
-// Fixed typo: was "controlButttonsListeners" (triple-t)
 export default function controlButtonsListeners(): void {
   const clearLogButton = document.getElementById('clearLog');
   clearLogButton?.addEventListener('click', clearLog);

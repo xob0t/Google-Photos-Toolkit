@@ -18,12 +18,10 @@ export function insertUi(): void {
       createHTML: (s: string) => s,
     });
   }
-  // HTML
   let buttonInsertLocation = '.J3TAe';
   if (window.location.href.includes('lockedfolder')) buttonInsertLocation = '.c9yG5b';
   document.querySelector(buttonInsertLocation)?.insertAdjacentHTML('afterbegin', htmlTemplatePrep(buttonHtml));
   document.body.insertAdjacentHTML('afterbegin', htmlTemplatePrep(gptkMainTemplate));
-  // CSS
   const style = document.createElement('style');
   style.textContent = css;
   document.head.appendChild(style);

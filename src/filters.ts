@@ -114,7 +114,6 @@ export function filterByDate(mediaItems: MediaItem[], filter: Filter): MediaItem
 }
 
 export function filterByMediaType(mediaItems: MediaItem[], filter: Filter): MediaItem[] {
-  // if has duration - video, else image
   log('Filtering by media type');
   let result = mediaItems;
   if (filter.type === 'video') result = mediaItems.filter((item) => item.duration);
@@ -136,8 +135,6 @@ export function filterFavorite(mediaItems: MediaItem[], filter: Filter): MediaIt
   return result;
 }
 
-// Coordinates from Google's API are in microdegrees (×10⁷).
-// Convert to decimal degrees for comparison.
 function toDecimalDegrees(microDeg: number): number {
   // Values > 360 or < -360 are clearly microdegrees
   return Math.abs(microDeg) > 360 ? microDeg / 1e7 : microDeg;
@@ -152,7 +149,6 @@ export function filterByLocation(mediaItems: MediaItem[], filter: Filter): Media
     result = result.filter((item) => !item.geoLocation?.coordinates?.length);
   }
 
-  // Bounding box filter
   const south = parseFloat(filter.boundSouth ?? '');
   const west = parseFloat(filter.boundWest ?? '');
   const north = parseFloat(filter.boundNorth ?? '');
@@ -216,7 +212,6 @@ export function filterArchived(mediaItems: MediaItem[], filter: Filter): MediaIt
   return result;
 }
 
-// Process images in batches with yield points
 async function processBatch<T, R>(
   items: T[],
   processFn: (item: T) => Promise<R | null>,
@@ -237,19 +232,16 @@ async function processBatch<T, R>(
     for (const r of batchResults) {
       if (r !== null) results.push(r);
     }
-    // Yield to UI thread after each batch
     await defer(() => {});
   }
   return results;
 }
 
-// This being a userscript prevents it from using web workers
-// dHash implementation with non-blocking behavior
+// This being a userscript prevents it from using web workers.
 async function generateImageHash(hashSize: number, blob: Blob, core: Core): Promise<bigint | null> {
   if (!blob) return null;
   if (!core.isProcessRunning) return null;
 
-  // Load image
   const img = new Image();
   const url = URL.createObjectURL(blob);
   await new Promise<void>((resolve, reject) => {
@@ -263,7 +255,6 @@ async function generateImageHash(hashSize: number, blob: Blob, core: Core): Prom
     return null;
   }
 
-  // Yield to UI thread after image loads
   await defer(() => {});
 
   const canvas = document.createElement('canvas');
@@ -273,32 +264,25 @@ async function generateImageHash(hashSize: number, blob: Blob, core: Core): Prom
   canvas.width = hashSize + 1;
   canvas.height = hashSize;
 
-  // Draw the image scaled down
   ctx.drawImage(img, 0, 0, hashSize + 1, hashSize);
   URL.revokeObjectURL(url);
 
   if (!core.isProcessRunning) return null;
 
-  // Get pixel data
   const imageData = ctx.getImageData(0, 0, hashSize + 1, hashSize);
   const pixels = imageData.data;
 
-  // Yield to UI thread before processing pixels
   return await defer(() => {
-    // Calculate the hash using differences between adjacent pixels
     let hash = 0n;
 
     for (let y = 0; y < hashSize; y++) {
       for (let x = 0; x < hashSize; x++) {
-        // Position in the pixel array
         const pos = (y * (hashSize + 1) + x) * 4;
         const nextPos = (y * (hashSize + 1) + x + 1) * 4;
 
-        // Convert to grayscale using ITU-R BT.601 luminance weights
         const gray1 = 0.299 * pixels[pos] + 0.587 * pixels[pos + 1] + 0.114 * pixels[pos + 2];
         const gray2 = 0.299 * pixels[nextPos] + 0.587 * pixels[nextPos + 1] + 0.114 * pixels[nextPos + 2];
 
-        // Set bit if left pixel is brighter than right pixel
         if (gray1 > gray2) {
           hash |= 1n << BigInt(y * hashSize + x);
         }
@@ -333,7 +317,6 @@ async function groupSimilarImages(
 ): Promise<HashedMediaItem[][]> {
   const groups: HashedMediaItem[][] = [];
 
-  // Process in small batches to prevent UI blocking
   const batchSize = 10;
   for (let i = 0; i < imageHashes.length; i += batchSize) {
     const batch = imageHashes.slice(i, i + batchSize);
@@ -346,7 +329,6 @@ async function groupSimilarImages(
         const groupHash = group[0].hash;
         const distance = hammingDistance(image.hash, groupHash);
 
-        // Max distance for a 8x8 hash is 64
         const maxPossibleDistance = hashSize * hashSize;
         const similarity = 1 - distance / maxPossibleDistance;
 
@@ -362,14 +344,12 @@ async function groupSimilarImages(
       }
     }
 
-    // Yield to UI thread after each batch
     await defer(() => {});
   }
 
   return groups.filter((group) => group.length > 1);
 }
 
-// Fetch image blobs with concurrency control
 async function fetchImageBlobs(
   mediaItems: MediaItem[],
   maxConcurrency: number,
@@ -383,12 +363,12 @@ async function fetchImageBlobs(
     for (let attempt = 1; attempt <= retries; attempt++) {
       if (!core.isProcessRunning) return null;
 
-      const url = item.thumb + `=h${imageHeight}`; // Resize image
+      const url = item.thumb + `=h${imageHeight}`;
       try {
         const response = await fetch(url, {
           cache: 'force-cache',
           credentials: 'include',
-          signal: AbortSignal.timeout(10000), // fetch timeout 10s
+          signal: AbortSignal.timeout(10000),
         });
 
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -400,7 +380,7 @@ async function fetchImageBlobs(
         const errMsg = error instanceof Error ? error.message : String(error);
         if (attempt < retries) {
           log(`Attempt ${attempt} failed for ${item.mediaKey} (${errMsg}). Retrying...`, 'error');
-          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt)); // backoff
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
         } else {
           log(`Failed to fetch thumb ${item.mediaKey} after ${retries} attempts. Final error: ${errMsg}`, 'error');
           return null;
@@ -413,7 +393,6 @@ async function fetchImageBlobs(
   const results: (MediaItem & { blob: Blob })[] = [];
   const queue = [...mediaItems];
 
-  // Process the queue with concurrency control
   const worker = async (): Promise<void> => {
     while (queue.length > 0) {
       if (!core.isProcessRunning) return;
@@ -425,31 +404,25 @@ async function fetchImageBlobs(
     }
   };
 
-  // Start multiple workers to handle concurrent fetches
   const workers = Array.from({ length: maxConcurrency }, () => worker());
   await Promise.all(workers);
 
   return results;
 }
 
-// Calculate an appropriate hash size based on image height
 export function calculateHashSize(imageHeight: number): number {
-  // Base hash size on the square root of the height
   const baseSize = Math.max(8, Math.floor(Math.sqrt(imageHeight) / 4));
 
-  // Keep hash size reasonable to prevent performance issues
   return Math.min(32, baseSize);
 }
 
-// Main function to filter similar media items
 export async function filterSimilar(core: Core, mediaItems: MediaItem[], filter: Filter): Promise<MediaItem[]> {
   const maxConcurrentFetches = 50;
   const similarityThreshold = Number(filter.similarityThreshold) || 0.9;
   const imageHeight = Number(filter.imageHeight) || 100;
-  const hashSize = calculateHashSize(imageHeight); // Dynamic hash size
+  const hashSize = calculateHashSize(imageHeight);
 
-  // FIX #82: Skip items that have no thumbnail URL. Expired or missing
-  // thumbs cause HTTP 400 errors that abort the entire similarity run.
+  // Expired or missing thumbs cause HTTP 400 errors that abort the similarity run.
   const itemsWithThumbs = mediaItems.filter((item) => !!item.thumb);
   const skippedCount = mediaItems.length - itemsWithThumbs.length;
   if (skippedCount > 0) {
@@ -461,7 +434,6 @@ export async function filterSimilar(core: Core, mediaItems: MediaItem[], filter:
   if (!core.isProcessRunning) return [];
 
   log('Generating image hashes');
-  // Process images in batches to prevent UI blocking
   const itemsWithHashes = await processBatch(
     itemsWithBlobs,
     async (item) => {
@@ -469,7 +441,7 @@ export async function filterSimilar(core: Core, mediaItems: MediaItem[], filter:
       const hash = await generateImageHash(hashSize, item.blob, core);
       return hash !== null ? { ...item, hash } : null;
     },
-    50, // Process 50 images per batch
+    50,
     core
   );
   if (!core.isProcessRunning) return [];
@@ -482,7 +454,6 @@ export async function filterSimilar(core: Core, mediaItems: MediaItem[], filter:
     core
   );
 
-  // Flatten the groups into a single array of items
   const flattenedGroups: MediaItem[] = groups.flat();
 
   log(`Found ${flattenedGroups.length} similar items across ${groups.length} groups`);

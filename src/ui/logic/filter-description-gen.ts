@@ -1,7 +1,5 @@
 import type { Filter } from '../../types';
 
-// ── helpers ────────────────────────────────────────────────────────────
-
 function parseSize(value?: string): number {
   return parseInt(value ?? '0', 10);
 }
@@ -20,59 +18,43 @@ function pluralAlbums(keys: string | string[], noun: string): string {
     : `in the ${noun} album`;
 }
 
-// ── rule type ──────────────────────────────────────────────────────────
-
 interface DescriptionRule {
-  /** Return true when this rule should contribute text. */
   test: (f: Filter) => boolean;
-  /** Return the fragment(s) to append. */
   describe: (f: Filter) => string | string[];
 }
 
-// ── rules ──────────────────────────────────────────────────────────────
-
 const rules: DescriptionRule[] = [
-  // ownership
   { test: (f) => f.owned === 'true',   describe: () => 'owned' },
   { test: (f) => f.owned === 'false',  describe: () => 'not owned' },
 
-  // space
   { test: (f) => f.space === 'consuming',      describe: () => 'space consuming' },
   { test: (f) => f.space === 'non-consuming',   describe: () => 'non-space consuming' },
 
-  // upload status
   { test: (f) => f.uploadStatus === 'full',     describe: () => 'fully uploaded' },
   { test: (f) => f.uploadStatus === 'partial',  describe: () => 'partially uploaded' },
 
-  // shared
   { test: (f) => f.excludeShared === 'true', describe: () => 'non-shared' },
 
-  // favorites
   { test: (f) => f.favorite === 'true', describe: () => 'favorite' },
   {
     test: (f) => f.excludeFavorites === 'true' || f.favorite === 'false',
     describe: () => 'non-favorite',
   },
 
-  // quality
   { test: (f) => f.quality === 'original',       describe: () => 'original quality' },
   { test: (f) => f.quality === 'storage-saver',  describe: () => 'storage-saver quality' },
 
-  // location
   { test: (f) => f.hasLocation === 'true',  describe: () => 'with location' },
   { test: (f) => f.hasLocation === 'false', describe: () => 'without location' },
 
-  // bounding box
   {
     test: (f) => Boolean(f.boundSouth && f.boundWest && f.boundNorth && f.boundEast),
     describe: (f) => `within area S${f.boundSouth} W${f.boundWest} N${f.boundNorth} E${f.boundEast}`,
   },
 
-  // archive
   { test: (f) => f.archived === 'true',  describe: () => 'archived' },
   { test: (f) => f.archived === 'false', describe: () => 'non-archived' },
 
-  // media type (always produces a token)
   {
     test: () => true,
     describe: (f) => {
@@ -85,13 +67,11 @@ const rules: DescriptionRule[] = [
     },
   },
 
-  // search query
   {
     test: (f) => !!f.searchQuery,
     describe: (f) => `in search results of query "${f.searchQuery}"`,
   },
 
-  // filename regex
   {
     test: (f) => !!f.fileNameRegex,
     describe: (f) => {
@@ -100,7 +80,6 @@ const rules: DescriptionRule[] = [
     },
   },
 
-  // description regex
   {
     test: (f) => !!f.descriptionRegex,
     describe: (f) => {
@@ -109,13 +88,11 @@ const rules: DescriptionRule[] = [
     },
   },
 
-  // similarity
   {
     test: (f) => !!f.similarityThreshold,
     describe: (f) => `with similarity more than "${f.similarityThreshold}"`,
   },
 
-  // resolution
   {
     test: (f) => parseSize(f.minWidth) > 0 || parseSize(f.maxWidth) > 0 || parseSize(f.minHeight) > 0 || parseSize(f.maxHeight) > 0,
     describe: (f) => {
@@ -132,7 +109,6 @@ const rules: DescriptionRule[] = [
     },
   },
 
-  // duration range
   {
     test: (f) => !isNaN(parseNumber(f.minDuration)) || !isNaN(parseNumber(f.maxDuration)),
     describe: (f) => {
@@ -145,7 +121,6 @@ const rules: DescriptionRule[] = [
     },
   },
 
-  // size range
   {
     test: (f) => parseSize(f.lowerBoundarySize) > 0 || parseSize(f.higherBoundarySize) > 0,
     describe: (f) => {
@@ -159,19 +134,16 @@ const rules: DescriptionRule[] = [
     },
   },
 
-  // albums include
   {
     test: (f) => !!f.albumsInclude,
     describe: (f) => pluralAlbums(f.albumsInclude ?? [], 'target'),
   },
 
-  // albums exclude
   {
     test: (f) => !!f.albumsExclude,
     describe: (f) => ['excluding items', pluralAlbums(f.albumsExclude ?? [], 'selected')],
   },
 
-  // date range
   {
     test: (f) => Boolean(f.lowerBoundaryDate ?? f.higherBoundaryDate),
     describe: (f) => {
@@ -198,11 +170,8 @@ const rules: DescriptionRule[] = [
     },
   },
 
-  // sort
   { test: (f) => !!f.sortBySize, describe: () => 'sorted by size' },
 ];
-
-// ── validation ─────────────────────────────────────────────────────────
 
 function validate(filter: Filter): string | null {
   if (
@@ -256,8 +225,6 @@ function validate(filter: Filter): string | null {
 
   return null;
 }
-
-// ── main ───────────────────────────────────────────────────────────────
 
 export function generateFilterDescription(filter: Filter): string {
   const error = validate(filter);

@@ -1,7 +1,3 @@
-// ============================================================
-// Media Item Types
-// ============================================================
-
 export interface GeoLocation {
   coordinates?: number[];
   name?: string;
@@ -49,21 +45,15 @@ export interface MediaItem {
   saved?: boolean;
   sourceAlbumMediaKey?: string;
   sourceAlbumTitle?: string;
-  // Extended media info (from getBatchMediaInfo)
   descriptionFull?: string;
   fileName?: string;
   size?: number;
   takesUpSpace?: boolean | null;
   spaceTaken?: number;
   isOriginalQuality?: boolean | null;
-  // Similarity filtering additions
   blob?: Blob;
   hash?: bigint;
 }
-
-// ============================================================
-// Album Types
-// ============================================================
 
 export interface Album {
   mediaKey: string;
@@ -77,31 +67,19 @@ export interface Album {
   isShared?: boolean;
 }
 
-// ============================================================
-// Shared Link Types
-// ============================================================
-
 export interface SharedLink {
   mediaKey: string;
   linkId: string;
   itemCount?: number;
 }
 
-// ============================================================
-// Actor Types
-// ============================================================
-
 export interface Actor {
   actorId?: string;
   gaiaId?: string;
   name?: string;
   gender?: string;
-  profilePhotoUrl?: string;  // Fixed typo: was "profiePhotoUrl"
+  profilePhotoUrl?: string;
 }
-
-// ============================================================
-// Page / Paginated Response Types
-// ============================================================
 
 export interface LibraryTimelinePage {
   items?: MediaItem[];
@@ -149,7 +127,7 @@ export interface PartnerSharedItemsPage {
   nextPageId?: string;
   items?: PartnerSharedItem[];
   members?: Actor[];
-  partnerActorId?: string;  // Fixed typo: was "parnterActorId"
+  partnerActorId?: string;
   gaiaId?: string;
 }
 
@@ -157,10 +135,6 @@ export interface TrashPage {
   items?: MediaItem[];
   nextPageId?: string;
 }
-
-// ============================================================
-// Media Info Types
-// ============================================================
 
 export interface BulkMediaInfo {
   mediaKey: string;
@@ -223,10 +197,6 @@ export interface ItemInfo {
   thumb?: string;
 }
 
-// ============================================================
-// Download Types
-// ============================================================
-
 export interface DownloadTokenCheck {
   fileName?: string;
   downloadUrl?: string;
@@ -234,19 +204,11 @@ export interface DownloadTokenCheck {
   unzippedSize?: number;
 }
 
-// ============================================================
-// Storage Quota Types
-// ============================================================
-
 export interface StorageQuota {
   totalUsed?: number;
   totalAvailable?: number;
   usedByGPhotos?: number;
 }
-
-// ============================================================
-// Remote Match Types
-// ============================================================
 
 export interface RemoteMatch {
   hash?: string;
@@ -261,10 +223,6 @@ export interface RemoteMatch {
   duration?: number;
   cameraInfo?: unknown;
 }
-
-// ============================================================
-// Filter Types
-// ============================================================
 
 export interface Filter {
   dateType?: 'taken' | 'uploaded';
@@ -307,10 +265,6 @@ export interface Filter {
 
 export type Source = 'library' | 'search' | 'trash' | 'lockedFolder' | 'favorites' | 'sharedLinks' | 'albums';
 
-// ============================================================
-// API Settings Types
-// ============================================================
-
 export interface ApiSettings {
   maxConcurrentSingleApiReq: number;
   maxConcurrentBatchApiReq: number;
@@ -319,18 +273,10 @@ export interface ApiSettings {
   infoSize: number;
 }
 
-// ============================================================
-// Action Types
-// ============================================================
-
 export interface Action {
   elementId: string;
   targetId?: string;
 }
-
-// ============================================================
-// Window Global Data
-// ============================================================
 
 export interface WindowGlobalData {
   rapt?: unknown;
@@ -341,19 +287,11 @@ export interface WindowGlobalData {
   at: string;
 }
 
-// ============================================================
-// Parsed page type (generic for getAllItems)
-// ============================================================
-
 export interface PaginatedPage<T = MediaItem> {
   items?: T[];
   nextPageId?: string;
   lastItemTimestamp?: number;
 }
-
-// ============================================================
-// Image hash for similarity filtering
-// ============================================================
 
 export interface ImageHash {
   hash: bigint;

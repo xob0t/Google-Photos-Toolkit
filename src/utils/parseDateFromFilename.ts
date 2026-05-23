@@ -12,33 +12,18 @@
  * This is separator-agnostic, meaning any non-digit characters between
  * numbers are ignored (e.g., "2023-05-15", "20230515", "2023_05_15" all work).
  *
- * @example
- * parseDateFromFilename("IMG_20230515_143022.jpg") // → 2023-05-15T14:30:22
- * parseDateFromFilename("Screenshot_2023-05-15-14-30-22.png") // → 2023-05-15T14:30:22
- * parseDateFromFilename("photo_20230515.jpg") // → 2023-05-15T00:00:00
  */
 
 export interface ParsedDate {
-  /** Timestamp in epoch milliseconds */
   timestamp: number;
-  /** Year extracted from filename */
   year: number;
-  /** Month extracted from filename (1-12) */
   month: number;
-  /** Day extracted from filename (1-31) */
   day: number;
-  /** Hour extracted from filename (0-23), defaults to 0 */
   hour: number;
-  /** Minute extracted from filename (0-59), defaults to 0 */
   minute: number;
-  /** Second extracted from filename (0-59), defaults to 0 */
   second: number;
 }
 
-/**
- * Extract all digit sequences from a string.
- * Returns an array of { value: string, index: number } objects.
- */
 function extractDigitSequences(str: string): Array<{ value: string; index: number }> {
   const sequences: Array<{ value: string; index: number }> = [];
   const regex = /\d+/g;
@@ -51,11 +36,7 @@ function extractDigitSequences(str: string): Array<{ value: string; index: numbe
   return sequences;
 }
 
-/**
- * Validate that the extracted values form a valid date.
- */
 function isValidDate(year: number, month: number, day: number, hour: number, minute: number, second: number): boolean {
-  // Basic range checks
   if (year < 1900 || year > 2100) return false;
   if (month < 1 || month > 12) return false;
   if (day < 1 || day > 31) return false;
@@ -63,7 +44,6 @@ function isValidDate(year: number, month: number, day: number, hour: number, min
   if (minute < 0 || minute > 59) return false;
   if (second < 0 || second > 59) return false;
 
-  // Check if the date is actually valid (handles Feb 30, etc.)
   const date = new Date(year, month - 1, day, hour, minute, second);
   return (
     date.getFullYear() === year &&
@@ -88,15 +68,12 @@ function isValidDate(year: number, month: number, day: number, hour: number, min
  * @returns ParsedDate object if a valid date was found, null otherwise
  */
 export function parseDateFromFilename(filename: string): ParsedDate | null {
-  // Extract just the filename without path
   const baseName = filename.replace(/^.*[\\/]/, '');
 
-  // Extract all digit sequences
   const sequences = extractDigitSequences(baseName);
 
   if (sequences.length === 0) return null;
 
-  // Try different starting points for the year
   for (let startIdx = 0; startIdx < sequences.length; startIdx++) {
     const result = tryParseFromSequence(sequences, startIdx);
     if (result) return result;
@@ -105,9 +82,6 @@ export function parseDateFromFilename(filename: string): ParsedDate | null {
   return null;
 }
 
-/**
- * Try to parse a date starting from a specific sequence index.
- */
 function tryParseFromSequence(
   sequences: Array<{ value: string; index: number }>,
   startIdx: number
@@ -123,12 +97,10 @@ function tryParseFromSequence(
   if (firstSeq.value.length === 8) {
     const dateResult = tryParseConcatenatedFormat(firstSeq.value);
     if (dateResult && startIdx + 1 < sequences.length) {
-      // Check if next sequence could be time (HHMMSS or 6 digits)
       const nextSeq = sequences[startIdx + 1];
       if (nextSeq.value.length === 6) {
         const timeResult = tryParseTimeSequence(nextSeq.value);
         if (timeResult) {
-          // Combine date and time
           const fullDate = new Date(
             dateResult.year,
             dateResult.month - 1,
@@ -163,9 +135,6 @@ function tryParseFromSequence(
   return null;
 }
 
-/**
- * Parse time from a 6-digit sequence (HHMMSS).
- */
 function tryParseTimeSequence(digits: string): { hour: number; minute: number; second: number } | null {
   if (digits.length !== 6) return null;
 
@@ -173,7 +142,6 @@ function tryParseTimeSequence(digits: string): { hour: number; minute: number; s
   const minute = parseInt(digits.substring(2, 4), 10);
   const second = parseInt(digits.substring(4, 6), 10);
 
-  // Validate time components
   if (hour < 0 || hour > 23) return null;
   if (minute < 0 || minute > 59) return null;
   if (second < 0 || second > 59) return null;
@@ -234,13 +202,11 @@ function tryParseWithSeparateComponents(
 
   const yearSeq = sequences[yearIdx];
 
-  // Year must be exactly 4 digits
   if (yearSeq.value.length !== 4) return null;
 
   const year = parseInt(yearSeq.value, 10);
   if (year < 1900 || year > 2100) return null;
 
-  // Look for subsequent components
   let month = 1;
   let day = 1;
   let hour = 0;
@@ -249,10 +215,8 @@ function tryParseWithSeparateComponents(
   let foundMonth = false;
   let foundDay = false;
 
-  // Process remaining sequences
   let seqIdx = yearIdx + 1;
 
-  // Month
   if (seqIdx < sequences.length) {
     const monthVal = extractTwoDigitValue(sequences[seqIdx].value);
     if (monthVal !== null && monthVal >= 1 && monthVal <= 12) {
@@ -262,7 +226,6 @@ function tryParseWithSeparateComponents(
     }
   }
 
-  // Day
   if (foundMonth && seqIdx < sequences.length) {
     const dayVal = extractTwoDigitValue(sequences[seqIdx].value);
     if (dayVal !== null && dayVal >= 1 && dayVal <= 31) {
@@ -272,7 +235,6 @@ function tryParseWithSeparateComponents(
     }
   }
 
-  // Hour
   if (foundDay && seqIdx < sequences.length) {
     const hourVal = extractTwoDigitValue(sequences[seqIdx].value);
     if (hourVal !== null && hourVal >= 0 && hourVal <= 23) {
@@ -281,7 +243,6 @@ function tryParseWithSeparateComponents(
     }
   }
 
-  // Minute
   if (seqIdx < sequences.length && hour > 0) {
     const minuteVal = extractTwoDigitValue(sequences[seqIdx].value);
     if (minuteVal !== null && minuteVal >= 0 && minuteVal <= 59) {
@@ -290,7 +251,6 @@ function tryParseWithSeparateComponents(
     }
   }
 
-  // Second
   if (seqIdx < sequences.length && minute > 0) {
     const secondVal = extractTwoDigitValue(sequences[seqIdx].value);
     if (secondVal !== null && secondVal >= 0 && secondVal <= 59) {
@@ -298,7 +258,6 @@ function tryParseWithSeparateComponents(
     }
   }
 
-  // Must have at least year, month, and day
   if (!foundMonth || !foundDay) return null;
 
   if (!isValidDate(year, month, day, hour, minute, second)) {
@@ -318,19 +277,12 @@ function tryParseWithSeparateComponents(
   };
 }
 
-/**
- * Extract a 2-digit value from a sequence.
- * If the sequence is longer, only the first 2 digits are used.
- */
 function extractTwoDigitValue(seq: string): number | null {
   if (seq.length < 2) return null;
   const val = parseInt(seq.substring(0, 2), 10);
   return isNaN(val) ? null : val;
 }
 
-/**
- * Format a ParsedDate as an ISO-like string for display.
- */
 export function formatParsedDate(parsed: ParsedDate): string {
   const pad = (n: number): string => n.toString().padStart(2, '0');
   return `${parsed.year}-${pad(parsed.month)}-${pad(parsed.day)} ${pad(parsed.hour)}:${pad(parsed.minute)}:${pad(parsed.second)}`;

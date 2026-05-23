@@ -1,15 +1,11 @@
-/* ================================================================
-   Google Photos Toolkit — Modern UI
-   ================================================================ */
-
 :root {
-    /* Accent */
+
     --accent: #3b82f6;
     --accent-hover: #60a5fa;
     --accent-muted: rgba(59, 130, 246, 0.15);
     --accent-glow: rgba(59, 130, 246, 0.25);
 
-    /* Surfaces — low to high */
+
     --bg-base: #0c0c0e;
     --bg-raised: #111114;
     --bg-overlay: #161619;
@@ -17,28 +13,28 @@
     --bg-surface-hover: #242429;
     --bg-surface-active: #2a2a30;
 
-    /* Borders */
+
     --border-subtle: rgba(255, 255, 255, 0.06);
     --border-default: rgba(255, 255, 255, 0.09);
     --border-strong: rgba(255, 255, 255, 0.14);
 
-    /* Text */
+
     --text-primary: #e4e4e8;
     --text-secondary: #9a9aa5;
     --text-tertiary: #65656f;
     --text-disabled: #45454d;
 
-    /* Semantic */
+
     --danger: #ef4444;
     --danger-muted: rgba(239, 68, 68, 0.12);
     --danger-hover: #f87171;
     --success: #34d399;
     --warning-text: #fbbf24;
 
-    /* Overlay */
+
     --overlay-filter: blur(12px) brightness(0.3) saturate(0.8);
 
-    /* Tokens */
+
     --radius-xs: 4px;
     --radius-sm: 6px;
     --radius-md: 8px;
@@ -51,9 +47,6 @@
                      0 0 0 1px var(--border-subtle);
 }
 
-/* ============================================
-   OVERLAY
-   ============================================ */
 .overlay {
     position: absolute;
     display: none;
@@ -67,9 +60,6 @@
     transition: opacity var(--duration) var(--ease);
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
 @media only screen and (min-width: 700px) {
     .window-body {
         display: grid;
@@ -111,9 +101,6 @@
     }
 }
 
-/* ============================================
-   MAIN CONTAINER
-   ============================================ */
 #gptk {
     position: fixed;
     top: 4%;
@@ -150,9 +137,7 @@
     .grid { display: grid; }
     .columns { gap: 1px; margin-bottom: 1px; grid-auto-flow: column; }
 
-    /* ============================================
-       GLOBAL ELEMENTS
-       ============================================ */
+
     hr {
         border: none;
         margin: 0;
@@ -160,7 +145,7 @@
         border-bottom: 1px solid var(--border-subtle);
     }
 
-    /* ── Buttons ────────────────────────────── */
+
     button {
         background-color: var(--bg-surface);
         color: var(--text-primary);
@@ -228,7 +213,7 @@
         font-weight: 500;
     }
 
-    /* ── Form Inputs ───────────────────────── */
+
     input[type="text"],
     input[type="input"],
     input[type="number"],
@@ -286,7 +271,7 @@
         color: white;
     }
 
-    /* ── Radio & Checkbox Groups ───────────── */
+
     .radio-group {
         display: flex;
         flex-wrap: wrap;
@@ -316,9 +301,7 @@
         accent-color: var(--accent);
     }
 
-    /* ============================================
-       HEADER
-       ============================================ */
+
     .header {
         padding: 10px 16px;
         display: flex;
@@ -350,7 +333,7 @@
         }
     }
 
-    /* ── Step Flow Indicator ────────────────── */
+
     .header-steps {
         display: flex;
         align-items: center;
@@ -399,9 +382,7 @@
         background-color: var(--bg-surface-hover);
     }
 
-    /* ============================================
-       PANEL SECTIONS (Step sections in sidebar & main)
-       ============================================ */
+
     .panel-section {
         padding: 0;
         flex-shrink: 0;
@@ -425,9 +406,7 @@
         user-select: none;
     }
 
-    /* ============================================
-       SOURCE TABS
-       ============================================ */
+
     .sources {
         gap: 3px;
         display: flex;
@@ -479,9 +458,7 @@
         }
     }
 
-    /* ============================================
-       ACTION BAR
-       ============================================ */
+
     .action-bar {
         display: flex;
         flex-direction: column;
@@ -594,18 +571,14 @@
         justify-content: center;
     }
 
-    /* ============================================
-       WINDOW BODY
-       ============================================ */
+
     .window-body {
         flex: 1 1 0;
         min-height: 0;
         overflow: hidden;
     }
 
-    /* ============================================
-       SIDEBAR
-       ============================================ */
+
     .sidebar {
         height: 100%;
         position: relative;
@@ -636,7 +609,7 @@
             }
         }
 
-        /* ── Sidebar Summary / Details ──────── */
+
         summary {
             font-size: 12.5px;
             font-weight: 600;
@@ -671,7 +644,7 @@
             color: var(--accent);
         }
 
-        /* Active filter highlight */
+
         details.filter-active > summary {
             color: var(--accent);
             background-color: var(--accent-muted);
@@ -823,9 +796,7 @@
         }
     }
 
-    /* ============================================
-       MAIN PANEL
-       ============================================ */
+
     .main {
         height: 100%;
         overflow: auto;
@@ -901,9 +872,7 @@
         }
     }
 
-    /* ============================================
-       FOOTER
-       ============================================ */
+
     .footer {
         width: 100%;
         padding: 6px 14px;
@@ -946,9 +915,7 @@
         }
     }
 
-    /* ============================================
-       SCROLLBAR
-       ============================================ */
+
     .scroll::-webkit-scrollbar {
         width: 5px;
         height: 5px;
@@ -973,7 +940,7 @@
         background-color: transparent;
     }
 
-    /* fade scrollbar */
+
     .scroll::-webkit-scrollbar-thumb,
     .scroll::-webkit-scrollbar-track {
         visibility: hidden;

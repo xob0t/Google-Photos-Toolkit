@@ -42,8 +42,6 @@ export default function advancedSettingsListenersSetUp(): void {
   lockedFolderOpSizeInput.value = String(restoredSettings?.lockedFolderOpSize ?? apiSettingsDefault.lockedFolderOpSize);
   infoSizeInput.value = String(restoredSettings?.infoSize ?? apiSettingsDefault.infoSize);
 
-  // Add event listener for form submission
   settingsForm?.addEventListener('submit', saveApiSettings);
-  // Add event listener for "Default" button click
   defaultButton?.addEventListener('click', restoreApiDefaults);
 }

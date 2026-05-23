@@ -20,7 +20,6 @@ export function isPatternValid(pattern: string): true | Error {
   }
 }
 
-/** Defer execution to prevent UI blocking */
 export function defer<T>(fn: () => T): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(fn()), 0));
 }

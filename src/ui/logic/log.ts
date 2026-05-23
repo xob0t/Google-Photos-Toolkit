@@ -6,7 +6,6 @@ export default function log(logMessage: string, type: string | null = null): voi
   const now = new Date();
   const timestamp = dateToHHMMSS(now);
 
-  // Create a new div for the log message
   const logDiv = document.createElement('div');
   logDiv.textContent = `[${timestamp}] ${logMessage}`;
 
@@ -14,7 +13,6 @@ export default function log(logMessage: string, type: string | null = null): voi
 
   console.log(`${logPrefix} [${timestamp}] ${logMessage}`);
 
-  // Append the log message to the log container
   try {
     const logContainer = document.querySelector('#logArea');
     if (logContainer) {

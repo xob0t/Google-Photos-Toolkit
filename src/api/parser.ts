@@ -179,7 +179,7 @@ function actorParse(data: any): Actor {
     gaiaId: data?.[1],
     name: data?.[11]?.[0],
     gender: data?.[11]?.[2],
-    profilePhotoUrl: data?.[12]?.[0],  // Fixed typo: was "profiePhotoUrl"
+    profilePhotoUrl: data?.[12]?.[0],
   };
 }
 
@@ -188,7 +188,7 @@ function partnerSharedItemsPage(data: any): PartnerSharedItemsPage {
     nextPageId: data?.[0],
     items: data?.[1]?.map((itemData: any) => partnerSharedItemParse(itemData)),
     members: data?.[2]?.map((itemData: any) => actorParse(itemData)),
-    partnerActorId: data?.[4],  // Fixed typo: was "parnterActorId"
+    partnerActorId: data?.[4],
     gaiaId: data?.[5],
   };
 }

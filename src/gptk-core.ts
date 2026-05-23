@@ -214,6 +214,10 @@ export default class Core {
         condition: Boolean(filter.minWidth ?? filter.maxWidth ?? filter.minHeight ?? filter.maxHeight),
         method: () => filters.resolutionFilter(filteredItems, filter),
       },
+      {
+        condition: Boolean(filter.minDuration ?? filter.maxDuration),
+        method: () => filters.durationFilter(filteredItems, filter),
+      },
     ];
 
     // Apply basic filters
@@ -438,6 +442,17 @@ export default class Core {
     const maxH = parseInt(filter.maxHeight ?? '0');
     if (minH > 0 && maxH > 0 && minH >= maxH) {
       throw new Error('Invalid Resolution Filter: Min Height must be less than Max Height');
+    }
+    const minDuration = parseFloat(filter.minDuration ?? '');
+    const maxDuration = parseFloat(filter.maxDuration ?? '');
+    if (!isNaN(minDuration) && minDuration < 0) {
+      throw new Error('Invalid Duration Filter: Min Duration must not be negative');
+    }
+    if (!isNaN(maxDuration) && maxDuration < 0) {
+      throw new Error('Invalid Duration Filter: Max Duration must not be negative');
+    }
+    if (!isNaN(minDuration) && !isNaN(maxDuration) && minDuration >= maxDuration) {
+      throw new Error('Invalid Duration Filter: Min Duration must be less than Max Duration');
     }
     const bS = parseFloat(filter.boundSouth ?? '');
     const bW = parseFloat(filter.boundWest ?? '');

@@ -277,6 +277,8 @@ export interface Filter {
   maxWidth?: string;
   minHeight?: string;
   maxHeight?: string;
+  minDuration?: string;
+  maxDuration?: string;
   type?: 'video' | 'image' | 'live';
   quality?: 'original' | 'storage-saver';
   space?: 'consuming' | 'non-consuming';

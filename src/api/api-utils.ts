@@ -58,7 +58,18 @@ export default class ApiUtils {
   private toCsvValue(value: unknown): string {
     if (value === undefined || value === null) return '';
     if (value instanceof Date) return value.toISOString();
-    const text = String(value);
+    let text: string;
+    if (typeof value === 'object') {
+      text = JSON.stringify(value) ?? '';
+    } else if (typeof value === 'string') {
+      text = value;
+    } else if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+      text = value.toString();
+    } else if (typeof value === 'symbol') {
+      text = value.description ?? '';
+    } else {
+      text = '';
+    }
     return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
   }
 
@@ -485,7 +496,6 @@ export default class ApiUtils {
       const itemInfoExt: ItemInfoExt = await this.api.getItemInfoExt(item.mediaKey);
       // Only copy the description if the Google Photos description field
       // is empty and the 'Other' description is non-empty.
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentional: empty string should be falsy
       if (itemInfoExt.descriptionFull || !itemInfoExt.other) {
         return [false];
       }

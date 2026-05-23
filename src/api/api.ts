@@ -65,7 +65,7 @@ export default class Api {
       rt: 'c',
     };
     // If in locked folder, send rapt
-    if (windowGlobalData.rapt) params['rapt'] = String(windowGlobalData.rapt);
+    if (typeof windowGlobalData.rapt === 'string') params['rapt'] = windowGlobalData.rapt;
 
     const paramsString = Object.keys(params)
       .map((key) => `${key}=${encodeURIComponent(params[key])}`)

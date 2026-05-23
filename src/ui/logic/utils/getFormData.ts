@@ -6,7 +6,7 @@ export default function getFormData(selector: string): Record<string, string | s
   const formData = new FormData(formElement);
 
   for (const [key, value] of formData) {
-    const strValue = String(value);
+    const strValue = typeof value === 'string' ? value : value.name;
     if (strValue) {
       // Check if the key already exists in the form object
       if (Reflect.has(form, key)) {

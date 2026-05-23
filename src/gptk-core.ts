@@ -341,7 +341,6 @@ export default class Core {
         if (!mediaPage.items || mediaPage.items.length === 0) continue;
         log(`Found ${mediaPage.items.length} items`);
         mediaItems.push(...mediaPage.items);
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentional boolean OR
       } while ((nextPageId && !nextPageTimestamp) || (nextPageTimestamp && nextPageTimestamp > lowerBoundaryDate));
     } else if ((Number.isInteger(lowerBoundaryDate) || Number.isInteger(higherBoundaryDate)) && filter.intervalType === 'exclude') {
       let nextPageTimestamp: number | null = null;

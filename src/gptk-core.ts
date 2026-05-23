@@ -59,6 +59,7 @@ export default class Core {
       unFavorite: async (p) => this.apiUtils.unFavorite(p.mediaItems),
       copyDescFromOther: async (p) => this.apiUtils.copyDescriptionFromOther(p.mediaItems),
       setDateFromFilename: async (p) => this.apiUtils.setTimestampFromFilename(p.mediaItems),
+      exportMetadata: async (p) => this.apiUtils.exportMetadata(p.mediaItems),
     };
   }
 
@@ -134,7 +135,12 @@ export default class Core {
         const albumItems = await Promise.all(
           albumMediaKeys.map(async (albumMediaKey) => {
             log('Getting album items');
-            return await this.apiUtils.getAllMediaInAlbum(albumMediaKey);
+            const { title: albumTitle, items } = await this.apiUtils.getAllMediaInAlbumWithContext(albumMediaKey);
+            return items.map((item) => ({
+              ...item,
+              sourceAlbumMediaKey: albumMediaKey,
+              sourceAlbumTitle: albumTitle,
+            }));
           })
         );
         return albumItems.flat();

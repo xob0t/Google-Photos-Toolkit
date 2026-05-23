@@ -41,6 +41,27 @@ export default class ApiUtils {
     this.infoSize = Math.floor(Number(resolvedSettings.infoSize));
   }
 
+  private downloadTextFile(fileName: string, content: string, type: string): void {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = fileName;
+    downloadLink.style.display = 'none';
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    downloadLink.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+
+  private toCsvValue(value: unknown): string {
+    if (value === undefined || value === null) return '';
+    if (value instanceof Date) return value.toISOString();
+    const text = String(value);
+    return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  }
+
   async executeWithConcurrency(
     apiMethod: (...args: any[]) => Promise<any>,
     operationSize: number,
@@ -154,6 +175,28 @@ export default class ApiUtils {
    */
   async getAllMediaInAlbum(albumMediaKey: string): Promise<MediaItem[]> {
     return await this.getAllItems<MediaItem>(this.api.getAlbumPage.bind(this.api), albumMediaKey);
+  }
+
+  async getAllMediaInAlbumWithContext(albumMediaKey: string): Promise<{ title?: string; items: MediaItem[] }> {
+    const items: MediaItem[] = [];
+    let title: string | undefined;
+    let nextPageId: string | null = null;
+    do {
+      if (!this.core.isProcessRunning) return { title, items };
+      try {
+        const page = await this.api.getAlbumPage(albumMediaKey, nextPageId);
+        title ??= page?.title;
+        if (page?.items && page.items.length > 0) {
+          log(`Found ${page.items.length} items`);
+          items.push(...page.items);
+        }
+        nextPageId = page?.nextPageId ?? null;
+      } catch (error) {
+        log(`Error fetching album page, skipping: ${error instanceof Error ? error.message : String(error)}`, 'error');
+        break;
+      }
+    } while (nextPageId);
+    return { title, items };
   }
 
   /**
@@ -573,5 +616,82 @@ export default class ApiUtils {
     }
 
     log(`Successfully set dates for ${successCount} of ${itemsToUpdate.length} items`);
+  }
+
+  async exportMetadata(mediaItems: MediaItem[]): Promise<void> {
+    log(`Fetching metadata for ${mediaItems.length} items`);
+
+    const mediaInfoData = await this.getBatchMediaInfoChunked(mediaItems);
+    const infoByKey = new Map(mediaInfoData.map((info) => [info.mediaKey, info]));
+
+    const headers = [
+      'mediaKey',
+      'dedupKey',
+      'sourceAlbumMediaKey',
+      'sourceAlbumTitle',
+      'fileName',
+      'description',
+      'takenAt',
+      'uploadedAt',
+      'timezoneOffsetMs',
+      'width',
+      'height',
+      'durationMs',
+      'livePhotoDurationMs',
+      'sizeBytes',
+      'takesUpSpace',
+      'spaceTakenBytes',
+      'isOriginalQuality',
+      'isArchived',
+      'isFavorite',
+      'isOwned',
+      'hasLocation',
+      'locationName',
+      'latitude',
+      'longitude',
+      'thumbnailUrl',
+    ];
+
+    const rows = mediaItems.map((item) => {
+      const info = infoByKey.get(item.mediaKey);
+      const timestamp = info?.timestamp ?? item.timestamp;
+      const creationTimestamp = info?.creationTimestamp ?? item.creationTimestamp;
+      const coordinates = item.geoLocation?.coordinates ?? [];
+
+      return [
+        item.mediaKey,
+        item.dedupKey,
+        item.sourceAlbumMediaKey,
+        item.sourceAlbumTitle,
+        info?.fileName ?? item.fileName,
+        info?.descriptionFull ?? item.descriptionFull ?? item.descriptionShort,
+        timestamp ? new Date(timestamp) : undefined,
+        creationTimestamp ? new Date(creationTimestamp) : undefined,
+        info?.timezoneOffset ?? item.timezoneOffset,
+        item.resWidth,
+        item.resHeight,
+        item.duration,
+        item.livePhotoDuration,
+        info?.size ?? item.size,
+        info?.takesUpSpace ?? item.takesUpSpace,
+        info?.spaceTaken ?? item.spaceTaken,
+        info?.isOriginalQuality ?? item.isOriginalQuality,
+        item.isArchived,
+        item.isFavorite,
+        item.isOwned,
+        item.geoLocation ? true : false,
+        item.geoLocation?.name,
+        coordinates[0],
+        coordinates[1],
+        item.thumb,
+      ];
+    });
+
+    const csv = [headers, ...rows]
+      .map((row) => row.map((value) => this.toCsvValue(value)).join(','))
+      .join('\n');
+
+    this.downloadTextFile('metadata.csv', `${csv}\n`, 'text/csv');
+    log(`Downloaded metadata for ${mediaItems.length} items`);
   }
 }

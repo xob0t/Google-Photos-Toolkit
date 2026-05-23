@@ -47,6 +47,8 @@ export interface MediaItem {
   isOwned?: boolean;
   geoLocation?: GeoLocation;
   saved?: boolean;
+  sourceAlbumMediaKey?: string;
+  sourceAlbumTitle?: string;
   // Extended media info (from getBatchMediaInfo)
   descriptionFull?: string;
   fileName?: string;

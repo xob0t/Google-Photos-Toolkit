@@ -6,6 +6,10 @@ function parseSize(value?: string): number {
   return parseInt(value ?? '0', 10);
 }
 
+function parseNumber(value?: string): number {
+  return parseFloat(value ?? '');
+}
+
 function formatDate(value?: string): string | null {
   return value ? new Date(value).toLocaleString('en-GB') : null;
 }
@@ -128,6 +132,19 @@ const rules: DescriptionRule[] = [
     },
   },
 
+  // duration range
+  {
+    test: (f) => !isNaN(parseNumber(f.minDuration)) || !isNaN(parseNumber(f.maxDuration)),
+    describe: (f) => {
+      const minDuration = parseNumber(f.minDuration);
+      const maxDuration = parseNumber(f.maxDuration);
+      const parts: string[] = [];
+      if (!isNaN(minDuration)) parts.push(`duration >= ${minDuration}s`);
+      if (!isNaN(maxDuration)) parts.push(`duration <= ${maxDuration}s`);
+      return `with ${parts.join(', ')}`;
+    },
+  },
+
   // size range
   {
     test: (f) => parseSize(f.lowerBoundarySize) > 0 || parseSize(f.higherBoundarySize) > 0,
@@ -223,6 +240,18 @@ function validate(filter: Filter): string | null {
   const maxH = parseSize(filter.maxHeight);
   if (minH > 0 && maxH > 0 && minH >= maxH) {
     return 'Error: Invalid Resolution Filter (Height)';
+  }
+
+  const minDuration = parseNumber(filter.minDuration);
+  const maxDuration = parseNumber(filter.maxDuration);
+  if (!isNaN(minDuration) && minDuration < 0) {
+    return 'Error: Invalid Duration Filter (Min)';
+  }
+  if (!isNaN(maxDuration) && maxDuration < 0) {
+    return 'Error: Invalid Duration Filter (Max)';
+  }
+  if (!isNaN(minDuration) && !isNaN(maxDuration) && minDuration >= maxDuration) {
+    return 'Error: Invalid Duration Filter';
   }
 
   return null;

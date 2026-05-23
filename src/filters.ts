@@ -51,6 +51,23 @@ export function resolutionFilter(mediaItems: MediaItem[], filter: Filter): Media
   return result;
 }
 
+export function durationFilter(mediaItems: MediaItem[], filter: Filter): MediaItem[] {
+  log('Filtering by duration');
+  let result = mediaItems;
+  const minDuration = parseFloat(filter.minDuration ?? '');
+  const maxDuration = parseFloat(filter.maxDuration ?? '');
+
+  if (!isNaN(minDuration)) {
+    result = result.filter((item) => item.duration !== undefined && item.duration >= minDuration * 1000);
+  }
+  if (!isNaN(maxDuration)) {
+    result = result.filter((item) => item.duration !== undefined && item.duration <= maxDuration * 1000);
+  }
+
+  log(`Item count after filtering: ${result.length}`);
+  return result;
+}
+
 export function qualityFilter(mediaItems: MediaItem[], filter: Filter): MediaItem[] {
   log('Filtering by quality');
   let result = mediaItems;

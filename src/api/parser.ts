@@ -116,6 +116,7 @@ function albumParse(itemData: any): Album {
     modifiedTimestamp: itemData?.at(-1)?.[72930366]?.[2]?.[9],
     timestampRange: [itemData?.at(-1)?.[72930366]?.[2]?.[5], itemData?.at(-1)?.[72930366]?.[2]?.[6]],
     isShared: itemData?.at(-1)?.[72930366]?.[4] || false,
+    authKey: itemData?.at(-1)?.[72930366]?.[5] || undefined,
   };
 }
 

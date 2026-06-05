@@ -65,6 +65,7 @@ export interface Album {
   modifiedTimestamp?: number;
   timestampRange?: [number?, number?];
   isShared?: boolean;
+  authKey?: string;
 }
 
 export interface SharedLink {

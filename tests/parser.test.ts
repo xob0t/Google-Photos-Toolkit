@@ -267,6 +267,13 @@ describe('Z5xsfc — albumsPage', () => {
     expect(withTimestamp).toBeDefined();
     expect(withTimestamp!.creationTimestamp).toBeTypeOf('number');
   });
+
+  it('parses authKey on albums', () => {
+    const withAuthKey = result.items!.find((a) => a.authKey != null);
+    expect(withAuthKey).toBeDefined();
+    expect(withAuthKey!.authKey).toBeTypeOf('string');
+    expect(withAuthKey!.authKey!.length).toBeGreaterThan(0);
+  });
 });
 
 // ── snAcKc — Album Items Page ─────────────────────────────────────────

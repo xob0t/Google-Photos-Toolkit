@@ -316,6 +316,8 @@ function itemInfoParse(itemData: any): ItemInfo {
     trashTimestamp: itemData[0]?.[15]?.[225032867]?.[0],
     descriptionFull: itemData[10],
     thumb: itemData[12],
+    cameraInfo: itemData[0]?.[1]?.[8]?.[4],
+    albums: itemData[0]?.[15]?.['525000002']?.map((a: any) => ({ mediaKey: a[0] })),
   };
 }
 

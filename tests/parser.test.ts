@@ -432,6 +432,18 @@ describe('VrseUb — itemInfoParse', () => {
   it('parses favorite status', () => {
     expect(typeof result.isFavorite).toBe('boolean');
   });
+
+  it('parses cameraInfo when present', () => {
+    expect(result.cameraInfo === undefined || Array.isArray(result.cameraInfo)).toBe(true);
+  });
+
+  it('parses albums when present', () => {
+    expect(result.albums === undefined || Array.isArray(result.albums)).toBe(true);
+    if (result.albums) {
+      expect(result.albums.length).toBeGreaterThan(0);
+      expect(result.albums[0].mediaKey).toBeTypeOf('string');
+    }
+  });
 });
 
 // ── fDcn4b — Item Info Extended ───────────────────────────────────────

@@ -196,6 +196,8 @@ export interface ItemInfo {
   trashTimestamp?: number;
   descriptionFull?: string;
   thumb?: string;
+  cameraInfo?: unknown;
+  albums?: Album[];
 }
 
 export interface DownloadTokenCheck {

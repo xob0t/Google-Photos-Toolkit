@@ -197,7 +197,7 @@ export interface ItemInfo {
   descriptionFull?: string;
   thumb?: string;
   cameraInfo?: unknown;
-  albums?: Album[];
+  albums?: Album[]; // mediaKeys only
 }
 
 export interface DownloadTokenCheck {

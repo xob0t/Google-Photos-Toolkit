@@ -29,6 +29,7 @@ import snAcKc from './fixtures/parser/snAcKc.json';
 import e9T5je from './fixtures/parser/e9T5je.json';
 import zy0IHe from './fixtures/parser/zy0IHe.json';
 import VrseUb from './fixtures/parser/VrseUb.json';
+import VrseUb_short from './fixtures/parser/VrseUb_short.json';
 import fDcn4b from './fixtures/parser/fDcn4b.json';
 import EWgK9e from './fixtures/parser/EWgK9e.json';
 import dnv2s from './fixtures/parser/dnv2s.json';
@@ -443,6 +444,25 @@ describe('VrseUb — itemInfoParse', () => {
       expect(result.albums.length).toBeGreaterThan(0);
       expect(result.albums[0].mediaKey).toBeTypeOf('string');
     }
+  });
+});
+
+describe('VrseUb_short — itemInfoParse', () => {
+  const result = parser(VrseUb_short, 'VrseUb') as ItemInfo;
+
+  it('parses basic item info', () => {
+    expect(result).toBeDefined();
+    expect(result.mediaKey).toBeTypeOf('string');
+    expect(result.mediaKey!.length).toBeGreaterThan(0);
+    expect(result.dedupKey).toBeTypeOf('string');
+  });
+
+  it('parses takesUpSpace correctly', () => {
+    expect(result.takesUpSpace === null || typeof result.takesUpSpace === 'boolean').toBe(true);
+  });
+
+  it('parses favorite status', () => {
+    expect(typeof result.isFavorite).toBe('boolean');
   });
 });
 

@@ -292,6 +292,11 @@ function itemInfoExtParse(itemData: any): ItemInfoExt {
 }
 
 function itemInfoParse(itemData: any): ItemInfo {
+  const knownKeys = ['15', '76647426', '146008172', '163238866', '225032867', '318563170', '525000000', '525000002'];
+  // extObj can be at position 9 or 15, so let's lookup based on keys we need
+  const extObj = itemData[0]?.find((x: any) =>
+    x && typeof x === 'object' && !Array.isArray(x) && Object.keys(x).some(k => knownKeys.includes(k))
+  );
   return {
     mediaKey: itemData[0]?.[0],
     dedupKey: itemData[0]?.[3],
@@ -303,21 +308,21 @@ function itemInfoParse(itemData: any): ItemInfo {
     creationTimestamp: itemData[0]?.[5],
     downloadUrl: itemData?.[1],
     downloadOriginalUrl: itemData?.[7],
-    savedToYourPhotos: itemData[0]?.[15]?.[163238866]?.length > 0,
+    savedToYourPhotos: extObj?.[163238866]?.length > 0,
     isArchived: itemData[0]?.[13],
-    takesUpSpace: itemData[0]?.[15]?.[318563170]?.[0]?.[0] === undefined ? null : itemData[0]?.[15]?.[318563170]?.[0]?.[0] === 1,
-    spaceTaken: itemData[0]?.[15]?.[318563170]?.[0]?.[1],
-    isOriginalQuality: itemData[0]?.[15]?.[318563170]?.[0]?.[2] === undefined ? null : itemData[0]?.[15]?.[318563170]?.[0]?.[2] === 2,
-    isFavorite: itemData[0]?.[15]?.[163238866]?.[0],
-    duration: itemData[0]?.[15]?.[76647426]?.[0],
-    isLivePhoto: itemData[0]?.[15]?.[146008172] ? true : false,
-    livePhotoDuration: itemData[0]?.[15]?.[146008172]?.[1],
-    livePhotoVideoDownloadUrl: itemData[0]?.[15]?.[146008172]?.[3],
-    trashTimestamp: itemData[0]?.[15]?.[225032867]?.[0],
+    takesUpSpace: extObj?.[318563170]?.[0]?.[0] === undefined ? null : extObj?.[318563170]?.[0]?.[0] === 1,
+    spaceTaken: extObj?.[318563170]?.[0]?.[1],
+    isOriginalQuality: extObj?.[318563170]?.[0]?.[2] === undefined ? null : extObj?.[318563170]?.[0]?.[2] === 2,
+    isFavorite: extObj?.[163238866]?.[0],
+    duration: extObj?.[76647426]?.[0],
+    isLivePhoto: extObj?.[146008172] ? true : false,
+    livePhotoDuration: extObj?.[146008172]?.[1],
+    livePhotoVideoDownloadUrl: extObj?.[146008172]?.[3],
+    trashTimestamp: extObj?.[225032867]?.[0],
     descriptionFull: itemData[10],
     thumb: itemData[12],
     cameraInfo: itemData[0]?.[1]?.[8]?.[4],
-    albums: itemData[0]?.[15]?.['525000002']?.map((a: any) => ({ mediaKey: a[0] })),
+    albums: extObj?.['525000002']?.map((a: any) => ({ mediaKey: a[0] })),
   };
 }
 

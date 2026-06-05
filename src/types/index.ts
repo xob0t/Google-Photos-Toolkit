@@ -167,7 +167,7 @@ export interface ItemInfoExt {
   spaceTaken?: number;
   isOriginalQuality?: boolean | null;
   savedToYourPhotos?: boolean;
-  owner?: Actor | null;
+  owner?: Actor | null; // the original uploader - this won't change even if you save and original uploader deletes
   geoLocation?: GeoLocation;
   other?: string;
 }

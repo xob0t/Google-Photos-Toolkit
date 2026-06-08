@@ -449,8 +449,10 @@ describe('VrseUb_short — itemInfoParse', () => {
     expect(result.dedupKey).toBeTypeOf('string');
   });
 
-  it('parses takesUpSpace', () => {
+  it('parses quality/space fields', () => {
+    // These may be null (not undefined) if the field exists but has no value
     expect(result.takesUpSpace === null || typeof result.takesUpSpace === 'boolean').toBe(true);
+    expect(result.isOriginalQuality === null || typeof result.isOriginalQuality === 'boolean').toBe(true);
   });
 
   it('parses favorite status', () => {

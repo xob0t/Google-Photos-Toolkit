@@ -65,6 +65,7 @@ export interface Album {
   modifiedTimestamp?: number;
   timestampRange?: [number?, number?];
   isShared?: boolean;
+  authKey?: string;
 }
 
 export interface SharedLink {
@@ -195,6 +196,7 @@ export interface ItemInfo {
   trashTimestamp?: number;
   descriptionFull?: string;
   thumb?: string;
+  cameraInfo?: unknown;
 }
 
 export interface DownloadTokenCheck {

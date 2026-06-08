@@ -636,6 +636,7 @@ export default class Api {
     }
   }
 
+  // Only works with mediaKey belonging to your library
   async getItemInfoExt(
     mediaKey: string,
     authKey: string | null = null,

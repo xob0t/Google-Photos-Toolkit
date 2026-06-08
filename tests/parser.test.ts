@@ -29,6 +29,7 @@ import snAcKc from './fixtures/parser/snAcKc.json';
 import e9T5je from './fixtures/parser/e9T5je.json';
 import zy0IHe from './fixtures/parser/zy0IHe.json';
 import VrseUb from './fixtures/parser/VrseUb.json';
+import VrseUb_short from './fixtures/parser/VrseUb_short.json';
 import fDcn4b from './fixtures/parser/fDcn4b.json';
 import EWgK9e from './fixtures/parser/EWgK9e.json';
 import dnv2s from './fixtures/parser/dnv2s.json';
@@ -267,6 +268,13 @@ describe('Z5xsfc — albumsPage', () => {
     expect(withTimestamp).toBeDefined();
     expect(withTimestamp!.creationTimestamp).toBeTypeOf('number');
   });
+
+  it('parses authKey on albums', () => {
+    const withAuthKey = result.items!.find((a) => a.authKey != null);
+    expect(withAuthKey).toBeDefined();
+    expect(withAuthKey!.authKey).toBeTypeOf('string');
+    expect(withAuthKey!.authKey!.length).toBeGreaterThan(0);
+  });
 });
 
 // ── snAcKc — Album Items Page ─────────────────────────────────────────
@@ -420,6 +428,31 @@ describe('VrseUb — itemInfoParse', () => {
 
   it('parses live photo status', () => {
     expect(typeof result.isLivePhoto).toBe('boolean');
+  });
+
+  it('parses favorite status', () => {
+    expect(typeof result.isFavorite).toBe('boolean');
+  });
+
+  it('parses cameraInfo when present', () => {
+    expect(result.cameraInfo === undefined || Array.isArray(result.cameraInfo)).toBe(true);
+  });
+});
+
+describe('VrseUb_short — itemInfoParse', () => {
+  const result = parser(VrseUb_short, 'VrseUb') as ItemInfo;
+
+  it('parses basic item info', () => {
+    expect(result).toBeDefined();
+    expect(result.mediaKey).toBeTypeOf('string');
+    expect(result.mediaKey!.length).toBeGreaterThan(0);
+    expect(result.dedupKey).toBeTypeOf('string');
+  });
+
+  it('parses quality/space fields', () => {
+    // These may be null (not undefined) if the field exists but has no value
+    expect(result.takesUpSpace === null || typeof result.takesUpSpace === 'boolean').toBe(true);
+    expect(result.isOriginalQuality === null || typeof result.isOriginalQuality === 'boolean').toBe(true);
   });
 
   it('parses favorite status', () => {

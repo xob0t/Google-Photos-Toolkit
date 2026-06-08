@@ -116,6 +116,7 @@ function albumParse(itemData: any): Album {
     modifiedTimestamp: itemData?.at(-1)?.[72930366]?.[2]?.[9],
     timestampRange: [itemData?.at(-1)?.[72930366]?.[2]?.[5], itemData?.at(-1)?.[72930366]?.[2]?.[6]],
     isShared: itemData?.at(-1)?.[72930366]?.[4] || false,
+    authKey: itemData?.at(-1)?.[72930366]?.[5] || undefined,
   };
 }
 
@@ -291,6 +292,12 @@ function itemInfoExtParse(itemData: any): ItemInfoExt {
 }
 
 function itemInfoParse(itemData: any): ItemInfo {
+  const knownKeys = ['15', '76647426', '146008172', '163238866', '225032867', '318563170', '525000000'];
+  // extObj can be at position 9 or 15 depending on whether mediaKey comes from getAlbumPage or the library.
+  // insdead of hardcoding - lookup based on whether the array contains the required keys.
+  const extObj = itemData[0]?.find((x: any) =>
+    x && typeof x === 'object' && !Array.isArray(x) && Object.keys(x).some(k => knownKeys.includes(k))
+  );
   return {
     mediaKey: itemData[0]?.[0],
     dedupKey: itemData[0]?.[3],
@@ -302,19 +309,20 @@ function itemInfoParse(itemData: any): ItemInfo {
     creationTimestamp: itemData[0]?.[5],
     downloadUrl: itemData?.[1],
     downloadOriginalUrl: itemData?.[7],
-    savedToYourPhotos: itemData[0]?.[15]?.[163238866]?.length > 0,
+    savedToYourPhotos: extObj?.[163238866]?.length > 0,
     isArchived: itemData[0]?.[13],
-    takesUpSpace: itemData[0]?.[15]?.[318563170]?.[0]?.[0] === undefined ? null : itemData[0]?.[15]?.[318563170]?.[0]?.[0] === 1,
-    spaceTaken: itemData[0]?.[15]?.[318563170]?.[0]?.[1],
-    isOriginalQuality: itemData[0]?.[15]?.[318563170]?.[0]?.[2] === undefined ? null : itemData[0]?.[15]?.[318563170]?.[0]?.[2] === 2,
-    isFavorite: itemData[0]?.[15]?.[163238866]?.[0],
-    duration: itemData[0]?.[15]?.[76647426]?.[0],
-    isLivePhoto: itemData[0]?.[15]?.[146008172] ? true : false,
-    livePhotoDuration: itemData[0]?.[15]?.[146008172]?.[1],
-    livePhotoVideoDownloadUrl: itemData[0]?.[15]?.[146008172]?.[3],
-    trashTimestamp: itemData[0]?.[15]?.[225032867]?.[0],
+    takesUpSpace: extObj?.[318563170]?.[0]?.[0] === undefined ? null : extObj?.[318563170]?.[0]?.[0] === 1,
+    spaceTaken: extObj?.[318563170]?.[0]?.[1],
+    isOriginalQuality: extObj?.[318563170]?.[0]?.[2] === undefined ? null : extObj?.[318563170]?.[0]?.[2] === 2,
+    isFavorite: extObj?.[163238866]?.[0],
+    duration: extObj?.[76647426]?.[0],
+    isLivePhoto: extObj?.[146008172] ? true : false,
+    livePhotoDuration: extObj?.[146008172]?.[1],
+    livePhotoVideoDownloadUrl: extObj?.[146008172]?.[3],
+    trashTimestamp: extObj?.[225032867]?.[0],
     descriptionFull: itemData[10],
     thumb: itemData[12],
+    cameraInfo: itemData[0]?.[1]?.[8]?.[4],
   };
 }
 

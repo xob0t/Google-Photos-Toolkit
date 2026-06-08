@@ -40,7 +40,7 @@ export interface MediaItem {
   descriptionShort?: string;
   isLivePhoto?: boolean;
   livePhotoDuration?: number;
-  isOwned?: boolean; // Whether you are the original uploader - this won't change even if you save and original uploader deletes
+  isOwned?: boolean;
   geoLocation?: GeoLocation;
   saved?: boolean;
   sourceAlbumMediaKey?: string;
@@ -167,7 +167,7 @@ export interface ItemInfoExt {
   spaceTaken?: number;
   isOriginalQuality?: boolean | null;
   savedToYourPhotos?: boolean;
-  owner?: Actor | null; // Original uploader - this won't change even if you save and original uploader deletes
+  owner?: Actor | null;
   geoLocation?: GeoLocation;
   other?: string;
 }

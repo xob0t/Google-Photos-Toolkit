@@ -293,7 +293,8 @@ function itemInfoExtParse(itemData: any): ItemInfoExt {
 
 function itemInfoParse(itemData: any): ItemInfo {
   const knownKeys = ['15', '76647426', '146008172', '163238866', '225032867', '318563170', '525000000', '525000002'];
-  // extObj can be at position 9 or 15, so let's lookup based on keys we need
+  // extObj can be at position 9 or 15 depending on whether mediaKey comes from getAlbumPage or the library.
+  // insdead of hardcoding - lookup based on whether the array contains the required keys.
   const extObj = itemData[0]?.find((x: any) =>
     x && typeof x === 'object' && !Array.isArray(x) && Object.keys(x).some(k => knownKeys.includes(k))
   );

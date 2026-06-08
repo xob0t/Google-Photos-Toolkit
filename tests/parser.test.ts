@@ -437,14 +437,6 @@ describe('VrseUb — itemInfoParse', () => {
   it('parses cameraInfo when present', () => {
     expect(result.cameraInfo === undefined || Array.isArray(result.cameraInfo)).toBe(true);
   });
-
-  it('parses albums when present', () => {
-    expect(result.albums === undefined || Array.isArray(result.albums)).toBe(true);
-    if (result.albums) {
-      expect(result.albums.length).toBeGreaterThan(0);
-      expect(result.albums[0].mediaKey).toBeTypeOf('string');
-    }
-  });
 });
 
 describe('VrseUb_short — itemInfoParse', () => {
@@ -457,7 +449,7 @@ describe('VrseUb_short — itemInfoParse', () => {
     expect(result.dedupKey).toBeTypeOf('string');
   });
 
-  it('parses takesUpSpace correctly', () => {
+  it('parses takesUpSpace', () => {
     expect(result.takesUpSpace === null || typeof result.takesUpSpace === 'boolean').toBe(true);
   });
 

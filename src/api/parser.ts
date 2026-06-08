@@ -292,7 +292,7 @@ function itemInfoExtParse(itemData: any): ItemInfoExt {
 }
 
 function itemInfoParse(itemData: any): ItemInfo {
-  const knownKeys = ['15', '76647426', '146008172', '163238866', '225032867', '318563170', '525000000', '525000002'];
+  const knownKeys = ['15', '76647426', '146008172', '163238866', '225032867', '318563170', '525000000'];
   // extObj can be at position 9 or 15 depending on whether mediaKey comes from getAlbumPage or the library.
   // insdead of hardcoding - lookup based on whether the array contains the required keys.
   const extObj = itemData[0]?.find((x: any) =>
@@ -323,7 +323,6 @@ function itemInfoParse(itemData: any): ItemInfo {
     descriptionFull: itemData[10],
     thumb: itemData[12],
     cameraInfo: itemData[0]?.[1]?.[8]?.[4],
-    albums: extObj?.['525000002']?.map((a: any) => ({ mediaKey: a[0] })),
   };
 }
 

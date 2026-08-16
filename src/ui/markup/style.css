@@ -186,7 +186,7 @@
         outline-offset: 1px;
     }
 
-    button:disabled {
+    button:disabled, button.not-applicable {
         background-color: var(--bg-raised);
         color: var(--text-disabled);
         border-color: transparent;

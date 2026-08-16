@@ -40,6 +40,13 @@ export default class Core {
         await this.apiUtils.addToNewAlbum(p.mediaItems, p.newTargetAlbumName, p.preserveOrder);
       },
       toTrash: async (p) => this.apiUtils.moveToTrash(p.mediaItems),
+      removeFromAlbum: async (p) => {
+        if (p.source !== 'albums') {
+          log('Remove from album requires the Albums source', 'error');
+          return;
+        }
+        await this.apiUtils.removeFromAlbum(p.mediaItems);
+      },
       toArchive: async (p) => this.apiUtils.sendToArchive(p.mediaItems),
       unArchive: async (p) => this.apiUtils.unArchive(p.mediaItems),
       toFavorite: async (p) => this.apiUtils.setAsFavorite(p.mediaItems),

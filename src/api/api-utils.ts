@@ -213,6 +213,21 @@ export default class ApiUtils {
     await this.executeWithConcurrency(this.api.restoreFromTrash.bind(this.api), this.operationSize, dedupKeyArray);
   }
 
+  /**
+   * Removes items from their album without trashing them.
+   *
+   * Only valid for items fetched via the Albums source: their album-scoped
+   * `mediaKey` (from getAlbumPage) is the key the removal RPC expects — not
+   * the library dedupKey. Sent in configured batches.
+   *
+   * @param mediaItems - The album items to remove.
+   */
+  async removeFromAlbum(mediaItems: MediaItem[]): Promise<void> {
+    log(`Removing ${mediaItems.length} items from album`);
+    const itemAlbumMediaKeyArray = mediaItems.map((item) => item.mediaKey);
+    await this.executeWithConcurrency(this.api.removeItemsFromAlbum.bind(this.api), this.operationSize, itemAlbumMediaKeyArray);
+  }
+
   async sendToArchive(mediaItems: MediaItem[]): Promise<void> {
     log(`Sending ${mediaItems.length} items to archive`);
     const filtered = mediaItems.filter((item) => item?.isArchived !== true);

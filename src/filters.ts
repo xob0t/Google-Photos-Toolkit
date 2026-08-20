@@ -448,7 +448,7 @@ export async function filterSimilar(core: Core, mediaItems: MediaItem[], filter:
 
   log('Grouping similar images');
   const groups = await groupSimilarImages(
-    itemsWithHashes as HashedMediaItem[],
+    itemsWithHashes,
     similarityThreshold,
     hashSize,
     core

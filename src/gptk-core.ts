@@ -43,8 +43,7 @@ export default class Core {
       toTrash: async (p) => this.apiUtils.moveToTrash(p.mediaItems),
       removeFromAlbum: async (p) => {
         if (p.source !== 'albums') {
-          log('Remove from album requires the Albums source', 'error');
-          return;
+          throw new Error('Remove from album requires the Albums source');
         }
         await this.apiUtils.removeFromAlbum(p.mediaItems);
       },

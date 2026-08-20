@@ -112,12 +112,16 @@ export default class Core {
           throw new Error('no target album');
         }
         const albumMediaKeys = Array.isArray(filter.albumsInclude) ? filter.albumsInclude : [filter.albumsInclude];
-        const sharedByAlbumKey = new Map((getFromStorage<Album[]>('albums') ?? []).map((album) => [album.mediaKey, album.isShared ?? false]));
-        // Cached album metadata can be missing or stale; fetch fresh so shared albums route to the shared-album RPC.
+        // Only trust a known boolean isShared; a missing value (stale/old cache) stays unknown so the fetch below resolves it.
+        const sharedByAlbumKey = new Map<string, boolean>(
+          (getFromStorage<Album[]>('albums') ?? [])
+            .filter((album) => typeof album.isShared === 'boolean')
+            .map((album) => [album.mediaKey, album.isShared as boolean])
+        );
         if (albumMediaKeys.some((albumMediaKey) => !sharedByAlbumKey.has(albumMediaKey))) {
           const albums = await this.apiUtils.getAllAlbums();
           for (const album of albums) {
-            sharedByAlbumKey.set(album.mediaKey, album.isShared ?? false);
+            if (typeof album.isShared === 'boolean') sharedByAlbumKey.set(album.mediaKey, album.isShared);
           }
         }
         const albumItems = await Promise.all(

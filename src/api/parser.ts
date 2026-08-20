@@ -115,8 +115,8 @@ function albumParse(itemData: any): Album {
     creationTimestamp: itemData?.at(-1)?.[72930366]?.[2]?.[4],
     modifiedTimestamp: itemData?.at(-1)?.[72930366]?.[2]?.[9],
     timestampRange: [itemData?.at(-1)?.[72930366]?.[2]?.[5], itemData?.at(-1)?.[72930366]?.[2]?.[6]],
-    isShared: itemData?.at(-1)?.[72930366]?.[4] || false,
-    authKey: itemData?.at(-1)?.[72930366]?.[5] || undefined,
+    isShared: itemData?.at(-1)?.[72930366]?.[4] ?? false,
+    authKey: itemData?.at(-1)?.[72930366]?.[5] ?? undefined,
   };
 }
 
@@ -258,7 +258,7 @@ function itemInfoExtParse(itemData: any): ItemInfoExt {
 
   let owner: Actor | null = null;
   if (itemData[0]?.[27]?.length > 0) {
-    owner = actorParse(itemData[0]?.[27]?.[3]?.[0] || itemData[0]?.[27]?.[4]?.[0]);
+    owner = actorParse(itemData[0]?.[27]?.[3]?.[0] ?? itemData[0]?.[27]?.[4]?.[0]);
   }
   if (!owner?.actorId) {
     owner = actorParse(itemData[0]?.[28]);
@@ -283,7 +283,7 @@ function itemInfoExtParse(itemData: any): ItemInfoExt {
     savedToYourPhotos: itemData[0]?.[12].filter((subArray: any[]) => subArray.includes(20)).length === 0,
     owner,
     geoLocation: {
-      coordinates: itemData[0]?.[9]?.[0] || itemData[0]?.[13]?.[0],
+      coordinates: itemData[0]?.[9]?.[0] ?? itemData[0]?.[13]?.[0],
       name: itemData[0]?.[13]?.[2]?.[0]?.[1]?.[0]?.[0],
       mapThumb: itemData?.[1],
     },

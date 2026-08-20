@@ -20,7 +20,7 @@ export function updateUI(): void {
     const previewElement = document.querySelector('.filter-preview span');
     if (!previewElement) return;
     try {
-      const description = generateFilterDescription(getFormData('.filters-form') as unknown as Filter);
+      const description = generateFilterDescription(getFormData('.filters-form'));
       previewElement.textContent = description;
     } catch {
       previewElement.textContent = 'Failed to generate description';

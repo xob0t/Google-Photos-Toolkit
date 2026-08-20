@@ -42,4 +42,34 @@ describe('ApiUtils.removeFromAlbum', () => {
 
     expect(spy).not.toHaveBeenCalled();
   });
+
+  it('routes shared-album items to removeItemsFromSharedAlbum', async () => {
+    const core = { isProcessRunning: true } as unknown as Core;
+    const apiUtils = new ApiUtils(core, settings);
+    const regular = vi.spyOn(apiUtils.api, 'removeItemsFromAlbum').mockResolvedValue([]);
+    const shared = vi.spyOn(apiUtils.api, 'removeItemsFromSharedAlbum').mockResolvedValue([]);
+
+    await apiUtils.removeFromAlbum([
+      { ...makeItem('a'), sourceAlbumMediaKey: 'ALB', sourceAlbumIsShared: true },
+      { ...makeItem('b'), sourceAlbumMediaKey: 'ALB', sourceAlbumIsShared: true },
+    ]);
+
+    expect(regular).not.toHaveBeenCalled();
+    expect(shared).toHaveBeenCalledWith('ALB', ['a', 'b']);
+  });
+
+  it('routes each source album to the matching RPC', async () => {
+    const core = { isProcessRunning: true } as unknown as Core;
+    const apiUtils = new ApiUtils(core, settings);
+    const regular = vi.spyOn(apiUtils.api, 'removeItemsFromAlbum').mockResolvedValue([]);
+    const shared = vi.spyOn(apiUtils.api, 'removeItemsFromSharedAlbum').mockResolvedValue([]);
+
+    await apiUtils.removeFromAlbum([
+      { ...makeItem('a'), sourceAlbumMediaKey: 'REG', sourceAlbumIsShared: false },
+      { ...makeItem('s'), sourceAlbumMediaKey: 'SHARED', sourceAlbumIsShared: true },
+    ]);
+
+    expect(regular).toHaveBeenCalledWith(['a']);
+    expect(shared).toHaveBeenCalledWith('SHARED', ['s']);
+  });
 });

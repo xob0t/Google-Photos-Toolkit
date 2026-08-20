@@ -214,18 +214,36 @@ export default class ApiUtils {
   }
 
   /**
-   * Removes items from their album without trashing them.
+   * Removes items from their album(s) without trashing them.
    *
    * Only valid for items fetched via the Albums source: their album-scoped
-   * `mediaKey` (from getAlbumPage) is the key the removal RPC expects — not
-   * the library dedupKey. Sent in configured batches.
+   * `mediaKey` (from getAlbumPage) is the key the removal RPCs expect — not
+   * the library dedupKey. Items are grouped by source album and routed to the
+   * shared- or regular-album RPC, then sent in configured batches.
    *
    * @param mediaItems - The album items to remove.
    */
   async removeFromAlbum(mediaItems: MediaItem[]): Promise<void> {
     log(`Removing ${mediaItems.length} items from album`);
-    const itemAlbumMediaKeyArray = mediaItems.map((item) => item.mediaKey);
-    await this.executeWithConcurrency(this.api.removeItemsFromAlbum.bind(this.api), this.operationSize, itemAlbumMediaKeyArray);
+
+    const itemsByAlbum = new Map<string, MediaItem[]>();
+    for (const item of mediaItems) {
+      const albumKey = item.sourceAlbumMediaKey ?? '';
+      const group = itemsByAlbum.get(albumKey);
+      if (group) group.push(item);
+      else itemsByAlbum.set(albumKey, [item]);
+    }
+
+    for (const [albumMediaKey, items] of itemsByAlbum) {
+      const itemMediaKeys = items.map((item) => item.mediaKey);
+      if (items[0]?.sourceAlbumIsShared) {
+        // Shared albums use a different RPC that also needs the album key.
+        const removeFromShared = (chunk: string[]): Promise<unknown> => this.api.removeItemsFromSharedAlbum(albumMediaKey, chunk);
+        await this.executeWithConcurrency(removeFromShared, this.operationSize, itemMediaKeys);
+      } else {
+        await this.executeWithConcurrency(this.api.removeItemsFromAlbum.bind(this.api), this.operationSize, itemMediaKeys);
+      }
+    }
   }
 
   async sendToArchive(mediaItems: MediaItem[]): Promise<void> {

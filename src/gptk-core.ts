@@ -2,6 +2,7 @@ import Api from './api/api';
 import ApiUtils from './api/api-utils';
 import { timeToHHMMSS, isPatternValid } from './utils/helpers';
 import log from './ui/logic/log';
+import getFromStorage from './utils/getFromStorage';
 import * as filters from './filters';
 import { apiSettingsDefault } from './api/api-utils-default-presets';
 import type { MediaItem, Filter, Source, Action, Album, ApiSettings, LibraryTimelinePage } from './types';
@@ -112,6 +113,7 @@ export default class Core {
           throw new Error('no target album');
         }
         const albumMediaKeys = Array.isArray(filter.albumsInclude) ? filter.albumsInclude : [filter.albumsInclude];
+        const sharedByAlbumKey = new Map((getFromStorage<Album[]>('albums') ?? []).map((album) => [album.mediaKey, album.isShared ?? false]));
         const albumItems = await Promise.all(
           albumMediaKeys.map(async (albumMediaKey) => {
             log('Getting album items');
@@ -120,6 +122,7 @@ export default class Core {
               ...item,
               sourceAlbumMediaKey: albumMediaKey,
               sourceAlbumTitle: albumTitle,
+              sourceAlbumIsShared: sharedByAlbumKey.get(albumMediaKey) ?? false,
             }));
           })
         );

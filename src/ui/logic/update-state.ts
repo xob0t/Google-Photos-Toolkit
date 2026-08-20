@@ -57,6 +57,18 @@ export function updateUI(): void {
     setDisabled('lock', isActiveTab('lockedFolder'));
     setDisabled('unLock', !isActiveTab('lockedFolder'));
     setDisabled('copyDescFromOther', isActiveTab('trash'));
+
+    // Soft-disabled (not the `disabled` attribute) so the hint tooltip still
+    // shows on hover — browsers suppress title tooltips on disabled buttons.
+    const removeFromAlbumBtn = document.getElementById('removeFromAlbum') as HTMLButtonElement | null;
+    if (removeFromAlbumBtn) {
+      const albumsActive = isActiveTab('albums');
+      removeFromAlbumBtn.classList.toggle('not-applicable', !albumsActive);
+      removeFromAlbumBtn.setAttribute('aria-disabled', String(!albumsActive));
+      removeFromAlbumBtn.title = albumsActive
+        ? 'Remove items from their album'
+        : 'Source must be Albums to remove items from an album';
+    }
   }
 
   function updateFilterVisibility(): void {

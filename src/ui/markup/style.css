@@ -171,12 +171,12 @@
         }
     }
 
-    button:not(:disabled):hover {
+    button:not(:disabled):not(.not-applicable):hover {
         background-color: var(--bg-surface-hover);
         border-color: var(--border-strong);
     }
 
-    button:not(:disabled):active {
+    button:not(:disabled):not(.not-applicable):active {
         background-color: var(--bg-surface-active);
         transform: scale(0.97);
     }
@@ -186,7 +186,7 @@
         outline-offset: 1px;
     }
 
-    button:disabled {
+    button:disabled, button.not-applicable {
         background-color: var(--bg-raised);
         color: var(--text-disabled);
         border-color: transparent;

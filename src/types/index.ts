@@ -45,6 +45,7 @@ export interface MediaItem {
   saved?: boolean;
   sourceAlbumMediaKey?: string;
   sourceAlbumTitle?: string;
+  sourceAlbumIsShared?: boolean;
   descriptionFull?: string;
   fileName?: string;
   size?: number;

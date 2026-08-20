@@ -2,6 +2,7 @@ import Api from './api/api';
 import ApiUtils from './api/api-utils';
 import { timeToHHMMSS, isPatternValid } from './utils/helpers';
 import log from './ui/logic/log';
+import getFromStorage from './utils/getFromStorage';
 import * as filters from './filters';
 import { apiSettingsDefault } from './api/api-utils-default-presets';
 import type { MediaItem, Filter, Source, Action, Album, ApiSettings, LibraryTimelinePage } from './types';
@@ -40,6 +41,12 @@ export default class Core {
         await this.apiUtils.addToNewAlbum(p.mediaItems, p.newTargetAlbumName, p.preserveOrder);
       },
       toTrash: async (p) => this.apiUtils.moveToTrash(p.mediaItems),
+      removeFromAlbum: async (p) => {
+        if (p.source !== 'albums') {
+          throw new Error('Remove from album requires the Albums source');
+        }
+        await this.apiUtils.removeFromAlbum(p.mediaItems);
+      },
       toArchive: async (p) => this.apiUtils.sendToArchive(p.mediaItems),
       unArchive: async (p) => this.apiUtils.unArchive(p.mediaItems),
       toFavorite: async (p) => this.apiUtils.setAsFavorite(p.mediaItems),
@@ -105,6 +112,18 @@ export default class Core {
           throw new Error('no target album');
         }
         const albumMediaKeys = Array.isArray(filter.albumsInclude) ? filter.albumsInclude : [filter.albumsInclude];
+        // Only trust a known boolean isShared; a missing value (stale/old cache) stays unknown so the fetch below resolves it.
+        const sharedByAlbumKey = new Map<string, boolean>(
+          (getFromStorage<Album[]>('albums') ?? [])
+            .filter((album) => typeof album.isShared === 'boolean')
+            .map((album) => [album.mediaKey, album.isShared as boolean])
+        );
+        if (albumMediaKeys.some((albumMediaKey) => !sharedByAlbumKey.has(albumMediaKey))) {
+          const albums = await this.apiUtils.getAllAlbums();
+          for (const album of albums) {
+            if (typeof album.isShared === 'boolean') sharedByAlbumKey.set(album.mediaKey, album.isShared);
+          }
+        }
         const albumItems = await Promise.all(
           albumMediaKeys.map(async (albumMediaKey) => {
             log('Getting album items');
@@ -113,6 +132,7 @@ export default class Core {
               ...item,
               sourceAlbumMediaKey: albumMediaKey,
               sourceAlbumTitle: albumTitle,
+              sourceAlbumIsShared: sharedByAlbumKey.get(albumMediaKey) ?? false,
             }));
           })
         );

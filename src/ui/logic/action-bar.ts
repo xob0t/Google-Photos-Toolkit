@@ -5,11 +5,13 @@ import { generateFilterDescription } from './filter-description-gen';
 import { updateUI } from './update-state';
 import { disableActionBar } from './utils/disable-action-bar';
 import getFromStorage from '../../utils/getFromStorage';
+import log from './log';
 import type { Action, Album, ApiSettings, Filter, Source } from '../../types';
 
 const actions: Action[] = [
   { elementId: 'toExistingAlbum', targetId: 'existingAlbum' },
   { elementId: 'toNewAlbum', targetId: 'newAlbumName' },
+  { elementId: 'removeFromAlbum' },
   { elementId: 'toTrash' },
   { elementId: 'restoreTrash' },
   { elementId: 'toArchive' },
@@ -69,6 +71,11 @@ async function runAction(actionId: string): Promise<void> {
 
   const sourceInput = document.querySelector('input[name="source"]:checked');
   const source = (sourceInput?.id ?? 'library') as Source;
+
+  if (actionId === 'removeFromAlbum' && source !== 'albums') {
+    log('Remove from album requires the Albums source', 'error');
+    return;
+  }
 
   const filtersForm = document.querySelector<HTMLFormElement>('.filters-form');
   if (filtersForm && !filtersForm.checkValidity()) {
